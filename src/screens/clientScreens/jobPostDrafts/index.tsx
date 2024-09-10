@@ -67,7 +67,7 @@ const JobPostDrafts = () => {
       if (isFetching) {
         return <JobPostCardLoading isDraft />;
       } else {
-        return <JobPostCard onPress={onPressDraftCard} {...item} />;
+        return <JobPostCard isDraft onPress={onPressDraftCard} {...item} />;
       }
     },
     [isFetching],

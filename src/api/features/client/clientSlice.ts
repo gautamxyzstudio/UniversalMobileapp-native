@@ -21,7 +21,7 @@ const clientSlice = createSlice({
       state.jobs.open = [...state.jobs.closed, ...action.payload];
     },
     saveDrafts: (state, action) => {
-      state.jobs.drafts = [...state.jobs.drafts, ...action.payload];
+      state.jobs.drafts = [...action.payload];
     },
     addNewJob: (state, action: PayloadAction<IJobPostTypes>) => {
       state.jobs.open.unshift(action.payload);
