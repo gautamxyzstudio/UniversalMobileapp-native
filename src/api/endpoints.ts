@@ -18,4 +18,5 @@ export const apiEndPoints = {
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
   getJobPost: `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc`,
+  saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
 };

@@ -90,6 +90,10 @@ import BIN_SECONDARY from './icons/svg/bin.svg';
 import PAUSE from './icons/svg/pause.svg';
 import CHECK_IN from './icons/svg/checkIn.svg';
 import PERSON_SECONDARY from './icons/svg/personSecondary.svg';
+import PENCIL from './icons/svg/pensil.svg';
+import POST from './icons/svg/post.svg';
+import NO_INTERNET from './icons/svg/noInternet.svg';
+import EMPTY from './icons/svg/emptyIcon.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -118,8 +122,12 @@ export const ANIMATIONS = {
 export {
   LOCATION_SMALL,
   PLUS_WHITE,
+  NO_INTERNET,
+  EMPTY,
   CROSS_ORANGE,
   EVENT,
+  PENCIL,
+  POST,
   PERSON_SECONDARY,
   JOB_ID,
   DRAFT,

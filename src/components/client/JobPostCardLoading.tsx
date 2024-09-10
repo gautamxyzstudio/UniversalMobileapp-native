@@ -7,10 +7,14 @@ import {Theme} from '@theme/Theme.type';
 import Spacers from '@components/atoms/Spacers';
 import BrTag from '@components/atoms/brTag';
 
-const JobPostCardLoading = () => {
+type IJobPostLoadingCardProps = {
+  isDraft?: boolean;
+};
+
+const JobPostCardLoading: React.FC<IJobPostLoadingCardProps> = ({isDraft}) => {
   const styles = useThemeAwareObject(getStyles);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDraft && {height: verticalScale(139)}]}>
       <Row spaceBetween>
         <Row alignCenter>
           <View style={styles.image} />

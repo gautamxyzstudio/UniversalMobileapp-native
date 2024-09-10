@@ -7,7 +7,6 @@ import UploadProfilePhoto from '@components/molecules/uploadProfilePhoto';
 import {Row} from '@components/atoms/Row';
 import {
   CALENDER_THIRD,
-  CLOCK_SEC,
   DOLLAR_SMALL,
   EVENT,
   LOCATION_ICON,
@@ -31,7 +30,10 @@ import {
   extractTimeFromDate,
   getJobAddress,
 } from '@utils/constants';
-import {usePostAJobMutation} from '@api/features/client/clientApi';
+import {
+  usePostAJobMutation,
+  useSaveAsDraftMutation,
+} from '@api/features/client/clientApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
@@ -53,18 +55,17 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const navigation = useNavigation<NavigationProps>();
   const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
 
-  const wage = `${jobDetails?.salary}$ ${
-    jobDetails?.PaymentType === IPayDuration.HOURLY ? '/hr' : ''
-  }`;
+  const wage = `${jobDetails?.salary}$ /hr`;
   const shiftTime = `${extractTimeFromDate(
     jobDetails?.startShift ?? new Date(),
   )} - ${extractTimeFromDate(jobDetails?.Endshift ?? new Date())}`;
 
   const jobsDate = `${extractDayAndMonthFromDate(
-    jobDetails?.startDate ?? new Date(),
-  )} - ${extractDayAndMonthFromDate(jobDetails?.endDate ?? new Date())}`;
+    jobDetails?.eventDate ?? new Date(),
+  )}`;
 
   const [postJob] = usePostAJobMutation();
+  const [saveAsDraft] = useSaveAsDraftMutation();
 
   const styles = useThemeAwareObject(createStyles);
 
@@ -77,11 +78,24 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
         navigation.navigate('clientTabBar');
       }
     } catch (error) {
-      showToast(
-        toast,
-        'something went wrong while passing job please try again later',
-        'error',
-      );
+      console.log(error);
+      showToast(toast, STRINGS.someting_went_wrong, 'error');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const saveAsDraftHandler = async () => {
+    try {
+      dispatch(setLoading(true));
+      const response = await saveAsDraft({data: jobDetails}).unwrap();
+      if (response) {
+        showToast(toast, 'job posted successfully', 'success');
+        navigation.navigate('clientTabBar');
+      }
+    } catch (error) {
+      console.log(error);
+      showToast(toast, STRINGS.someting_went_wrong, 'error');
     } finally {
       dispatch(setLoading(false));
     }
@@ -123,21 +137,14 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
           </Row>
         </View>
         <Spacers type="vertical" size={16} scalable />
-        {jobDetails?.required_certificates && (
-          <JobDetailsKey
-            heading={STRINGS.requiredCertificates}
-            value={(jobDetails?.required_certificates.length ?? 0).toString()}
-          />
-        )}
-        <Spacers type="vertical" size={16} scalable />
         {jobDetails?.gender && (
           <JobDetailsKey heading={STRINGS.gender} value={jobDetails.gender} />
         )}
         <Spacers type="vertical" size={16} scalable />
-        {jobDetails?.experience && (
+        {jobDetails?.requiredEmployee && (
           <JobDetailsKey
-            heading={STRINGS.year_of_ex}
-            value={jobDetails.experience.toString()}
+            heading={STRINGS.requiredCertificates}
+            value={jobDetails.requiredEmployee.toString()}
           />
         )}
         <Spacers type="vertical" size={16} scalable />
@@ -169,7 +176,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
             />
           )}
         </View>
-        <Spacers type="vertical" size={32} scalable />
+        <Spacers type="vertical" size={16} scalable />
         <Text style={styles.heading}>{STRINGS.address}</Text>
         <Text style={styles.pStyles}>
           {getJobAddress({
@@ -184,6 +191,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
       <BottomButtonView
         disabled={false}
         title={STRINGS.post}
+        onPressSecondaryButton={saveAsDraftHandler}
         secondaryButtonTitles={STRINGS.draft}
         isMultiple
         onButtonPress={postJobHandler}

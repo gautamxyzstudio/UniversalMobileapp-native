@@ -60,7 +60,7 @@ const DatePickerInput: React.FC<IDatePickerInputPropTypes> = ({
   };
   return (
     <>
-      <View style={outerContainer}>
+      <View style={[{width: '100%'}, outerContainer]}>
         <Pressable onPress={() => setOpen(true)} style={styles.view} />
         <CustomTextInput
           title={title ?? STRINGS.date_of_birth}

@@ -33,10 +33,12 @@ import {IJobPostTypes} from '@api/features/client/types';
 export interface IJobDetailsPropTypes extends IJobPostTypes {
   onPress?: () => void;
   cardWidth?: number;
+  isDraft?: boolean;
 }
 
 const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
   onPress,
+  isDraft,
   cardWidth,
   ...cardProps
 }) => {
@@ -45,19 +47,15 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
 
   const {
     job_name,
-    status,
-    postedBy,
-    jobDuties,
     publishedAt,
-    postalCode,
     job_type,
     eventDate,
-    salary,
     startShift,
-    experience,
     Endshift,
     location,
   } = cardProps;
+
+  console.log(isDraft, 'draft');
 
   return (
     <Pressable onPress={onPress} style={styles.container}>
@@ -82,7 +80,11 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
                 style={[styles.title]}>
                 {job_name}
               </Text>
-              <Text style={styles.notAccepting}>{STRINGS.not_accepting}</Text>
+              {isDraft ? (
+                <Text style={styles.postedDate}>8 may</Text>
+              ) : (
+                <Text style={styles.notAccepting}>{STRINGS.not_accepting}</Text>
+              )}
             </View>
             <Row alignCenter style={styles.statusRow}>
               <JobStatusChip
@@ -95,10 +97,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
         </View>
       </Row>
       <View style={styles.midContainer}>
-        <Row alignCenter>
-          <JOB_ID width={verticalScale(20)} height={verticalScale(20)} />
-          <Text style={styles.locationText}>S2</Text>
-        </Row>
+        {!isDraft && (
+          <Row alignCenter>
+            <JOB_ID width={verticalScale(20)} height={verticalScale(20)} />
+            <Text style={styles.locationText}>S2</Text>
+          </Row>
+        )}
+
         <Row>
           <Row alignCenter>
             <CALENDAR_SECONDARY
@@ -123,15 +128,19 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
           <Text style={styles.locationText}>{location}</Text>
         </Row>
       </View>
-      <View style={styles.divider} />
-      <Row spaceBetween alignCenter>
-        {publishedAt && (
-          <Text style={styles.postedDate}>{fromNowOn(publishedAt)}</Text>
-        )}
-        <TouchableOpacity>
-          <Text style={styles.postedDate}>Posted by Yash</Text>
-        </TouchableOpacity>
-      </Row>
+      {!isDraft && (
+        <>
+          <View style={styles.divider} />
+          <Row spaceBetween alignCenter>
+            {publishedAt && (
+              <Text style={styles.postedDate}>{fromNowOn(publishedAt)}</Text>
+            )}
+            <TouchableOpacity>
+              <Text style={styles.postedDate}>Posted by Yash</Text>
+            </TouchableOpacity>
+          </Row>
+        </>
+      )}
     </Pressable>
   );
 };

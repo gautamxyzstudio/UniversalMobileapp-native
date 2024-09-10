@@ -57,6 +57,7 @@ export const STRINGS = {
   replace: 'Replace',
   add: 'Add',
   fAQs: 'FAQs',
+  eventDate: 'Event Date',
   emailRequired: 'email is a required field',
   emailOrUsernameValid: 'Please enter a valid email address or username',
   passwordRequired: 'Please enter a password',
@@ -232,7 +233,7 @@ export const STRINGS = {
   jobDescription_min: 'Please enter at least 50 words',
   postal_code_required: 'Postal Code Required',
   start_date_required: 'start date required',
-  end_date_required: 'end date required',
+  end_date_required: 'please select the  date of the event',
   employee_required: 'Please enter the number of employees required',
   wage_required: 'Please enter the starting wage',
   review: 'Review',
@@ -243,4 +244,5 @@ export const STRINGS = {
   view_details: 'View Details',
   stop: 'Stop',
   quick_links: 'Quick Links',
+  edit: 'Edit',
 };

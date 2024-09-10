@@ -17,18 +17,16 @@ import {jobPostStep2Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 
 type IJobPostingStepTwoState = {
+  eventDate: Date | null;
   shiftStartTime: Date | null;
   shiftEndTime: Date | null;
-  shiftStartDate: Date | null;
-  shiftEndDate: Date | null;
   location: string;
   address: string;
   city: string;
   postalCode: string;
-  shiftStartTimeError: string;
   shiftEndTimeError: string;
-  shiftStartDateError: string;
-  shiftEndDateError: string;
+  shiftStartTimeError: string;
+  eventDateError: string;
   locationError: string;
   addressError: string;
   cityError: string;
@@ -44,28 +42,23 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
       };
     },
     {
-      shiftStartDate: null,
-      shiftEndDate: null,
+      eventDate: null,
       shiftStartTime: null,
       shiftEndTime: null,
       location: '',
       address: '',
       city: '',
       postalCode: '',
+      eventDateError: '',
       shiftStartTimeError: '',
       shiftEndTimeError: '',
-      shiftStartDateError: '',
-      shiftEndDateError: '',
       locationError: '',
       addressError: '',
       cityError: '',
       postalCodeError: '',
     },
   );
-  const isTimeDisabled = useMemo(
-    () => !(state.shiftStartDate && state.shiftEndDate),
-    [state.shiftStartDate, state.shiftEndDate],
-  );
+  const isTimeDisabled = useMemo(() => !state.eventDate, [state.eventDate]);
 
   const handleValueChange = (key: string, value: any) => {
     setState({
@@ -90,8 +83,7 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
       if (fields) {
         return {
           fields: {
-            startDate: fields.shiftStartDate,
-            endDate: fields.shiftEndDate,
+            eventDate: fields.eventDate,
             startShift: fields.shiftStartTime,
             Endshift: fields.shiftEndTime,
             location: fields.location,
@@ -131,24 +123,13 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
         keyboardShouldPersistTaps="always">
         <Row spaceBetween style={styles.row}>
           <DatePickerInput
-            title={STRINGS.start_date}
-            currentDate={state.shiftStartDate}
+            title={STRINGS.eventDate}
+            currentDate={state.eventDate}
             minimumDate={getMinimumDateJobPost(1)}
-            outerContainer={styles.timerInput}
             getSelectedDate={(date: Date) =>
               handleValueChange(Object.keys(state)[0], date)
             }
-            errorMessage={state.shiftStartDateError}
-          />
-          <DatePickerInput
-            title={STRINGS.end_date}
-            currentDate={state.shiftEndDate}
-            outerContainer={styles.timerInput}
-            minimumDate={getMinimumDateJobPost(1)}
-            getSelectedDate={(date: Date) =>
-              handleValueChange(Object.keys(state)[1], date)
-            }
-            errorMessage={state.shiftEndDateError}
+            errorMessage={state.eventDateError}
           />
         </Row>
         <Spacers type={'vertical'} size={16} />
@@ -166,7 +147,7 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
             errorMessage={state.shiftStartTimeError}
             currentDate={state.shiftStartTime}
             getSelectedDate={(date: Date) =>
-              handleValueChange(Object.keys(state)[2], date)
+              handleValueChange(Object.keys(state)[1], date)
             }
           />
 
@@ -180,7 +161,7 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
             errorMessage={state.shiftEndTimeError}
             currentDate={state.shiftEndTime}
             getSelectedDate={(date: Date) =>
-              handleValueChange(Object.keys(state)[3], date)
+              handleValueChange(Object.keys(state)[2], date)
             }
           />
         </Row>
@@ -189,20 +170,20 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
         <CustomTextInput
           title={STRINGS.location}
           value={state.location}
-          onTextChange={text => handleValueChange(Object.keys(state)[4], text)}
+          onTextChange={text => handleValueChange(Object.keys(state)[3], text)}
           errorMessage={state.locationError}
         />
         <Spacers type={'vertical'} size={16} />
         <CustomTextInput
           value={state.address}
           title={STRINGS.address}
-          onTextChange={e => handleValueChange(Object.keys(state)[5], e)}
+          onTextChange={e => handleValueChange(Object.keys(state)[4], e)}
           errorMessage={state.addressError}
         />
         <Spacers type={'vertical'} size={16} />
         <CustomTextInput
           value={state.city}
-          onTextChange={e => handleValueChange(Object.keys(state)[6], e)}
+          onTextChange={e => handleValueChange(Object.keys(state)[5], e)}
           title={STRINGS.city}
           errorMessage={state.cityError}
         />
@@ -210,7 +191,7 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
         <CustomTextInput
           keyboardType="number-pad"
           title={STRINGS.postal_code}
-          onTextChange={e => handleValueChange(Object.keys(state)[7], e)}
+          onTextChange={e => handleValueChange(Object.keys(state)[6], e)}
           value={state.postalCode}
           errorMessage={state.postalCodeError}
         />

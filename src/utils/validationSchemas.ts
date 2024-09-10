@@ -129,8 +129,7 @@ export const jobPostStep2Schema = Yup.object().shape({
   location: Yup.string().required(STRINGS.location_required),
   shiftEndTime: Yup.date().required(STRINGS.end_time_required),
   shiftStartTime: Yup.date().required(STRINGS.start_time_required),
-  shiftEndDate: Yup.date().required(STRINGS.end_date_required),
-  shiftStartDate: Yup.date().required(STRINGS.start_date_required),
+  eventDate: Yup.date().required(STRINGS.end_date_required),
 });
 
 //job post step  3:

@@ -1,20 +1,27 @@
 import {IJobTypesEnum, IPayDuration} from '@utils/enums';
 
+export type IClientSliceInitialState = {
+  jobs: {
+    open: IJobPostTypes[];
+    closed: IJobPostTypes[];
+    drafts: IJobPostTypes[];
+  };
+};
+
 export interface IJobPostTypes {
   id?: number;
   job_name?: string;
   city: string;
   required_certificates: string[] | null;
   postedBy: string;
-  jobDuties: JSON;
+  jobDuties: JSON | undefined;
   job_type: IJobTypesEnum;
   status: number;
   location: string;
   requiredEmployee: number;
-  PaymentType: IPayDuration;
   startShift: Date;
   Endshift: Date;
-  description: JSON;
+  description: JSON | undefined;
   gender: string;
   experience?: number | null;
   eventDate: Date;
@@ -43,10 +50,8 @@ export type IPostedJobsResponse = {
       city: string;
       address: string;
       postalCode: string;
-      experience: number | null;
       gender: string;
-      startDate: Date;
-      endDate: Date;
+      eventDate: Date;
       salary: string;
       createdAt: Date;
       updatedAt: Date;
@@ -55,7 +60,6 @@ export type IPostedJobsResponse = {
       job_type: IJobTypesEnum;
       location: string;
       requiredEmployee: number;
-      PaymentType: IPayDuration;
       startShift: Date;
       Endshift: Date;
       description: JSON;

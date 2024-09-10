@@ -6,8 +6,7 @@ export interface IJobPostingStepOneFields {
 }
 
 export interface IJobPostingStepTwoFields {
-  endDate: Date;
-  startDate: Date;
+  eventDate: Date;
   startShift: Date;
   Endshift: Date;
   location: string;
@@ -20,8 +19,6 @@ export interface IJobPostingStepThreeFields {
   gender: string;
   salary: string;
   requiredEmployee: number;
-  PaymentType: string;
-  experience: number;
   required_certificates: string[];
 }
 

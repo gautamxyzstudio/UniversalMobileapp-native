@@ -17,14 +17,10 @@ import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 type IJobPostingStepThreeState = {
   requiredEmployee: string;
   salary: string;
-  paymentDuration: string;
   requiredCertificates: string[];
-  experienceRequired: string;
   gender: string;
   requiredEmployeeError: string;
   salaryError: string;
-  paymentDurationError: string;
-  experienceRequiredError: string;
   requiredCertificatesError: string;
   genderError: string;
 };
@@ -39,15 +35,11 @@ const JobPostingStepThree = React.forwardRef<any, IJobPostRef>(({}, ref) => {
     {
       requiredEmployee: '',
       salary: '',
-      paymentDuration: paymentSchedulesMockData[0].value,
       requiredCertificates: [STRINGS.sinDocument],
-      experienceRequired: '',
       gender: genderPreferences[2].value,
       requiredEmployeeError: '',
       salaryError: '',
-      paymentDurationError: '',
       requiredCertificatesError: '',
-      experienceRequiredError: '',
       genderError: '',
     },
   );
@@ -70,8 +62,6 @@ const JobPostingStepThree = React.forwardRef<any, IJobPostRef>(({}, ref) => {
             gender: state.gender,
             salary: fields.salary,
             requiredEmployee: fields.requiredEmployee,
-            PaymentType: state.paymentDuration,
-            experience: Number(state.experienceRequired),
             required_certificates: state.requiredCertificates,
           },
           isValid: true,
@@ -131,15 +121,6 @@ const JobPostingStepThree = React.forwardRef<any, IJobPostRef>(({}, ref) => {
           errorMessage={state.requiredEmployeeError}
         />
         <Spacers type={'vertical'} size={16} />
-        <DropdownComponent
-          title={STRINGS.payment_Schedule}
-          dropdownPosition="top"
-          onChangeValue={e => handleValueChange(Object.keys(state)[2], e.value)}
-          error={state.paymentDurationError}
-          value={state.paymentDuration}
-          data={paymentSchedulesMockData}
-        />
-        <Spacers type={'vertical'} size={16} />
         <CustomTextInput
           value={state.salary}
           title={STRINGS.starting_wage}
@@ -155,19 +136,10 @@ const JobPostingStepThree = React.forwardRef<any, IJobPostRef>(({}, ref) => {
           getUpdatedCertificate={certificatesHandler}
         />
         <Spacers type={'vertical'} size={16} />
-        <CustomTextInput
-          title={STRINGS.years_of_experience}
-          value={state.experienceRequired}
-          maxLength={3}
-          onTextChange={e => handleValueChange(Object.keys(state)[4], e)}
-          keyboardType="numeric"
-          errorMessage={''}
-        />
-        <Spacers type={'vertical'} size={16} />
         <DropdownComponent
           title={STRINGS.gender_optional}
           dropdownPosition="top"
-          onChangeValue={e => handleValueChange(Object.keys(state)[5], e.value)}
+          onChangeValue={e => handleValueChange(Object.keys(state)[3], e.value)}
           error={''}
           value={state.gender}
           data={genderPreferences}

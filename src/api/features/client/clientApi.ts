@@ -57,7 +57,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
       transformErrorResponse: (
         response: IErrorResponse,
       ): ICustomErrorResponse => {
-        console.log(response, 'RESPONSE ERROR');
         return {
           statusCode: response.status,
           message: response.data.error?.message ?? STRINGS.someting_went_wrong,
@@ -65,7 +64,50 @@ const clientApi = baseApiWithTag.injectEndpoints({
       },
       providesTags: ['PostedJobs'],
     }),
+    saveAsDraft: builder.mutation<{data: IJobPostInterface}, any>({
+      query: body => ({
+        url: apiEndPoints.saveAsDraft,
+        method: apiMethodType.post,
+        body,
+      }),
+    }),
+    getDrafts: builder.query({
+      query: () => ({
+        url: apiEndPoints.saveAsDraft,
+        method: apiMethodType.get,
+      }),
+      transformResponse: (
+        response: IPostedJobsResponse,
+      ): IJobPostCustomizedResponse => {
+        let data: IJobPostTypes[] = [];
+        response.data.forEach((job, index) => {
+          if (job.id && job.attributes) {
+            data.push({
+              ...job.attributes,
+              id: job.id,
+
+              postedBy: 'posted by Yash',
+              status: 0,
+            });
+          }
+        });
+        return {
+          data: data,
+          pagination: response?.meta && {
+            page: response.meta?.pagination?.page ?? 1,
+            pageSize: response?.meta.pagination?.pageSize ?? 1,
+            pageCount: response?.meta.pagination?.pageCount ?? 1,
+            total: response?.meta.pagination?.total ?? 1,
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const {usePostAJobMutation, useLazyGetPostedJobQuery} = clientApi;
+export const {
+  usePostAJobMutation,
+  useLazyGetPostedJobQuery,
+  useSaveAsDraftMutation,
+  useLazyGetDraftsQuery,
+} = clientApi;
