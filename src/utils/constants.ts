@@ -1,4 +1,4 @@
-import {IDoc} from '@api/features/user/types';
+import {IClientDetails, IDoc, IEmployeeDetails} from '@api/features/user/types';
 import moment from 'moment';
 
 export const convertDateToDobFormat = (date: Date | null): string | null => {
@@ -180,4 +180,11 @@ export const getJobAddress = ({
   postalCode: string;
 }) => {
   return `${address},${location},${city},${postalCode}`;
+};
+
+// Type guard function to check if user details are of type IClientDetails
+export const isClientDetails = (
+  details: IClientDetails | IEmployeeDetails,
+): details is IClientDetails => {
+  return (details as IClientDetails).companyName !== undefined;
 };

@@ -9,6 +9,11 @@ export enum IJobTypesEnum {
 }
 
 export enum IJobPostStatus {
-  OPEN = 0,
-  CLOSED = 1,
+  OPEN = 's0',
+  CLOSED = 's1',
+}
+
+export enum IUserTypeEnum {
+  CLIENT = 'client',
+  EMPLOYEE = 'emp',
 }

@@ -15,16 +15,33 @@ const clientSlice = createSlice({
   initialState,
   reducers: {
     saveOpenJobs: (state, action) => {
-      state.jobs.open = [...state.jobs.open, ...action.payload];
+      state.jobs.open = [...action.payload];
     },
     saveClosedJobs: (state, action) => {
       state.jobs.open = [...state.jobs.closed, ...action.payload];
     },
-    saveDrafts: (state, action) => {
+    saveDrafts: (state, action: PayloadAction<IJobPostTypes[]>) => {
       state.jobs.drafts = [...action.payload];
+    },
+    removeADraft: (state, action: PayloadAction<{id: number}>) => {
+      const draftIndex = state.jobs.drafts.findIndex(
+        draft => draft.id === action.payload.id,
+      );
+      if (draftIndex !== -1) {
+        state.jobs.drafts.splice(draftIndex, 1);
+      }
     },
     addNewJob: (state, action: PayloadAction<IJobPostTypes>) => {
       state.jobs.open.unshift(action.payload);
+    },
+    postADraft: (state, action: PayloadAction<IJobPostTypes>) => {
+      const draftIndex = state.jobs.drafts.findIndex(
+        draft => draft.id === action.payload.id,
+      );
+      if (draftIndex !== -1) {
+        state.jobs.drafts.splice(draftIndex, 1);
+        state.jobs.open.unshift(action.payload);
+      }
     },
     closeAJob: (state, action: PayloadAction<IJobPostTypes>) => {
       const jobIndex = state.jobs.open.findIndex(
@@ -35,7 +52,7 @@ const clientSlice = createSlice({
         state.jobs.closed.unshift(action.payload);
       }
     },
-    addNewDraft: (state, action) => {
+    addNewDraft: (state, action: PayloadAction<IJobPostTypes>) => {
       state.jobs.drafts.unshift(action.payload);
     },
   },
@@ -46,8 +63,10 @@ export const {
   addNewDraft,
   saveClosedJobs,
   saveDrafts,
+  removeADraft,
   closeAJob,
   saveOpenJobs,
+  postADraft,
 } = clientSlice.actions;
 
 //state extractors

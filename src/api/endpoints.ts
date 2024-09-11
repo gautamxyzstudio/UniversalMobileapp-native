@@ -19,4 +19,5 @@ export const apiEndPoints = {
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
   getJobPost: `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc`,
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
+  deleteADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
 };

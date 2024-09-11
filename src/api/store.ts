@@ -1,14 +1,5 @@
 import {configureStore, Store} from '@reduxjs/toolkit';
-import {
-  FLUSH,
-  PAUSE,
-  PERSIST,
-  persistReducer,
-  PURGE,
-  REGISTER,
-  REHYDRATE,
-  persistStore,
-} from 'redux-persist';
+import {persistReducer, persistStore} from 'redux-persist';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 
 import {baseApi} from './baseApi';
@@ -26,9 +17,7 @@ const store: Store = configureStore({
   reducer: persistedReducer,
   middleware: gdm =>
     gdm({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
+      serializableCheck: false,
     }).concat(baseApi.middleware as any),
 });
 

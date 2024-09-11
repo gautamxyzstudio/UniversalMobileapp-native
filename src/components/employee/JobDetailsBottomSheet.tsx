@@ -2,7 +2,7 @@ import {Alert, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useMemo} from 'react';
 import {BaseBottomSheet} from '@components/molecules/bottomsheet';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {verticalScale, windowHeight} from '@utils/metrics';
+import {verticalScale, windowHeight, windowWidth} from '@utils/metrics';
 
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -10,7 +10,6 @@ import {fonts} from '@utils/common.styles';
 import {
   BRIEF_CASE,
   CALENDER_THIRD,
-  CLOCK_SEC,
   DOLLAR_SMALL,
   ICONS,
   LOCATION_TERNARY,
@@ -27,10 +26,26 @@ import {
   jobRequirementsMock,
   requiredCertificatesMock,
 } from '@api/mockData';
-import {IJobTypes} from '@api/types';
+import {IJobPostTypes} from '@api/features/client/types';
+import {useSelector} from 'react-redux';
+import {
+  userAdvanceDetailsFromState,
+  userBasicDetailsFromState,
+} from '@api/features/user/userSlice';
+import {IClientDetails} from '@api/features/user/types';
+import {IJobPostStatus, IJobTypesEnum, IUserTypeEnum} from '@utils/enums';
+import {
+  extractTimeFromDate,
+  extractDayAndMonthFromDate,
+  convertArrayOfStringsToUlLi,
+  getJobAddress,
+  isClientDetails,
+} from '@utils/constants';
+import JobDetailsKey from './JobDetailsKeys';
+import {useTheme} from '@theme/Theme.context';
 
 type IJobDetailsBottomSheetProps = {
-  jobDetails: IJobTypes | null;
+  jobDetails: IJobPostTypes | null;
 };
 
 const JobDetailsBottomSheet = React.forwardRef<
@@ -38,13 +53,31 @@ const JobDetailsBottomSheet = React.forwardRef<
   IJobDetailsBottomSheetProps
 >(({jobDetails}, ref) => {
   const styles = useThemeAwareObject(createStyles);
-
+  const {theme} = useTheme();
+  const companyDetails = useSelector(
+    userAdvanceDetailsFromState,
+  ) as IClientDetails;
   const modalHeight = verticalScale(windowHeight * 0.83);
+  const user = useSelector(userBasicDetailsFromState);
   const snapPoints = useMemo(() => [0.01, modalHeight], [modalHeight]);
   const onClose = () => {
     // @ts-ignore
     ref.current?.snapToIndex(0);
   };
+
+  const clientJobStatusAttributes = getStatusStyleAttributesFromStatus(
+    user?.user_type ?? 'emp',
+    jobDetails?.status ?? 0,
+    theme,
+  );
+
+  const shiftTime = `${extractTimeFromDate(
+    jobDetails?.startShift ?? new Date(),
+  )} - ${extractTimeFromDate(jobDetails?.endShift ?? new Date())}`;
+
+  const jobsDate = `${extractDayAndMonthFromDate(
+    jobDetails?.eventDate ?? new Date(),
+  )}`;
 
   return (
     <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onClose}>
@@ -64,8 +97,8 @@ const JobDetailsBottomSheet = React.forwardRef<
             resizeMode="cover"
             source={ICONS.imagePlaceholder}
           />
-          <Text style={styles.title}>{jobDetails?.title}</Text>
-          <Text style={styles.jobName}>{jobDetails?.companyName}</Text>
+          <Text style={styles.title}>{jobDetails?.job_name}</Text>
+          <Text style={styles.jobName}>{companyDetails.companyName}</Text>
           <Row style={styles.location} alignCenter>
             <LOCATION_TERNARY
               width={verticalScale(20)}
@@ -75,45 +108,100 @@ const JobDetailsBottomSheet = React.forwardRef<
           </Row>
           <View style={styles.headerView}>
             <Row wrap spaceBetween style={styles.stickyHeader}>
-              <JobDetailsTopTag icon={BRIEF_CASE} title={STRINGS.night_Shift} />
-              <JobDetailsTopTag icon={DOLLAR_SMALL} title={'20$ /hr'} />
+              {jobDetails?.job_type && (
+                <JobDetailsTopTag
+                  icon={BRIEF_CASE}
+                  title={jobDetails?.job_type}
+                />
+              )}
+              {jobDetails?.salary && (
+                <JobDetailsTopTag
+                  icon={DOLLAR_SMALL}
+                  title={`${jobDetails?.salary}/$ hr`}
+                />
+              )}
             </Row>
             <Row wrap spaceBetween style={styles.stickyHeaderBottom}>
-              <JobDetailsTopTag icon={CLOCK_SEC} title={'7 pm - 2 am'} />
-              <JobDetailsTopTag icon={CALENDER_THIRD} title={'2 Jun - 3 Jun'} />
+              <JobDetailsTopTag
+                iconSize={verticalScale(20)}
+                icon={CALENDER_THIRD}
+                isMultiple
+                titleSec={shiftTime}
+                title={jobsDate}
+              />
             </Row>
           </View>
-
-          <View style={styles.descriptionView}>
-            <JobDetailsRenderer
-              heading={STRINGS.jobDescription}
-              description={jobDescriptionMock}
-            />
-            <View style={styles.spacer} />
-            <JobDetailsRenderer
-              heading={STRINGS.jobDuties}
-              description={jobRequirementsMock}
-            />
-            <View style={styles.spacer} />
-            <JobDetailsRenderer
+          <Spacers type="vertical" size={24} scalable />
+          {jobDetails?.requiredEmployee && (
+            <JobDetailsKey
               heading={STRINGS.requiredCertificates}
-              description={requiredCertificatesMock}
+              value={jobDetails.requiredEmployee.toString()}
             />
-            <View style={styles.spacer} />
+          )}
+          <Spacers type="vertical" size={16} scalable />
+          {jobDetails?.gender && (
+            <JobDetailsKey heading={STRINGS.gender} value={jobDetails.gender} />
+          )}
+          <Spacers type="vertical" size={16} scalable />
+          <View style={styles.descriptionView}>
+            {jobDetails?.description && (
+              <JobDetailsRenderer
+                heading={STRINGS.jobDescription}
+                description={jobDetails?.description}
+              />
+            )}
+
+            <Spacers type="vertical" size={16} scalable />
+            {jobDetails?.jobDuties && (
+              <JobDetailsRenderer
+                heading={STRINGS.jobDuties}
+                description={jobDetails?.jobDuties}
+              />
+            )}
+            <Spacers type="vertical" size={16} scalable />
+            {jobDetails?.required_certificates && (
+              <JobDetailsRenderer
+                heading={STRINGS.requiredCertificates}
+                description={convertArrayOfStringsToUlLi(
+                  jobDetails?.required_certificates,
+                )}
+              />
+            )}
+            <Spacers type="vertical" size={16} scalable />
             <Text style={styles.heading}>{STRINGS.address}</Text>
-            <Text style={styles.pStyles}>{jobDetails?.location}</Text>
-            {/* <JobDetailsRenderer
-              heading={STRINGS.address}
-              description={jobDetails.location}
-            /> */}
+            <Text style={styles.pStyles}>
+              {getJobAddress({
+                address: jobDetails?.address ?? '',
+                city: jobDetails?.city ?? '',
+                postalCode: jobDetails?.postalCode ?? '',
+                location: jobDetails?.location ?? '',
+              })}
+            </Text>
           </View>
           <Spacers type="vertical" />
         </BottomSheetScrollView>
-        <BottomButtonView
-          disabled={false}
-          title={STRINGS.applyNow}
-          onButtonPress={() => Alert.alert('job applied')}
-        />
+        {user?.user_type === 'client' &&
+          user.details &&
+          isClientDetails(user.details) && (
+            <View style={styles.mainView}>
+              <Text
+                style={[
+                  styles.statusText,
+                  {color: clientJobStatusAttributes?.color},
+                ]}>
+                {clientJobStatusAttributes?.title}
+              </Text>
+            </View>
+          )}
+        {user?.user_type === 'emp' &&
+          user.details &&
+          isClientDetails(user.details) && (
+            <BottomButtonView
+              disabled={false}
+              title={STRINGS.applyNow}
+              onButtonPress={() => Alert.alert('job applied')}
+            />
+          )}
       </View>
     </BaseBottomSheet>
   );
@@ -129,7 +217,6 @@ const createStyles = ({color}: Theme) => {
     },
     container: {
       flex: 1,
-      marginTop: verticalScale(16),
       alignItems: 'center',
     },
     profilePicture: {
@@ -192,9 +279,35 @@ const createStyles = ({color}: Theme) => {
       marginBottom: verticalScale(12),
       backgroundColor: color.primary,
     },
-    spacer: {
-      height: verticalScale(16),
+    mainView: {
+      width: windowWidth,
+      paddingHorizontal: verticalScale(24),
+      alignSelf: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: verticalScale(16),
+      paddingTop: verticalScale(16),
+      borderTopWidth: 1,
+      borderTopColor: color.grey,
+    },
+    statusText: {
+      ...fonts.mediumBold,
     },
   });
   return styles;
+};
+
+export const getStatusStyleAttributesFromStatus = (
+  user_type: 'client' | 'emp',
+  IJobStatus: IJobPostStatus,
+  theme: Theme,
+) => {
+  if (user_type === IUserTypeEnum.CLIENT) {
+    switch (IJobStatus) {
+      case IJobPostStatus.OPEN:
+        return {color: theme.color.green, title: STRINGS.open};
+      case IJobPostStatus.CLOSED:
+        return {color: theme.color.red, title: STRINGS.closed_position};
+    }
+  }
 };

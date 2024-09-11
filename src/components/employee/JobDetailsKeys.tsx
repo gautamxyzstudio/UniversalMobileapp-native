@@ -14,7 +14,7 @@ type IJobDetailsKeyPropTypes = {
 const JobDetailsKey: React.FC<IJobDetailsKeyPropTypes> = ({heading, value}) => {
   const styles = useThemeAwareObject(createStyles);
   return (
-    <Row spaceBetween alignCenter>
+    <Row style={styles.row} spaceBetween alignCenter>
       <Text style={styles.heading}>{heading}</Text>
       <Text style={styles.title}>{value}</Text>
     </Row>
@@ -34,6 +34,9 @@ const createStyles = ({color}: Theme) => {
       borderColor: color.lightGrey,
       paddingVertical: verticalScale(11),
       paddingLeft: verticalScale(13),
+    },
+    row: {
+      width: '100%',
     },
     title: {
       ...fonts.regular,

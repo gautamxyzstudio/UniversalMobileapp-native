@@ -1,3 +1,5 @@
+import {IJobPostStatus} from '@utils/enums';
+
 export interface IJobPostingStepOneFields {
   job_name: string;
   jobDuties: string;
@@ -8,7 +10,7 @@ export interface IJobPostingStepOneFields {
 export interface IJobPostingStepTwoFields {
   eventDate: Date;
   startShift: Date;
-  Endshift: Date;
+  endShift: Date;
   location: string;
   city: string;
   address: string;
@@ -25,7 +27,10 @@ export interface IJobPostingStepThreeFields {
 export interface IJobPostInterface
   extends IJobPostingStepOneFields,
     IJobPostingStepTwoFields,
-    IJobPostingStepThreeFields {}
+    IJobPostingStepThreeFields {
+  client_details: number;
+  status: IJobPostStatus;
+}
 
 export const getMinimumDateJobPost = (days: number) => {
   return new Date(new Date().setDate(new Date().getDate() + days));

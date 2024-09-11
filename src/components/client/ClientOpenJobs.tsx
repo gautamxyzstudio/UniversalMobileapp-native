@@ -17,9 +17,16 @@ import {
   PERSON_SECONDARY,
 } from '@assets/exporter';
 import {STRINGS} from 'src/locales/english';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  openJobsFromState,
+  saveOpenJobs,
+} from '@api/features/client/clientSlice';
 
 const ClientOpenJobs = () => {
-  const [getJobPosts, {isLoading, data}] = useLazyGetPostedJobQuery();
+  const [getJobPosts, {isLoading, error}] = useLazyGetPostedJobQuery();
+  const openJobs = useSelector(openJobsFromState);
+  const dispatch = useDispatch();
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
 
@@ -31,6 +38,10 @@ const ClientOpenJobs = () => {
     quickActionSheetRef.current?.snapToIndex(1);
   };
 
+  useEffect(() => {
+    updateJobPosts(openJobs);
+  }, [openJobs]);
+
   const renderItem = useCallback(
     ({item}: {item: IJobPostTypes}) =>
       isLoading ? (
@@ -38,13 +49,13 @@ const ClientOpenJobs = () => {
       ) : (
         <JobPostCard onPress={onPressCard} {...item} />
       ),
-    [isLoading, data],
+    [isLoading, openJobs],
   );
 
   const getJobPostsHandler = async () => {
     try {
       const response = await getJobPosts(null).unwrap();
-      if (response.data) updateJobPosts(response.data);
+      if (response.data) dispatch(saveOpenJobs(response.data));
     } catch (error) {
       console.log(error);
     }
@@ -56,9 +67,10 @@ const ClientOpenJobs = () => {
         data={isLoading ? mockJobPostsLoading : jobPosts}
         estimatedItemSize={verticalScale(220)}
         renderItem={renderItem}
-        error={undefined}
+        error={error}
         getItemType={item => item.id}
-        onRefresh={getJobPostsHandler}
+        emptyListMessage={STRINGS.no_jobs_posted_yet}
+        emptyListSubTitle={STRINGS.create_job_to_find}
         ListFooterComponentStyle={{height: verticalScale(150)}}
         isLastPage={true}
       />

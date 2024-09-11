@@ -29,6 +29,7 @@ import JobStatusChip from '@components/employee/JobStatusChip';
 import {Circle, Svg} from 'react-native-svg';
 import {dateFormatter, fromNowOn, timeFormatter} from '@utils/utils.common';
 import {IJobPostTypes} from '@api/features/client/types';
+import {IJobPostStatus} from '@utils/enums';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
   onPress?: () => void;
@@ -50,12 +51,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     publishedAt,
     job_type,
     eventDate,
+    status,
     startShift,
-    Endshift,
+    endShift,
     location,
   } = cardProps;
 
-  console.log(isDraft, 'draft');
+  console.log(cardProps);
 
   return (
     <Pressable onPress={onPress} style={styles.container}>
@@ -83,7 +85,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
               {isDraft ? (
                 <Text style={styles.postedDate}>8 may</Text>
               ) : (
-                <Text style={styles.notAccepting}>{STRINGS.not_accepting}</Text>
+                <>
+                  {status === IJobPostStatus.CLOSED && (
+                    <Text style={styles.notAccepting}>
+                      {STRINGS.not_accepting}
+                    </Text>
+                  )}
+                </>
               )}
             </View>
             <Row alignCenter style={styles.statusRow}>
@@ -113,11 +121,11 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
             <Text style={styles.locationText}>{dateFormatter(eventDate)}</Text>
           </Row>
           <View style={styles.dividerVertical} />
-          {startShift && Endshift && (
+          {startShift && endShift && (
             <Text
               style={[styles.locationText, {marginLeft: 0}]}>{`${timeFormatter(
               startShift,
-            )} - ${timeFormatter(Endshift)}`}</Text>
+            )} - ${timeFormatter(endShift)}`}</Text>
           )}
         </Row>
         <Row alignCenter>

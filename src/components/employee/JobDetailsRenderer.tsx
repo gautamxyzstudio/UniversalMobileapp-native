@@ -18,7 +18,7 @@ const JobDetailsRenderer: React.FC<IJobDetailsRendererPropTypes> = ({
   const styles = useThemeAwareObject(createStyles);
   const {width} = useWindowDimensions();
 
-  console.log(description);
+  console.log(heading, description);
   return (
     <>
       {heading && <Text style={styles.heading}>{heading}</Text>}
@@ -27,7 +27,7 @@ const JobDetailsRenderer: React.FC<IJobDetailsRendererPropTypes> = ({
           tagsStyles={{
             p: styles.pStyles,
             span: styles.pStyles,
-            div: styles.pStyles,
+            div: styles.div,
             ul: styles.ul,
             li: styles.li,
           }}
@@ -55,6 +55,7 @@ const createStyles = ({color}: Theme) => {
       color: color.textPrimary,
     },
     descriptionContainer: {
+      flex: 1,
       // marginTop: verticalScale(12),
     },
     pStyles: {
@@ -62,14 +63,18 @@ const createStyles = ({color}: Theme) => {
       ...fonts.regular,
       marginVertical: 0,
     },
+    div: {
+      flex: 1,
+    },
     ul: {
       paddingLeft: verticalScale(10),
       marginTop: 0,
       marginBottom: 0,
-      width: '99%',
+      width: '100%',
     },
     li: {
       color: color.textPrimary,
+      marginTop: 1,
       marginLeft: verticalScale(4),
       fontWeight: '400',
       ...fonts.regular,

@@ -15,8 +15,8 @@
 		7FEC6807275649C58F6DE4D9 /* Helvetica-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66BADF662EDA4FC087A9B007 /* Helvetica-Bold.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		A0B985489241048DF65626A1 /* Pods_UniversalMobileApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D401C5056BFC759B748153C5 /* Pods_UniversalMobileApp.framework */; };
+		A68E78562C9157CD001B11F3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A68E78552C9157CD001B11F3 /* GoogleService-Info.plist */; };
 		C141CA45A7BD46ADB7F4717B /* Helvetica-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0DEBCBDF8574BEAA0AEBCEA /* Helvetica-Regular.ttf */; };
-		EEAA4A302BEB523F00B1AD4D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EEAA4A2F2BEB523F00B1AD4D /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,10 +47,10 @@
 		66BADF662EDA4FC087A9B007 /* Helvetica-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-Bold.ttf"; path = "../assets/fonts/Helvetica-Bold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = UniversalMobileApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-UniversalMobileApp-UniversalMobileAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UniversalMobileApp-UniversalMobileAppTests.release.xcconfig"; path = "Target Support Files/Pods-UniversalMobileApp-UniversalMobileAppTests/Pods-UniversalMobileApp-UniversalMobileAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		A68E78552C9157CD001B11F3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C0DEBCBDF8574BEAA0AEBCEA /* Helvetica-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-Regular.ttf"; path = "../assets/fonts/Helvetica-Regular.ttf"; sourceTree = "<group>"; };
 		D401C5056BFC759B748153C5 /* Pods_UniversalMobileApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UniversalMobileApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		EEAA4A2F2BEB523F00B1AD4D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +124,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				EEAA4A2F2BEB523F00B1AD4D /* GoogleService-Info.plist */,
+				A68E78552C9157CD001B11F3 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* UniversalMobileApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* UniversalMobileAppTests */,
@@ -263,7 +263,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				EEAA4A302BEB523F00B1AD4D /* GoogleService-Info.plist in Resources */,
+				A68E78562C9157CD001B11F3 /* GoogleService-Info.plist in Resources */,
 				7FEC6807275649C58F6DE4D9 /* Helvetica-Bold.ttf in Resources */,
 				C141CA45A7BD46ADB7F4717B /* Helvetica-Regular.ttf in Resources */,
 			);
@@ -643,10 +643,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -729,10 +726,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

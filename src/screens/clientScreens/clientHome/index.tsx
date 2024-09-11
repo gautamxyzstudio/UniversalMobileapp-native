@@ -14,6 +14,7 @@ import FloatingButton from '@components/molecules/floatingButton';
 const ClientHome = () => {
   const styles = useThemeAwareObject(getStyles);
   const [tabIndex, updateTabIndex] = useState(0);
+
   const scrollViewRef = useRef<ScrollView | null>(null);
 
   const handleTabsChange = (index: number) => {
@@ -36,7 +37,6 @@ const ClientHome = () => {
           onClick={handleTabsChange}
           currentIndex={tabIndex}
         />
-
         <ScrollView
           pagingEnabled={true}
           style={styles.scrollView}

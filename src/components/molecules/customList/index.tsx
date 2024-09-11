@@ -16,6 +16,8 @@ import {styles} from './styles';
 import {verticalScale} from '@utils/metrics';
 import {FlashList, FlashListProps, ListRenderItem} from '@shopify/flash-list';
 import {useTheme} from '@theme/Theme.context';
+import EmptyState from '@screens/common/emptyAndErrorScreen';
+import {SvgProps} from 'react-native-svg';
 
 export interface ICustomList<T> extends FlashListProps<T> {
   data: T[];
@@ -23,6 +25,8 @@ export interface ICustomList<T> extends FlashListProps<T> {
   error: any | null;
   betweenItemSpace?: number; // space between items
   isRefreshing?: boolean;
+  emptyListIllustration?: React.FC<SvgProps>;
+  emptyListSubTitle?: string;
   withRefreshing?: boolean;
   ItemSeparatorComponent?: React.ComponentType<any> | null | undefined; // render between items component
   refreshAfterError?: () => void; // refetch after api fail
@@ -46,6 +50,8 @@ const CustomList = <T,>({
   withRefreshing = true,
   bottomSpace,
   ListFooterComponent,
+  emptyListSubTitle,
+  emptyListIllustration,
   emptyListMessage,
   blankViewStyles,
   isLastPage,
@@ -75,12 +81,14 @@ const CustomList = <T,>({
   const renderEmptyView = () => {
     return (
       <View style={[styles.blankView, blankViewStyles]}>
-        {/* <EmptyState
-            data={data}
-            errorObj={error}
-            emptyListMessage={emptyListMessage}
-            refreshHandler={refreshAfterError}
-          /> */}
+        <EmptyState
+          data={data}
+          errorObj={error}
+          emptyListSubTitle={emptyListSubTitle}
+          emptyListIllustration={emptyListIllustration}
+          emptyListMessage={emptyListMessage}
+          refreshHandler={refreshAfterError}
+        />
       </View>
     );
   };
@@ -99,15 +107,6 @@ const CustomList = <T,>({
           ItemSeparatorComponent ?? itemSeparatorComponent
         }
         ListFooterComponent={ListFooterComponent ?? itemFooterComponent}
-        refreshControl={
-          withRefreshing ? (
-            <RefreshControl
-              colors={[theme.theme.color.blue, theme.theme.color.darkBlue]}
-              refreshing={isRefreshing ?? false}
-              onRefresh={onRefresh}
-            />
-          ) : undefined
-        }
         {...flatlistProps}
       />
     </View>

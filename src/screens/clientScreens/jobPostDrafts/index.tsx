@@ -1,21 +1,17 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import JobPostCard from '@components/client/JobPostCard';
-import {IJobTypesEnum} from '@utils/enums';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {verticalScale} from '@utils/metrics';
+import {BIN, BIN_SECONDARY, IC_DOCUMENT, PENCIL, POST} from '@assets/exporter';
 import {
-  BIN,
-  BIN_SECONDARY,
-  DELETE_SECONDARY,
-  IC_DOCUMENT,
-  PENCIL,
-  POST,
-} from '@assets/exporter';
-import {useLazyGetDraftsQuery} from '@api/features/client/clientApi';
+  useDeleteADraftMutation,
+  useLazyGetDraftsQuery,
+  usePostAJobMutation,
+} from '@api/features/client/clientApi';
 import CustomList from '@components/molecules/customList';
 import {IJobPostTypes} from '@api/features/client/types';
 import {useDispatch, useSelector} from 'react-redux';
@@ -23,17 +19,36 @@ import {setLoading} from '@api/features/loading/loadingSlice';
 import JobPostCardLoading from '@components/client/JobPostCardLoading';
 import {
   addNewDraft,
+  addNewJob,
   jobDraftFromState,
+  removeADraft,
   saveDrafts,
 } from '@api/features/client/clientSlice';
 import {mockJobPosts} from '@api/mockData';
+import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
+import {showToast} from '@components/organisms/customToast';
+import {useToast} from 'react-native-toast-notifications';
+import EmptyState from '@screens/common/emptyAndErrorScreen';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {useNavigation} from '@react-navigation/native';
+import {NavigationProps} from 'src/navigator/types';
+import {IJobPostStatus} from '@utils/enums';
 
 const JobPostDrafts = () => {
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
+  const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
   const rootDrafts = useSelector(jobDraftFromState);
+
+  const [currentSelectedDraft, setCurrentSelectedDraft] =
+    useState<IJobPostTypes | null>(null);
   const [drafts, setDrafts] = useState<IJobPostTypes[]>([]);
   const dispatch = useDispatch();
-  const [getDrafts, {isFetching}] = useLazyGetDraftsQuery();
+  const [getDrafts, {isFetching, error}] = useLazyGetDraftsQuery();
+  const toast = useToast();
+  const navigation = useNavigation<NavigationProps>();
+  const user = useSelector(userBasicDetailsFromState);
+  const [postJob] = usePostAJobMutation();
+  const [deleteDrafts] = useDeleteADraftMutation();
 
   useEffect(() => {
     setDrafts(rootDrafts);
@@ -41,35 +56,102 @@ const JobPostDrafts = () => {
 
   useEffect(() => {
     fetchDrafts();
-  }, []);
-
-  const onPressDraftCard = () => {
-    quickActionSheetRef.current?.snapToIndex(1);
-  };
-
-  useEffect(() => {
-    dispatch(setLoading(isFetching));
-  }, []);
+  }, []); // Empty dependency array ensures this only runs once
 
   const fetchDrafts = async () => {
     try {
       const posts = await getDrafts(null).unwrap();
-      if (posts) {
+      if (posts.data) {
         dispatch(saveDrafts(posts.data));
       }
     } catch (e) {
-      console.log(e);
+      console.error('Error fetching drafts:', e);
     }
   };
 
-  const renderItem = useCallback(
-    ({item}: {item: IJobPostTypes}) => {
-      if (isFetching) {
-        return <JobPostCardLoading isDraft />;
-      } else {
-        return <JobPostCard isDraft onPress={onPressDraftCard} {...item} />;
+  const onPressDraftCard = (draft: IJobPostTypes) => {
+    setCurrentSelectedDraft(draft);
+    quickActionSheetRef.current?.snapToIndex(1);
+  };
+
+  const postJobHandler = async () => {
+    quickActionSheetRef.current?.close();
+    setTimeout(async () => {
+      try {
+        dispatch(setLoading(true));
+        if (currentSelectedDraft !== null) {
+          const response = await postJob({
+            data: {
+              job_name: currentSelectedDraft.job_name ?? '',
+              client_details: user?.details?.detailsId ?? 0,
+              status: IJobPostStatus.OPEN,
+              jobDuties: currentSelectedDraft.jobDuties,
+              description: currentSelectedDraft.description,
+              job_type: currentSelectedDraft.job_type,
+              eventDate: currentSelectedDraft.eventDate,
+              startShift: currentSelectedDraft.startShift,
+              endShift: currentSelectedDraft.endShift,
+              location: currentSelectedDraft.location,
+              city: currentSelectedDraft.city,
+              address: currentSelectedDraft.address,
+              postalCode: currentSelectedDraft.postalCode,
+              gender: currentSelectedDraft.gender,
+              salary: currentSelectedDraft.salary,
+              requiredEmployee: currentSelectedDraft.requiredEmployee,
+              required_certificates:
+                currentSelectedDraft.required_certificates ?? [],
+            },
+          }).unwrap();
+          if (response) {
+            dispatch(addNewJob(response));
+            showToast(toast, 'job posted successfully', 'success');
+            navigation.navigate('clientTabBar');
+          }
+        }
+      } catch (error) {
+        console.log(error, 'USER DETAILS');
+        showToast(toast, STRINGS.someting_went_wrong, 'error');
+      } finally {
+        dispatch(setLoading(false));
       }
-    },
+    }, 300);
+  };
+
+  const onPressJobDetails = () => {
+    quickActionSheetRef.current?.close();
+    setTimeout(() => {
+      jobDetailsSheetRef.current?.snapToIndex(1);
+    }, 300);
+  };
+
+  const onPressDeleteDraft = () => {
+    quickActionSheetRef.current?.close();
+    setTimeout(async () => {
+      try {
+        dispatch(setLoading(true));
+        const response = await deleteDrafts({
+          id: currentSelectedDraft?.id ?? 0,
+        }).unwrap();
+        if (response) {
+          dispatch(removeADraft({id: currentSelectedDraft?.id ?? 0}));
+          showToast(toast, STRINGS.draft_deleted_successful, 'success');
+        }
+      } catch (error) {
+        showToast(toast, STRINGS.someting_went_wrong, 'error');
+        console.error('Error deleting draft:', error);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    }, 300);
+  };
+
+  const renderItem = useCallback(
+    ({item}: {item: IJobPostTypes}) =>
+      isFetching ? (
+        <JobPostCardLoading isDraft />
+      ) : (
+        <JobPostCard isDraft onPress={() => onPressDraftCard(item)} {...item} />
+      ),
     [isFetching],
   );
 
@@ -79,10 +161,11 @@ const JobPostDrafts = () => {
         data={isFetching ? mockJobPosts : drafts}
         estimatedItemSize={verticalScale(130)}
         renderItem={renderItem}
-        error={undefined}
+        emptyListMessage={STRINGS.emptyTitleDrafts}
+        emptyListSubTitle={STRINGS.emptySubTitleDrafts}
+        error={error}
         isLastPage={true}
       />
-      {/* <CustomList  /> */}
       <SelectOptionBottomSheet
         ref={quickActionSheetRef}
         customStyles={styles.container}
@@ -92,24 +175,28 @@ const JobPostDrafts = () => {
           {
             icon: POST,
             title: STRINGS.post,
-            onPress: () => console.log('void'),
+            onPress: postJobHandler,
           },
           {
             icon: PENCIL,
             title: STRINGS.edit,
-            onPress: () => console.log('void'),
+            onPress: () => console.log('Edit option selected'),
           },
           {
             icon: IC_DOCUMENT,
             title: STRINGS.viewDetails,
-            onPress: () => console.log('void'),
+            onPress: onPressJobDetails,
           },
           {
             icon: BIN_SECONDARY,
             title: STRINGS.delete,
-            onPress: () => console.log('void'),
+            onPress: onPressDeleteDraft,
           },
         ]}
+      />
+      <JobDetailsBottomSheet
+        ref={jobDetailsSheetRef}
+        jobDetails={currentSelectedDraft}
       />
     </OnBoardingBackground>
   );

@@ -21,14 +21,15 @@ import Spacers from '@components/atoms/Spacers';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import JobDetailsKey from '@components/employee/JobDetailsKeys';
 import {useDispatch, useSelector} from 'react-redux';
-import {userAdvanceDetailsFromState} from '@api/features/user/userSlice';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {IClientDetails} from '@api/features/user/types';
-import {IPayDuration} from '@utils/enums';
+import {IJobPostStatus, IPayDuration} from '@utils/enums';
 import {
   convertArrayOfStringsToUlLi,
   extractDayAndMonthFromDate,
   extractTimeFromDate,
   getJobAddress,
+  isClientDetails,
 } from '@utils/constants';
 import {
   usePostAJobMutation,
@@ -39,6 +40,7 @@ import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
+import {addNewJob} from '@api/features/client/clientSlice';
 
 type IReviewJobPostProps = {
   route: {
@@ -51,14 +53,16 @@ type IReviewJobPostProps = {
 const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const dispatch = useDispatch();
   const jobDetails = route.params.postDetails;
+
   const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
-  const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
+
+  const user = useSelector(userBasicDetailsFromState);
 
   const wage = `${jobDetails?.salary}$ /hr`;
   const shiftTime = `${extractTimeFromDate(
     jobDetails?.startShift ?? new Date(),
-  )} - ${extractTimeFromDate(jobDetails?.Endshift ?? new Date())}`;
+  )} - ${extractTimeFromDate(jobDetails?.endShift ?? new Date())}`;
 
   const jobsDate = `${extractDayAndMonthFromDate(
     jobDetails?.eventDate ?? new Date(),
@@ -72,13 +76,21 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const postJobHandler = async () => {
     try {
       dispatch(setLoading(true));
-      const response = await postJob({data: jobDetails}).unwrap();
-      if (response) {
-        showToast(toast, 'job posted successfully', 'success');
-        navigation.navigate('clientTabBar');
+      if (jobDetails) {
+        const response = await postJob({
+          data: {
+            ...jobDetails,
+            client_details: user?.details?.detailsId ?? 0,
+            status: IJobPostStatus.OPEN,
+          },
+        }).unwrap();
+        if (response) {
+          dispatch(addNewJob(response));
+          showToast(toast, 'job posted successfully', 'success');
+          navigation.navigate('clientTabBar');
+        }
       }
     } catch (error) {
-      console.log(error);
       showToast(toast, STRINGS.someting_went_wrong, 'error');
     } finally {
       dispatch(setLoading(false));
@@ -88,9 +100,12 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const saveAsDraftHandler = async () => {
     try {
       dispatch(setLoading(true));
-      const response = await saveAsDraft({data: jobDetails}).unwrap();
+      const response = await saveAsDraft({
+        data: jobDetails,
+        client_details: user?.details?.detailsId,
+      }).unwrap();
       if (response) {
-        showToast(toast, 'job posted successfully', 'success');
+        showToast(toast, 'job post saved in drafts', 'success');
         navigation.navigate('clientTabBar');
       }
     } catch (error) {
@@ -110,7 +125,14 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
           <UploadProfilePhoto isEditable={false} />
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{jobDetails?.job_name}</Text>
-            <Text style={styles.description}>{user?.companyName}</Text>
+            {user?.user_type === 'client' &&
+              user.details &&
+              isClientDetails(user.details) && (
+                <Text style={styles.description}>
+                  {user.details.companyName}
+                </Text>
+              )}
+
             <Row style={styles.row} alignCenter>
               <LOCATION_ICON />
               <Text style={styles.location}>{jobDetails?.location}</Text>
@@ -188,6 +210,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
         </Text>
         <Spacers type="vertical" size={16} scalable />
       </ScrollView>
+
       <BottomButtonView
         disabled={false}
         title={STRINGS.post}

@@ -1,4 +1,4 @@
-import {IJobTypesEnum, IPayDuration} from '@utils/enums';
+import {IJobPostStatus, IJobTypesEnum, IPayDuration} from '@utils/enums';
 
 export type IClientSliceInitialState = {
   jobs: {
@@ -14,16 +14,15 @@ export interface IJobPostTypes {
   city: string;
   required_certificates: string[] | null;
   postedBy: string;
-  jobDuties: JSON | undefined;
+  jobDuties: string;
   job_type: IJobTypesEnum;
-  status: number;
+  status: IJobPostStatus;
   location: string;
   requiredEmployee: number;
   startShift: Date;
-  Endshift: Date;
-  description: JSON | undefined;
+  endShift: Date;
+  description: string;
   gender: string;
-  experience?: number | null;
   eventDate: Date;
   publishedAt: Date;
   salary: string;
@@ -56,13 +55,13 @@ export type IPostedJobsResponse = {
       createdAt: Date;
       updatedAt: Date;
       publishedAt: Date;
-      jobDuties: JSON;
+      jobDuties: string;
       job_type: IJobTypesEnum;
       location: string;
       requiredEmployee: number;
       startShift: Date;
-      Endshift: Date;
-      description: JSON;
+      endShift: Date;
+      description: string;
     } | null;
   }[];
   meta: {
@@ -73,4 +72,30 @@ export type IPostedJobsResponse = {
       total: number;
     };
   } | null;
+};
+
+export type INewPostedJobResponse = {
+  data: {
+    id: 21;
+    attributes: {
+      job_name: string;
+      required_certificates: string[] | null;
+      city: string;
+      address: string;
+      postalCode: string;
+      gender: string;
+      eventDate: Date;
+      salary: string;
+      createdAt: Date;
+      updatedAt: Date;
+      publishedAt: Date;
+      jobDuties: string;
+      job_type: IJobTypesEnum;
+      location: string;
+      requiredEmployee: number;
+      startShift: Date;
+      endShift: Date;
+      description: string;
+    } | null;
+  };
 };

@@ -32,5 +32,8 @@ module.exports = {
     production: {
       plugins: ['react-native-paper/babel'],
     },
+    development: {
+      plugins: [['@babel/plugin-transform-react-jsx', {runtime: 'classic'}]],
+    },
   },
 };

@@ -6,11 +6,7 @@ import {StyleSheet} from 'react-native';
 export const getStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     container: {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      top: 0,
-      left: 0,
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       // backgroundColor: "red",
@@ -23,24 +19,20 @@ export const getStyles = (theme: Theme) => {
 
       ...fonts.mediumBold,
     },
-
-    subHeaderText: {
-      marginTop: verticalScale(10),
+    errorDescription: {
+      ...fonts.medium,
+      marginTop: verticalScale(8),
       textAlign: 'center',
-      marginBottom: verticalScale(20),
       color: theme.color.textPrimary,
-
-      ...fonts.mediumBold,
     },
 
     // empty
     errorHeader: {
-      marginTop: verticalScale(20),
+      marginTop: verticalScale(24),
       textAlign: 'center',
       paddingHorizontal: verticalScale(20),
       color: theme.color.textPrimary,
-
-      ...fonts.mediumBold,
+      ...fonts.headingSmall,
     },
 
     errorSubHeader: {

@@ -5,24 +5,46 @@ import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {
   IJobPostCustomizedResponse,
   IJobPostTypes,
+  INewPostedJobResponse,
   IPostedJobsResponse,
 } from './types';
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
+import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
 
-const baseApiWithTag = baseApi.enhanceEndpoints({
-  addTagTypes: ['PostedJobs'],
-});
-
-const clientApi = baseApiWithTag.injectEndpoints({
+const clientApi = baseApi.injectEndpoints({
   endpoints: builder => ({
-    postAJob: builder.mutation<{data: IJobPostInterface}, any>({
+    postAJob: builder.mutation<IJobPostTypes, {data: IJobPostInterface}>({
       query: body => ({
         url: apiEndPoints.jobPost,
         method: apiMethodType.post,
         body,
       }),
-      invalidatesTags: ['PostedJobs'],
+      transformResponse: (response: INewPostedJobResponse): IJobPostTypes => {
+        console.log(response, 'API REs');
+        return {
+          id: response.data.id,
+          job_name: response.data.attributes?.job_name,
+          city: response.data.attributes?.city ?? '',
+          required_certificates:
+            response.data.attributes?.required_certificates ?? [],
+          postedBy: 'Posted by yash',
+          jobDuties: response.data.attributes?.jobDuties ?? '',
+          job_type: response.data.attributes?.job_type ?? IJobTypesEnum.EVENT,
+          status: IJobPostStatus.OPEN,
+          location: response.data.attributes?.location ?? '',
+          requiredEmployee: response.data.attributes?.requiredEmployee ?? 0,
+          startShift: response.data.attributes?.startShift ?? new Date(),
+          endShift: response.data.attributes?.endShift ?? new Date(),
+          description: response.data.attributes?.description ?? '',
+          gender: response.data.attributes?.gender ?? '',
+          eventDate: response.data.attributes?.eventDate ?? new Date(),
+          publishedAt: response.data.attributes?.publishedAt ?? new Date(),
+          salary: response.data.attributes?.salary ?? '0',
+          address: response.data.attributes?.address ?? '0',
+          postalCode: response.data.attributes?.postalCode ?? '0',
+        };
+      },
     }),
     getPostedJob: builder.query({
       query: () => ({
@@ -38,9 +60,8 @@ const clientApi = baseApiWithTag.injectEndpoints({
             data.push({
               ...job.attributes,
               id: job.id,
-
               postedBy: 'posted by Yash',
-              status: 0,
+              status: IJobPostStatus.OPEN,
             });
           }
         });
@@ -62,7 +83,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
           message: response.data.error?.message ?? STRINGS.someting_went_wrong,
         };
       },
-      providesTags: ['PostedJobs'],
     }),
     saveAsDraft: builder.mutation<{data: IJobPostInterface}, any>({
       query: body => ({
@@ -85,9 +105,8 @@ const clientApi = baseApiWithTag.injectEndpoints({
             data.push({
               ...job.attributes,
               id: job.id,
-
               postedBy: 'posted by Yash',
-              status: 0,
+              status: IJobPostStatus.OPEN,
             });
           }
         });
@@ -101,6 +120,20 @@ const clientApi = baseApiWithTag.injectEndpoints({
           },
         };
       },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
+    deleteADraft: builder.mutation<{id: number}, any>({
+      query: ({id}) => ({
+        url: apiEndPoints.deleteADraft(id),
+        method: apiMethodType.delete,
+      }),
     }),
   }),
 });
@@ -108,6 +141,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
 export const {
   usePostAJobMutation,
   useLazyGetPostedJobQuery,
+  useDeleteADraftMutation,
   useSaveAsDraftMutation,
   useLazyGetDraftsQuery,
 } = clientApi;

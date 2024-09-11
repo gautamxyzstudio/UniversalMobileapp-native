@@ -1,4 +1,4 @@
-import {verticalScale} from '@utils/metrics';
+import {verticalScale, windowHeight} from '@utils/metrics';
 import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -6,8 +6,8 @@ export const styles = StyleSheet.create({
   activityIndicatorView: {marginTop: verticalScale(15)},
   blankView: {
     ...StyleSheet.absoluteFillObject,
-    bottom: '30%',
     alignSelf: 'center',
+    height: windowHeight / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },

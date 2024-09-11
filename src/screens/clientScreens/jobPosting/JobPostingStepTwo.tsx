@@ -85,7 +85,7 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostRef>(({}, ref) => {
           fields: {
             eventDate: fields.eventDate,
             startShift: fields.shiftStartTime,
-            Endshift: fields.shiftEndTime,
+            endShift: fields.shiftEndTime,
             location: fields.location,
             address: fields.address,
             city: fields.city,
