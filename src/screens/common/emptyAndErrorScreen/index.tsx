@@ -1,3 +1,4 @@
+import React from 'react';
 import {ICustomErrorResponse} from '@api/types';
 import {useTheme} from '@theme/Theme.context';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';

@@ -1,3 +1,4 @@
+import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {IJobPostStatus, IJobTypesEnum, IPayDuration} from '@utils/enums';
 
 export type IClientSliceInitialState = {
@@ -13,12 +14,12 @@ export interface IJobPostTypes {
   job_name?: string;
   city: string;
   required_certificates: string[] | null;
-  postedBy: string;
+  postedBy?: string;
   jobDuties: string;
   job_type: IJobTypesEnum;
-  status: IJobPostStatus;
+  status?: IJobPostStatus;
   location: string;
-  requiredEmployee: number;
+  requiredEmployee?: number;
   startShift: Date;
   endShift: Date;
   description: string;
@@ -28,6 +29,14 @@ export interface IJobPostTypes {
   salary: string;
   address: string;
   postalCode: string;
+  clientDetails?: {
+    id: number;
+    Name: string;
+    companyname: string;
+    Industry: string;
+    Email: string;
+    location: string;
+  };
 }
 
 export interface IJobPostCustomizedResponse {
@@ -98,4 +107,8 @@ export type INewPostedJobResponse = {
       description: string;
     } | null;
   };
+};
+
+export type IPatchADraft = {
+  data: IJobPostInterface;
 };

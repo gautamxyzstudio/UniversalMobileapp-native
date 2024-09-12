@@ -78,7 +78,7 @@ const RegisterNewCompany = () => {
           />
           <PhoneNumberInput
             value={state.contactNumber}
-            onTextChange={e =>
+            getSelectedPhoneNumber={e =>
               dispatch({...state, contactNumber: e, contactNumberError: ''})
             }
             errorMessage={state.contactNumberError}
@@ -105,7 +105,11 @@ const RegisterNewCompany = () => {
             }
             errorMessage={undefined}
           />
-          <LocationInput onPress={displayModal} />
+          <LocationInput
+            onPress={displayModal}
+            value={state.location}
+            errorMessage={state.locationError}
+          />
           <CustomTextInput
             title={STRINGS.industry}
             value={state.industry}

@@ -1,5 +1,5 @@
 import {FlatList, StatusBar, StyleSheet, View} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -12,22 +12,100 @@ import JobPostingStepOne from './JobPostingStepOne';
 import JobPostingStepTwo from './JobPostingStepTwo';
 import JobPostingStepThree from './JobPostingStepThree';
 import CustomButton from '@components/molecules/customButton';
-import {IJobPostRef} from './types';
-import {useNavigation} from '@react-navigation/native';
-import {NavigationProps} from 'src/navigator/types';
+import {
+  IJobPostInterface,
+  IJobPostRef,
+  IJobPostStepThreeRef,
+  IJobPostStepTwoRef,
+  IJobPostingStepOneFields,
+} from './types';
+import {useNavigation, StackActions} from '@react-navigation/native';
+import {NavigationProps, routNames} from 'src/navigator/types';
 import {fonts} from '@utils/common.styles';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  jobDraftFromState,
+  updateDraftReducer,
+} from '@api/features/client/clientSlice';
+import {withAsyncErrorHandlingPost} from '@utils/constants';
+import {useToast} from 'react-native-toast-notifications';
+import {usePatchADraftMutation} from '@api/features/client/clientApi';
+import {IJobPostStatus} from '@utils/enums';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {showToast} from '@components/organisms/customToast';
+import {AppDispatch} from '@api/store';
+import {IJobPostTypes} from '@api/features/client/types';
 
-const JobPosting = () => {
+export type IJobPostingPropType = {
+  route: {
+    params: {
+      draftId: number | null;
+    };
+  };
+};
+
+const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
   const {insetsBottom, insetsTop} = useScreenInsets();
   const styles = useThemeAwareObject(getStyles);
+  const toast = useToast();
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector(userBasicDetailsFromState);
   const [jobPostFields, updateJobPostFields] = useState<any>();
   const jobPostStepOneRef = useRef<IJobPostRef | null>(null);
-  const jobPostStepTwoRef = useRef<IJobPostRef | null>(null);
-  const jobPostStepThreeRef = useRef<IJobPostRef | null>(null);
+  const jobPostStepTwoRef = useRef<IJobPostStepTwoRef | null>(null);
+  const jobPostStepThreeRef = useRef<IJobPostStepThreeRef | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const navigation = useNavigation<NavigationProps>();
   const flatListRef = useRef<FlatList | null>(null);
+  const draftsFromState = useSelector(jobDraftFromState);
+  const {draftId} = route.params;
+  const [updateDraft] = usePatchADraftMutation();
 
+  useEffect(() => {
+    if (draftId) {
+      setDraftData();
+    }
+  }, [draftId]);
+
+  //set data incase for edit draft
+  const setDraftData = () => {
+    let selectedDraftId = draftsFromState.findIndex(
+      draft => draft.id === draftId,
+    );
+
+    if (selectedDraftId !== -1) {
+      let selectedDraft = draftsFromState[selectedDraftId];
+      if (
+        jobPostStepOneRef.current?.setData &&
+        jobPostStepTwoRef.current?.setData &&
+        jobPostStepThreeRef.current?.setData
+      ) {
+        jobPostStepOneRef.current.setData({
+          job_name: selectedDraft.job_name ?? '',
+          job_type: selectedDraft.job_type ?? '',
+          jobDuties: selectedDraft.jobDuties ?? '',
+          description: selectedDraft.description ?? '',
+        });
+        jobPostStepTwoRef.current.setData({
+          eventDate: selectedDraft.eventDate ?? new Date(),
+          startShift: selectedDraft.startShift ?? new Date(),
+          endShift: selectedDraft.endShift ?? new Date(),
+          location: selectedDraft.location ?? '',
+          city: selectedDraft.city ?? '',
+          address: selectedDraft.address ?? '',
+          postalCode: selectedDraft.postalCode ?? '',
+        });
+        jobPostStepThreeRef.current.setData({
+          salary: selectedDraft.salary ?? '',
+          required_certificates: selectedDraft.required_certificates ?? [],
+          requiredEmployee: selectedDraft.requiredEmployee,
+          gender: selectedDraft.gender,
+        });
+      }
+    }
+  };
+
+  //next press step handler
   const onPressNext = async () => {
     if (jobPostStepOneRef.current?.validate && currentIndex === 0) {
       const stepOneResult = await jobPostStepOneRef!.current!.validate();
@@ -72,11 +150,40 @@ const JobPosting = () => {
           return {...prevData, ...stepThreeResult.fields};
         });
       }
-      navigation.navigate('reviewJobPost', {
-        postDetails: {...jobPostFields, ...stepThreeResult.fields},
-      });
+      let postDetails = {...jobPostFields, ...stepThreeResult.fields};
+      if (draftId) {
+        updateDraftHandler(postDetails);
+      } else {
+        navigation.navigate('reviewJobPost', {
+          postDetails,
+        });
+      }
     }
   };
+
+  // update draft
+  const updateDraftHandler = withAsyncErrorHandlingPost(
+    async (fields: IJobPostInterface) => {
+      const response: any = await updateDraft({
+        id: draftId ?? 0,
+        body: {
+          data: {
+            ...fields,
+            status: IJobPostStatus.OPEN,
+            client_details: user?.details?.detailsId ?? 0,
+          },
+        },
+      });
+      if (response) {
+        console.log(response, 'RESPONSE');
+        showToast(toast, STRINGS.draft_updated_successful, 'success');
+        dispatch(updateDraftReducer(response.data));
+        navigation.navigate('jobPostDrafts');
+      }
+    },
+    toast,
+    dispatch,
+  );
 
   const onPressPrev = () => {
     setCurrentIndex(currentIndex - 1);
@@ -93,7 +200,7 @@ const JobPosting = () => {
       <View style={styles.headerContainer}>
         <HeaderWithBack
           renderRightIcon={true}
-          headerTitle={STRINGS.jobPosting}
+          headerTitle={draftId ? STRINGS.edit_draft : STRINGS.jobPosting}
         />
       </View>
       <ProgressSteps
@@ -140,7 +247,13 @@ const JobPosting = () => {
           <CustomButton
             disabled={false}
             buttonStyle={styles.buttonPrimary}
-            title={currentIndex === 2 ? STRINGS.submit : STRINGS.next}
+            title={
+              currentIndex === 2
+                ? draftId
+                  ? STRINGS.update
+                  : STRINGS.submit
+                : STRINGS.next
+            }
             onButtonPress={onPressNext}
           />
         </View>

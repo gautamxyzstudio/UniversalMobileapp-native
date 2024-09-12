@@ -60,8 +60,6 @@ const Splash = () => {
   };
 
   const navigateToNextScreen = async () => {
-    // navigation.navigate('clientTabBar');
-    // return;
     if (user?.token) {
       if (user.user_type === 'emp') {
         if (isUserDetails) {

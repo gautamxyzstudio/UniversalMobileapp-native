@@ -18,6 +18,10 @@ export const apiEndPoints = {
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
   getJobPost: `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc`,
+  getJobsEmployee: (pageNumber: number) =>
+    `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&pagination[page]=${
+      pageNumber ?? 1
+    }&pagination[pageSize]=10`,
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
-  deleteADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
+  patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
 };

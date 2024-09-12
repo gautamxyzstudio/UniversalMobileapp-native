@@ -1,8 +1,15 @@
+import {setLoading} from '@api/features/loading/loadingSlice';
 import {IClientDetails, IDoc, IEmployeeDetails} from '@api/features/user/types';
+import {ICustomErrorResponse} from '@api/types';
+import {showToast} from '@components/organisms/customToast';
+import {Dispatch} from '@reduxjs/toolkit';
 import moment from 'moment';
+import {Toast} from 'react-native-toast-notifications';
+import {STRINGS} from 'src/locales/english';
 
-export const convertDateToDobFormat = (date: Date | null): string | null => {
-  if (date) {
+export const convertDateToDobFormat = (dateObj: Date | null): string | null => {
+  if (dateObj) {
+    let date = new Date(dateObj);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -187,4 +194,50 @@ export const isClientDetails = (
   details: IClientDetails | IEmployeeDetails,
 ): details is IClientDetails => {
   return (details as IClientDetails).companyName !== undefined;
+};
+
+// Utility to wrap a function in a try-catch block
+export const withErrorHandling = (fn: (...args: any[]) => any) => {
+  return (...args: any[]) => {
+    try {
+      return fn(...args);
+    } catch (error) {
+      console.error('An error occurred:', error);
+      // Optionally, you can add more error-handling logic here (e.g., logging, notifications)
+    }
+  };
+};
+
+export const withAsyncErrorHandlingGet = (
+  fn: (...args: any[]) => Promise<any>,
+) => {
+  return async (...args: any[]) => {
+    try {
+      return await fn(...args);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  };
+};
+
+export const withAsyncErrorHandlingPost = (
+  fn: (...args: any[]) => Promise<any>,
+  toast: typeof Toast,
+  dispatch: Dispatch,
+) => {
+  return async (...args: any[]) => {
+    try {
+      dispatch(setLoading(true));
+      return await fn(...args);
+    } catch (error) {
+      let customError = error as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 };

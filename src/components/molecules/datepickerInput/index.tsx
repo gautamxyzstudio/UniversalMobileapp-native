@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import React, {LegacyRef, useState} from 'react';
+import React, {LegacyRef, useEffect, useState} from 'react';
 import {CALENDAR} from '@assets/exporter';
 import CustomTextInput from '@components/atoms/customtextInput';
 import {STRINGS} from 'src/locales/english';
@@ -43,6 +43,13 @@ const DatePickerInput: React.FC<IDatePickerInputPropTypes> = ({
     displayDate: getDisplayDate(currentDate ?? null, mode),
     actualDate: currentDate,
   });
+
+  useEffect(() => {
+    setDate({
+      displayDate: getDisplayDate(currentDate ?? null, mode),
+      actualDate: currentDate,
+    });
+  }, [currentDate]);
 
   const [open, setOpen] = useState(false);
 

@@ -85,7 +85,7 @@ const DropdownComponent: React.FC<IDropdownComponentProps> = ({
       setIsFocus(false);
       onChangeValue(item);
     },
-    [onChangeValue, textAnimation],
+    [onChangeValue, textAnimation, value],
   );
 
   if (!Array.isArray(data)) {
@@ -120,7 +120,7 @@ const DropdownComponent: React.FC<IDropdownComponentProps> = ({
         )}
         dropdownPosition={dropdownPosition ?? 'auto'}
         maxHeight={300}
-        placeholder={''}
+        placeholder={value}
         renderItem={item => {
           return (
             <View style={styles.item}>

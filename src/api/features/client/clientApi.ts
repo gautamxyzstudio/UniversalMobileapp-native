@@ -6,6 +6,7 @@ import {
   IJobPostCustomizedResponse,
   IJobPostTypes,
   INewPostedJobResponse,
+  IPatchADraft,
   IPostedJobsResponse,
 } from './types';
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
@@ -131,15 +132,55 @@ const clientApi = baseApi.injectEndpoints({
     }),
     deleteADraft: builder.mutation<{id: number}, any>({
       query: ({id}) => ({
-        url: apiEndPoints.deleteADraft(id),
+        url: apiEndPoints.patchADraft(id),
         method: apiMethodType.delete,
       }),
+    }),
+    patchADraft: builder.mutation<any, {id: number; body: IPatchADraft}>({
+      query: ({id, body}) => ({
+        url: apiEndPoints.patchADraft(id), // Use the id in the endpoint
+        method: apiMethodType.PUT, // Specify the method as PUT
+        body, // Pass the body
+      }),
+      transformResponse: (response: INewPostedJobResponse): IJobPostTypes => {
+        return {
+          id: response.data.id,
+          job_name: response.data.attributes?.job_name,
+          city: response.data.attributes?.city ?? '',
+          required_certificates:
+            response.data.attributes?.required_certificates ?? [],
+          postedBy: 'Posted by yash',
+          jobDuties: response.data.attributes?.jobDuties ?? '',
+          job_type: response.data.attributes?.job_type ?? IJobTypesEnum.EVENT,
+          status: IJobPostStatus.OPEN,
+          location: response.data.attributes?.location ?? '',
+          requiredEmployee: response.data.attributes?.requiredEmployee ?? 0,
+          startShift: response.data.attributes?.startShift ?? new Date(),
+          endShift: response.data.attributes?.endShift ?? new Date(),
+          description: response.data.attributes?.description ?? '',
+          gender: response.data.attributes?.gender ?? '',
+          eventDate: response.data.attributes?.eventDate ?? new Date(),
+          publishedAt: response.data.attributes?.publishedAt ?? new Date(),
+          salary: response.data.attributes?.salary ?? '0',
+          address: response.data.attributes?.address ?? '0',
+          postalCode: response.data.attributes?.postalCode ?? '0',
+        };
+      },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
     }),
   }),
 });
 
 export const {
   usePostAJobMutation,
+  usePatchADraftMutation,
   useLazyGetPostedJobQuery,
   useDeleteADraftMutation,
   useSaveAsDraftMutation,

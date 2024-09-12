@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import React, {memo} from 'react';
 import {CLOUD} from '@assets/exporter';
 import CustomButton from '@components/molecules/customButton';
@@ -45,7 +45,7 @@ const getStyles = (theme: Theme) => {
     },
     button: {
       backgroundColor: theme.color.purple,
-      paddingVertical: verticalScale(6),
+      paddingVertical: Platform.OS === 'ios' ? 0 : verticalScale(6),
       height: verticalScale(28),
     },
     buttonText: {

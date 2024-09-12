@@ -103,13 +103,19 @@ const JobPostDrafts = () => {
             },
           }).unwrap();
           if (response) {
-            dispatch(addNewJob(response));
+            const deletePostedDraftResponse = await deleteDrafts({
+              id: currentSelectedDraft?.id ?? 0,
+            }).unwrap();
+            if (deletePostedDraftResponse) {
+              dispatch(addNewJob(response));
+              dispatch(removeADraft({id: currentSelectedDraft?.id ?? 0}));
+            }
             showToast(toast, 'job posted successfully', 'success');
             navigation.navigate('clientTabBar');
           }
         }
       } catch (error) {
-        console.log(error, 'USER DETAILS');
+        console.log(error, 'error');
         showToast(toast, STRINGS.someting_went_wrong, 'error');
       } finally {
         dispatch(setLoading(false));
@@ -142,6 +148,15 @@ const JobPostDrafts = () => {
       } finally {
         dispatch(setLoading(false));
       }
+    }, 300);
+  };
+
+  const onPressEditDraft = () => {
+    quickActionSheetRef.current?.close();
+    setTimeout(async () => {
+      navigation.navigate('jobPosting', {
+        draftId: currentSelectedDraft?.id ?? 0,
+      });
     }, 300);
   };
 
@@ -180,7 +195,7 @@ const JobPostDrafts = () => {
           {
             icon: PENCIL,
             title: STRINGS.edit,
-            onPress: () => console.log('Edit option selected'),
+            onPress: onPressEditDraft,
           },
           {
             icon: IC_DOCUMENT,

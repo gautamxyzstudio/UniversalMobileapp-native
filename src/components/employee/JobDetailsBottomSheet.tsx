@@ -67,7 +67,7 @@ const JobDetailsBottomSheet = React.forwardRef<
 
   const clientJobStatusAttributes = getStatusStyleAttributesFromStatus(
     user?.user_type ?? 'emp',
-    jobDetails?.status ?? 0,
+    jobDetails?.status ?? IJobPostStatus.OPEN,
     theme,
   );
 

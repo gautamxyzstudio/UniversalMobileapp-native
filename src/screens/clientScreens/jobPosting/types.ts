@@ -37,6 +37,23 @@ export const getMinimumDateJobPost = (days: number) => {
 };
 
 export type IJobPostRef = {
+  setData?: (data: IJobPostingStepOneFields) => void;
+  validate?: () => Promise<{
+    fields: IJobPostingStepOneFields | null;
+    isValid: boolean;
+  }>;
+};
+
+export type IJobPostStepTwoRef = {
+  setData?: (data: IJobPostingStepTwoFields) => void;
+  validate?: () => Promise<{
+    fields: IJobPostingStepOneFields | null;
+    isValid: boolean;
+  }>;
+};
+
+export type IJobPostStepThreeRef = {
+  setData?: (data: IJobPostingStepThreeFields) => void;
   validate?: () => Promise<{
     fields: IJobPostingStepOneFields | null;
     isValid: boolean;

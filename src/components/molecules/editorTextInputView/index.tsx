@@ -25,6 +25,7 @@ import JobDetailsRenderer from '@components/employee/JobDetailsRenderer';
 
 type IEditorTextInputView = {
   label: string;
+  initialValue?: string;
   errorMessage: string;
   getEnteredText: (text: string) => void;
 };
@@ -33,6 +34,7 @@ const EditorTextInputView: React.FC<IEditorTextInputView> = ({
   label,
   getEnteredText,
   errorMessage,
+  initialValue,
 }) => {
   const styles = useThemeAwareObject(createStyles);
   const theme = useTheme();
@@ -49,6 +51,12 @@ const EditorTextInputView: React.FC<IEditorTextInputView> = ({
       textAnimation.value = withTiming(1);
     }
   }, [htmlContext]);
+
+  useEffect(() => {
+    if (initialValue) {
+      setHtmlContent(initialValue);
+    }
+  }, [initialValue]);
 
   const onPressInput = () => {
     navigation.navigate('textEditor', {

@@ -50,7 +50,10 @@ const FloatingButton = () => {
             labelStyle: styles.label,
             labelTextColor: '#fff',
             label: 'Add Post',
-            onPress: () => navigation.navigate('jobPosting'),
+            onPress: () =>
+              navigation.navigate('jobPosting', {
+                draftId: null,
+              }),
           },
         ]}
         onStateChange={onStateChange}

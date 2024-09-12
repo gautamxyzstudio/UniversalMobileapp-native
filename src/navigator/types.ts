@@ -27,7 +27,7 @@ export type RootStackParamList = {
   updateEmployeeDetails: undefined;
   updateEmployeeDocuments: undefined;
   employeeSearch: undefined;
-  jobPosting: undefined;
+  jobPosting: {draftId: number | null};
   employeeJobHistory: undefined;
   clientTabBar: undefined;
   employeeDocuments: undefined;

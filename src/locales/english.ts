@@ -249,9 +249,11 @@ export const STRINGS = {
   closed: 'Closed',
   closed_position: 'Closed Position',
   draft_deleted_successful: 'Draft Deleted Successfully',
+  draft_updated_successful: 'Draft updated Successfully',
   emptyTitleDrafts: 'You Have No Drafts',
   emptySubTitleDrafts:
     'Create new job drafts to keep track of your potential postings',
   no_jobs_posted_yet: 'No Jobs Posted Yet',
   create_job_to_find: 'Create your job and find the perfect candidate',
+  edit_draft: 'Update Draft',
 };

@@ -9,19 +9,13 @@ import CustomList from '@components/molecules/customList';
 import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
 import {verticalScale} from '@utils/metrics';
 import {mockJobFilters, userMockJobs} from '@api/mockData';
-import {IJobTypes} from '@api/types';
-import {useJobDetailsContext} from 'src/Providers/JobDetailsContextProvider';
 
 const EmployeeJobs = () => {
   const [selectedFilterId, setSelectedFilterId] = useState(0);
-  const {onPressSheet} = useJobDetailsContext();
+
   const [filters, setFilters] = useState<IFilter[]>([
     {id: 0, value: STRINGS.all},
   ]);
-
-  const displayJobDetails = (item: IJobTypes) => {
-    onPressSheet('show', item);
-  };
 
   useEffect(() => {
     if (filters.length < 2) {
@@ -36,7 +30,7 @@ const EmployeeJobs = () => {
 
   const renderItemListing = useCallback(
     ({item}: {item: IJobDetailsPropTypes}) => {
-      return <JobCard onPress={() => displayJobDetails(item)} {...item} />;
+      return <JobCard {...item} />;
     },
     [],
   );
@@ -51,7 +45,7 @@ const EmployeeJobs = () => {
         selectedFilterId={selectedFilterId}
       />
       <View style={styles.customList}>
-        <CustomList
+        {/* <CustomList
           data={userMockJobs}
           renderItem={renderItemListing}
           getItemType={item => `${item.id}`}
@@ -59,7 +53,7 @@ const EmployeeJobs = () => {
           estimatedItemSize={verticalScale(177)}
           error={undefined}
           isLastPage={false}
-        />
+        /> */}
       </View>
     </OnBoardingBackground>
   );

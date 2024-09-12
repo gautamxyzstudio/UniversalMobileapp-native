@@ -30,6 +30,9 @@ import {Circle, Svg} from 'react-native-svg';
 import {dateFormatter, fromNowOn, timeFormatter} from '@utils/utils.common';
 import {IJobPostTypes} from '@api/features/client/types';
 import {IJobPostStatus} from '@utils/enums';
+import {useSelector} from 'react-redux';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {isClientDetails} from '@utils/constants';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
   onPress?: () => void;
@@ -45,11 +48,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
 }) => {
   const styles = useThemeAwareObject(createStyles);
   const theme = useTheme();
+  const user = useSelector(userBasicDetailsFromState);
 
   const {
     job_name,
     publishedAt,
     job_type,
+    clientDetails,
     eventDate,
     status,
     startShift,
@@ -82,16 +87,26 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
                 style={[styles.title]}>
                 {job_name}
               </Text>
-              {isDraft ? (
-                <Text style={styles.postedDate}>8 may</Text>
-              ) : (
+              {user?.user_type === 'client' &&
+              user.details &&
+              isClientDetails(user.details) ? (
                 <>
-                  {status === IJobPostStatus.CLOSED && (
-                    <Text style={styles.notAccepting}>
-                      {STRINGS.not_accepting}
-                    </Text>
+                  {isDraft ? (
+                    <Text style={styles.postedDate}>8 may</Text>
+                  ) : (
+                    <>
+                      {status === IJobPostStatus.CLOSED && (
+                        <Text style={styles.notAccepting}>
+                          {STRINGS.not_accepting}
+                        </Text>
+                      )}
+                    </>
                   )}
                 </>
+              ) : (
+                <Text style={styles.postedDate}>
+                  {clientDetails?.companyname}
+                </Text>
               )}
             </View>
             <Row alignCenter style={styles.statusRow}>
@@ -213,7 +228,6 @@ const createStyles = ({color}: Theme) => {
     locationText: {
       ...fonts.regular,
       marginLeft: verticalScale(4),
-
       color: color.textPrimary,
       ...Platform.select({
         ios: {

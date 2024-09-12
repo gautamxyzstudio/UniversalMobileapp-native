@@ -73,6 +73,8 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
 
   const styles = useThemeAwareObject(createStyles);
 
+  console.log(jobDetails, 'jOBnoe');
+
   const postJobHandler = async () => {
     try {
       dispatch(setLoading(true));
@@ -87,7 +89,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
         if (response) {
           dispatch(addNewJob(response));
           showToast(toast, 'job posted successfully', 'success');
-          navigation.navigate('clientTabBar');
+          // navigation.navigate('clientTabBar');
         }
       }
     } catch (error) {
@@ -210,7 +212,6 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
         </Text>
         <Spacers type="vertical" size={16} scalable />
       </ScrollView>
-
       <BottomButtonView
         disabled={false}
         title={STRINGS.post}

@@ -27,6 +27,7 @@ export type IJobPostingStepOneStatePropsTypes = {
     fields: IJobPostingStepOneFields | null;
     isValid: boolean;
   }>;
+  setData: (data: IJobPostingStepOneFields) => void;
 };
 
 const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
@@ -48,7 +49,18 @@ const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
 
   useImperativeHandle(ref, () => ({
     validate: validate,
+    setData: setData,
   }));
+
+  const setData = (data: IJobPostingStepOneFields) => {
+    setJobBasicDetails({
+      ...jobBasicDetails,
+      jobDescription: data.description,
+      jobDuties: data.jobDuties,
+      jobTitle: data.job_name,
+      jobType: data.job_type,
+    });
+  };
 
   const validate = async (): Promise<{
     fields: IJobPostingStepOneFields | null;
@@ -115,6 +127,7 @@ const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
         <Spacers type={'vertical'} size={16} />
         <EditorTextInputView
           label={STRINGS.jobDescription}
+          initialValue={jobBasicDetails.jobDescription}
           errorMessage={jobBasicDetails.jobDescriptionError}
           getEnteredText={text =>
             handleValueChange(Object.keys(jobBasicDetails)[1], text)
@@ -123,6 +136,7 @@ const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
         <Spacers type={'vertical'} size={16} />
         <EditorTextInputView
           label={STRINGS.jobDuties}
+          initialValue={jobBasicDetails.jobDuties}
           errorMessage={jobBasicDetails.jobDutiesError}
           getEnteredText={text =>
             handleValueChange(Object.keys(jobBasicDetails)[2], text)

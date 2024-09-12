@@ -217,7 +217,7 @@ const getStyles = (theme: Theme) => {
     label: {
       color: theme.color.disabled,
       // paddingTop: verticalScale(3),
-      height: Platform.OS === 'android' ? verticalScale(23) : verticalScale(18),
+      height: Platform.OS === 'android' ? verticalScale(23) : verticalScale(20),
       zIndex: 999,
       ...fonts.medium,
     },

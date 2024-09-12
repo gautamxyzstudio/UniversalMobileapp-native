@@ -43,6 +43,14 @@ const clientSlice = createSlice({
         state.jobs.open.unshift(action.payload);
       }
     },
+    updateDraftReducer: (state, action: PayloadAction<IJobPostTypes>) => {
+      const draftIndex = state.jobs.drafts.findIndex(
+        draft => draft.id === action.payload.id,
+      );
+      if (draftIndex !== -1) {
+        state.jobs.drafts[draftIndex] = {...action.payload};
+      }
+    },
     closeAJob: (state, action: PayloadAction<IJobPostTypes>) => {
       const jobIndex = state.jobs.open.findIndex(
         job => job.id === action.payload.id,
@@ -67,6 +75,7 @@ export const {
   closeAJob,
   saveOpenJobs,
   postADraft,
+  updateDraftReducer,
 } = clientSlice.actions;
 
 //state extractors

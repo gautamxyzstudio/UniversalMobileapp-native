@@ -10,18 +10,12 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
 import HomeTopView from '@components/employee/HomeTopView';
-import HomeListHeaderView from '@components/employee/HomeListHeaderView';
 import {verticalScale} from '@utils/metrics';
 import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
-
-import {STRINGS} from 'src/locales/english';
-
 import {useSharedValue} from 'react-native-reanimated';
-import RecommendedJobs from '@components/employee/RecommendedJobs';
 import CustomList from '@components/molecules/customList';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {useJobDetailsContext} from 'src/Providers/JobDetailsContextProvider';
 import {useLazyGetUserQuery} from '@api/features/user/userApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -29,36 +23,44 @@ import {
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {IEmployeeDetails} from '@api/features/user/types';
+import {provincesAndCities} from '@api/mockData';
+import {useLazyFetchJobsQuery} from '@api/features/employee/employeeApi';
+import {jobsFromState, updateJobs} from '@api/features/employee/employeeSlice';
+import HomeListHeaderView from '@components/employee/HomeListHeaderView';
+import {STRINGS} from 'src/locales/english';
+import JobPostCard from '@components/client/JobPostCard';
+import {IJobTypes} from '@api/features/employee/types';
 
 const EmployeeHome = () => {
   const styles = useThemeAwareObject(getStyles);
-  const [data, setData] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [isLoading, updateIsLoading] = useState(true);
+  const [isLastPage, setIsLastPage] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const user = useSelector(userBasicDetailsFromState);
   const scrollY = useSharedValue(0);
-  const {onPressSheet} = useJobDetailsContext();
   const [getUserDetails] = useLazyGetUserQuery();
-
+  const [getJobs] = useLazyFetchJobsQuery();
+  const jobsInState = useSelector(jobsFromState);
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
-
-  const displayJobDetails = (item: any) => {
-    onPressSheet('show', item);
-  };
-
   const displayModal = useCallback(
     () => bottomSheetRef.current?.snapToIndex(1),
     [],
   );
 
+  console.log(jobsInState, 'STATEJOBS');
+
   useEffect(() => {
     getUser();
+    getJobsPosts();
   }, []);
 
   useEffect(() => {
-    if (mockJobs.length > 0) {
-      setData([appendMockJob, ...mockJobs]);
+    if (jobsInState) {
+      setJobs(jobsInState);
     }
-  }, []);
+  }, [jobsInState]);
 
   const getUser = async () => {
     try {
@@ -72,8 +74,32 @@ const EmployeeHome = () => {
     }
   };
 
+  const getJobsPosts = async (isFirstPage: boolean = false) => {
+    try {
+      let page = isFirstPage ? 1 : currentPage + 1;
+      let perPageRecord = 10;
+      const usersJobsResponse = await getJobs(page).unwrap();
+      if (usersJobsResponse) {
+        dispatch(updateJobs({currentPage: page, jobs: usersJobsResponse.data}));
+        setCurrentPage(page);
+        setIsLastPage(
+          usersJobsResponse.data.length === 0 ||
+            usersJobsResponse.data.length !== perPageRecord,
+        );
+      }
+    } catch (err) {
+      console.log(err, 'ERROR GETTING JOB POSTS');
+    }
+  };
+
+  const loadMore = () => {
+    if (!isLastPage) {
+      getJobsPosts();
+    }
+  };
+
   const renderItemListing = useCallback(
-    ({item, index}: {item: IJobDetailsPropTypes; index: number}) => {
+    ({item, index}: {item: IJobTypes; index: number}) => {
       if (index === 0) {
         return (
           <View style={styles.headingView}>
@@ -86,11 +112,16 @@ const EmployeeHome = () => {
       } else {
         return (
           <View style={styles.list}>
-            <JobCard onPress={() => displayJobDetails(item)} {...item} />
+            <JobPostCard
+              clientDetails={item.client_details}
+              onPress={() => console.log('hello world')}
+              {...item}
+            />
           </View>
         );
       }
     },
+
     [],
   );
 
@@ -102,16 +133,7 @@ const EmployeeHome = () => {
     <View style={styles.container}>
       <HomeTopView height={scrollY} onPress={displayModal} />
       <CustomList
-        ListHeaderComponent={
-          <>
-            <HomeListHeaderView
-              title={STRINGS.recommended_jobs}
-              displayRightArrow={true}
-            />
-            <RecommendedJobs data={mockJobs} />
-          </>
-        }
-        data={data}
+        data={jobs}
         onScroll={onScroll}
         renderItem={renderItemListing as any}
         stickyHeaderIndices={[0]}
@@ -121,7 +143,9 @@ const EmployeeHome = () => {
         ListFooterComponent={<View />}
         ListFooterComponentStyle={styles.footer}
         error={undefined}
-        isLastPage={false}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.1}
+        isLastPage={isLastPage}
       />
       <FilterListBottomSheet
         ref={bottomSheetRef}
