@@ -256,4 +256,5 @@ export const STRINGS = {
   no_jobs_posted_yet: 'No Jobs Posted Yet',
   create_job_to_find: 'Create your job and find the perfect candidate',
   edit_draft: 'Update Draft',
+  job_applied_successfully: 'Job applied successfully',
 };

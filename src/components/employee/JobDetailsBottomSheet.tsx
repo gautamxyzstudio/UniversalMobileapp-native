@@ -46,12 +46,14 @@ import {useTheme} from '@theme/Theme.context';
 
 type IJobDetailsBottomSheetProps = {
   jobDetails: IJobPostTypes | null;
+  onPressApply?: () => void;
+  isDraft?: boolean;
 };
 
 const JobDetailsBottomSheet = React.forwardRef<
   BottomSheetModal,
   IJobDetailsBottomSheetProps
->(({jobDetails}, ref) => {
+>(({jobDetails, isDraft, onPressApply}, ref) => {
   const styles = useThemeAwareObject(createStyles);
   const {theme} = useTheme();
   const companyDetails = useSelector(
@@ -70,6 +72,11 @@ const JobDetailsBottomSheet = React.forwardRef<
     jobDetails?.status ?? IJobPostStatus.OPEN,
     theme,
   );
+
+  const companyName =
+    user?.user_type === 'emp'
+      ? jobDetails?.client_details?.companyname
+      : companyDetails?.companyName;
 
   const shiftTime = `${extractTimeFromDate(
     jobDetails?.startShift ?? new Date(),
@@ -98,7 +105,7 @@ const JobDetailsBottomSheet = React.forwardRef<
             source={ICONS.imagePlaceholder}
           />
           <Text style={styles.title}>{jobDetails?.job_name}</Text>
-          <Text style={styles.jobName}>{companyDetails.companyName}</Text>
+          <Text style={styles.jobName}>{companyName}</Text>
           <Row style={styles.location} alignCenter>
             <LOCATION_TERNARY
               width={verticalScale(20)}
@@ -182,7 +189,8 @@ const JobDetailsBottomSheet = React.forwardRef<
         </BottomSheetScrollView>
         {user?.user_type === 'client' &&
           user.details &&
-          isClientDetails(user.details) && (
+          isClientDetails(user.details) &&
+          !isDraft && (
             <View style={styles.mainView}>
               <Text
                 style={[
@@ -195,11 +203,11 @@ const JobDetailsBottomSheet = React.forwardRef<
           )}
         {user?.user_type === 'emp' &&
           user.details &&
-          isClientDetails(user.details) && (
+          !isClientDetails(user.details) && (
             <BottomButtonView
               disabled={false}
               title={STRINGS.applyNow}
-              onButtonPress={() => Alert.alert('job applied')}
+              onButtonPress={onPressApply}
             />
           )}
       </View>

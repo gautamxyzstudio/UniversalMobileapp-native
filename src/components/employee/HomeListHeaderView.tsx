@@ -6,21 +6,35 @@ import {Theme} from '@theme/Theme.type';
 import {fonts} from '@utils/common.styles';
 import LottieView from 'lottie-react-native';
 import {ANIMATIONS} from '@assets/exporter';
+import {useTheme} from '@theme/Theme.context';
 
 type IHomeListHeaderViewProps = {
   title: string;
+  isLoading?: boolean;
   displayRightArrow: boolean;
 };
 
 const HomeListHeaderView: React.FC<IHomeListHeaderViewProps> = ({
   title,
+  isLoading,
   displayRightArrow,
 }) => {
   const styles = useThemeAwareObject(getStyles);
-
+  const {theme} = useTheme();
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>{title}</Text>
+      <Text
+        style={[
+          styles.heading,
+          isLoading && {
+            backgroundColor: theme.color.skelton,
+            color: theme.color.skelton,
+            borderRadius: 8,
+            overflow: 'hidden',
+          },
+        ]}>
+        {title}
+      </Text>
       {displayRightArrow && (
         <LottieView
           autoPlay

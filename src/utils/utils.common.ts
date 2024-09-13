@@ -239,3 +239,5 @@ export const extractEmployeeDocumentsFromApiResponse = (
 
   return documents;
 };
+
+export const salaryFormatter = (salary: string) => `$ ${salary}/hr`;

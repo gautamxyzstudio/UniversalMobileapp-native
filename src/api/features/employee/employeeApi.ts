@@ -1,7 +1,14 @@
 import {apiMethodType} from '@api/apiConstants';
 import {baseApi} from '@api/baseApi';
 import {apiEndPoints} from '@api/endpoints';
-import {ICustomizedJobsResponse, IGetJobsResponse, IJobTypes} from './types';
+import {
+  IApplyForJobRequest,
+  ICustomizedJobsResponse,
+  IGetJobsResponse,
+  IJobTypes,
+} from './types';
+import {IErrorResponse, ICustomErrorResponse} from '@api/types';
+import {STRINGS} from 'src/locales/english';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -49,11 +56,26 @@ const employeeApi = baseApi.injectEndpoints({
           },
         };
       },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
+    applyForJob: builder.mutation<any, IApplyForJobRequest>({
+      query: body => ({
+        url: apiEndPoints.applyForJob,
+        method: apiMethodType.post,
+        body,
+      }),
     }),
   }),
 });
 
-export const {useLazyFetchJobsQuery} = employeeApi;
+export const {useLazyFetchJobsQuery, useApplyForJobMutation} = employeeApi;
 
 //  getPostedJob: builder.query({
 //       query: () => ({

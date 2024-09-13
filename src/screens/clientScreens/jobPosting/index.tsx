@@ -98,7 +98,7 @@ const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
         jobPostStepThreeRef.current.setData({
           salary: selectedDraft.salary ?? '',
           required_certificates: selectedDraft.required_certificates ?? [],
-          requiredEmployee: selectedDraft.requiredEmployee,
+          requiredEmployee: selectedDraft.requiredEmployee ?? 0,
           gender: selectedDraft.gender,
         });
       }

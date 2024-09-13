@@ -12,6 +12,7 @@ import {
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import {JOB_ID} from '@assets/exporter';
 
 const clientApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -48,8 +49,8 @@ const clientApi = baseApi.injectEndpoints({
       },
     }),
     getPostedJob: builder.query({
-      query: () => ({
-        url: apiEndPoints.getJobPost,
+      query: client_id => ({
+        url: apiEndPoints.getJobPost(client_id),
         method: apiMethodType.get,
       }),
       transformResponse: (

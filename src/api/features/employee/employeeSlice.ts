@@ -1,10 +1,10 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import {IEmployeeSliceInitialState, IJobTypes} from './types';
-import {act} from 'react-test-renderer';
 import {RootState} from '@api/store';
 
 const initialState: IEmployeeSliceInitialState = {
   jobs: [],
+  myJobs: [],
 };
 
 const employeeSlice = createSlice({
@@ -21,10 +21,13 @@ const employeeSlice = createSlice({
         state.jobs = [...action.payload.jobs];
       }
     },
+    applyForJob: (state, action: PayloadAction<IJobTypes>) => {
+      state.myJobs.push(action.payload);
+    },
   },
 });
 
 export default employeeSlice.reducer;
-export const {updateJobs} = employeeSlice.actions;
+export const {updateJobs, applyForJob} = employeeSlice.actions;
 
 export const jobsFromState = (state: RootState) => state.employee.jobs;

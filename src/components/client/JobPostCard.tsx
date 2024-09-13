@@ -13,6 +13,7 @@ import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
 import {fonts} from '@utils/common.styles';
 import {
+  ARROW_SECONDARY,
   CALENDAR_SECONDARY,
   ICONS,
   JOB_ID,
@@ -27,7 +28,12 @@ import {useTheme} from '@theme/Theme.context';
 
 import JobStatusChip from '@components/employee/JobStatusChip';
 import {Circle, Svg} from 'react-native-svg';
-import {dateFormatter, fromNowOn, timeFormatter} from '@utils/utils.common';
+import {
+  dateFormatter,
+  fromNowOn,
+  salaryFormatter,
+  timeFormatter,
+} from '@utils/utils.common';
 import {IJobPostTypes} from '@api/features/client/types';
 import {IJobPostStatus} from '@utils/enums';
 import {useSelector} from 'react-redux';
@@ -54,12 +60,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     job_name,
     publishedAt,
     job_type,
-    clientDetails,
+    client_details,
     eventDate,
     status,
     startShift,
     endShift,
     location,
+    salary,
   } = cardProps;
 
   console.log(cardProps);
@@ -105,7 +112,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
                 </>
               ) : (
                 <Text style={styles.postedDate}>
-                  {clientDetails?.companyname}
+                  {client_details?.companyname}
                 </Text>
               )}
             </View>
@@ -120,10 +127,21 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
         </View>
       </Row>
       <View style={styles.midContainer}>
-        {!isDraft && (
+        {user?.user_type === 'client' &&
+        user.details &&
+        isClientDetails(user.details) ? (
+          <>
+            {!isDraft && (
+              <Row alignCenter>
+                <JOB_ID width={verticalScale(20)} height={verticalScale(20)} />
+                <Text style={styles.locationText}>S2</Text>
+              </Row>
+            )}
+          </>
+        ) : (
           <Row alignCenter>
             <JOB_ID width={verticalScale(20)} height={verticalScale(20)} />
-            <Text style={styles.locationText}>S2</Text>
+            <Text style={styles.locationText}>{salaryFormatter(salary)}</Text>
           </Row>
         )}
 
@@ -158,9 +176,23 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
             {publishedAt && (
               <Text style={styles.postedDate}>{fromNowOn(publishedAt)}</Text>
             )}
-            <TouchableOpacity>
+            {user?.user_type === 'client' &&
+            user.details &&
+            isClientDetails(user.details) ? (
               <Text style={styles.postedDate}>Posted by Yash</Text>
-            </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={onPress}>
+                <Row style={styles.viewCont}>
+                  <Text style={styles.viewText}>{STRINGS.viewDetails}</Text>
+                  <View style={styles.arrowView}>
+                    <ARROW_SECONDARY
+                      width={verticalScale(16)}
+                      height={verticalScale(16)}
+                    />
+                  </View>
+                </Row>
+              </TouchableOpacity>
+            )}
           </Row>
         </>
       )}
@@ -184,10 +216,24 @@ const createStyles = ({color}: Theme) => {
       color: color.red,
       ...fonts.regular,
     },
-
+    arrowView: {
+      width: verticalScale(16),
+      height: verticalScale(16),
+      backgroundColor: color.lightGrey,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: verticalScale(8),
+    },
     midContainer: {
       marginTop: verticalScale(24),
       gap: verticalScale(8),
+    },
+    viewCont: {
+      gap: verticalScale(8),
+    },
+    viewText: {
+      ...fonts.small,
+      color: color.darkBlue,
     },
 
     postedBy: {

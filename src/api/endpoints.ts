@@ -17,11 +17,13 @@ export const apiEndPoints = {
   uploadOtherDocuments: `${process.env.BASE_URL}/api/other-documents/bulk-create`,
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
-  getJobPost: `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc`,
+  getJobPost: (detailsId: number) =>
+    `${process.env.BASE_URL}/api/Jobs/${detailsId}?sort=createdAt:desc`,
   getJobsEmployee: (pageNumber: number) =>
     `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&pagination[page]=${
       pageNumber ?? 1
     }&pagination[pageSize]=10`,
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
+  applyForJob: `${process.env.BASE_URL}/api/job-applications`,
 };

@@ -22,11 +22,13 @@ import {
   openJobsFromState,
   saveOpenJobs,
 } from '@api/features/client/clientSlice';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 
 const ClientOpenJobs = () => {
   const [getJobPosts, {isLoading, error}] = useLazyGetPostedJobQuery();
   const openJobs = useSelector(openJobsFromState);
   const dispatch = useDispatch();
+  const user = useSelector(userBasicDetailsFromState);
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
 
@@ -54,7 +56,7 @@ const ClientOpenJobs = () => {
 
   const getJobPostsHandler = async () => {
     try {
-      const response = await getJobPosts(null).unwrap();
+      const response = await getJobPosts(user?.details?.detailsId).unwrap();
       if (response.data) dispatch(saveOpenJobs(response.data));
     } catch (error) {
       console.log(error);

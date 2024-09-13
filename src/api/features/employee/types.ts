@@ -2,6 +2,7 @@ import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
 
 export type IEmployeeSliceInitialState = {
   jobs: IJobTypes[];
+  myJobs: IJobTypes[];
 };
 
 export type IJobTypes = {
@@ -22,6 +23,7 @@ export type IJobTypes = {
   description: string;
   eventDate: Date;
   endShift: Date;
+  requiredEmployee?: number;
   startShift: Date;
   client_details: {
     id: number;
@@ -88,5 +90,14 @@ export type IGetJobsResponse = {
       pageCount: number;
       total: number;
     };
+  };
+};
+
+export type IApplyForJobRequest = {
+  data: {
+    applicationDate: Date;
+    status: IJobPostStatus.OPEN;
+    employee_details: number;
+    jobs: number;
   };
 };

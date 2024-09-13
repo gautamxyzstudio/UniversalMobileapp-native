@@ -29,7 +29,7 @@ export interface IJobPostTypes {
   salary: string;
   address: string;
   postalCode: string;
-  clientDetails?: {
+  client_details?: {
     id: number;
     Name: string;
     companyname: string;

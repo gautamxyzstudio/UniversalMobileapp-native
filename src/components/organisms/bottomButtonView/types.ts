@@ -1,6 +1,6 @@
 export interface IButtonButtonView {
   disabled: boolean;
-  onButtonPress: () => void;
+  onButtonPress: (() => void) | undefined;
   title?: string;
   backgroundColor?: string;
   rippleColor?: string;
