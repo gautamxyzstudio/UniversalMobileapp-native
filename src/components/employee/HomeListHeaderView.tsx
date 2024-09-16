@@ -56,7 +56,6 @@ const getStyles = ({color}: Theme) => {
   const styles = StyleSheet.create({
     container: {
       flexDirection: 'row',
-      marginHorizontal: verticalScale(24),
       justifyContent: 'space-between',
       marginTop: verticalScale(24),
       marginBottom: verticalScale(16),

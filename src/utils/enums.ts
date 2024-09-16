@@ -16,6 +16,7 @@ export enum IJobPostStatus {
   CONFIRMED = 's4',
   NO_SHOW = 's5',
   COMPLETED = 's6',
+  CANCELED = 's7',
 }
 
 export enum IUserTypeEnum {

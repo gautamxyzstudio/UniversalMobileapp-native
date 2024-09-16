@@ -76,7 +76,7 @@ const Splash = () => {
       } else {
         if (isUserDetails) {
           let client = isUserDetails as IClientDetails;
-          if (client.status !== 'pending') {
+          if (client.status === 'pending') {
             let isApproved = await fetchUserDetails();
             if (isApproved) {
               navigation.reset({

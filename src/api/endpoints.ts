@@ -26,4 +26,6 @@ export const apiEndPoints = {
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
   applyForJob: `${process.env.BASE_URL}/api/job-applications`,
+  getAppliedJobs: (id: number) =>
+    `${process.env.BASE_URL}/api/job-applications/employee/${id}`,
 };

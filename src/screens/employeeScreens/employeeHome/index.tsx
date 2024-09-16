@@ -28,7 +28,11 @@ import {
   useApplyForJobMutation,
   useLazyFetchJobsQuery,
 } from '@api/features/employee/employeeApi';
-import {jobsFromState, updateJobs} from '@api/features/employee/employeeSlice';
+import {
+  applyJobAction,
+  jobsFromState,
+  updateJobs,
+} from '@api/features/employee/employeeSlice';
 import HomeListHeaderView from '@components/employee/HomeListHeaderView';
 import {STRINGS} from 'src/locales/english';
 import JobPostCard from '@components/client/JobPostCard';
@@ -68,6 +72,8 @@ const EmployeeHome = () => {
     getJobsPosts(true);
   }, []);
 
+  console.log(jobsInState, 'State_jobs');
+
   useEffect(() => {
     if (jobsInState) {
       setJobs(jobsInState);
@@ -94,12 +100,20 @@ const EmployeeHome = () => {
           data: {
             jobs: currentSelectedJob?.id,
             applicationDate: new Date(),
-            status: IJobPostStatus.OPEN,
+            status: IJobPostStatus.APPLIED,
             employee_details: user.details?.detailsId ?? 0,
           },
         }).unwrap();
         if (applyJobResponse) {
           showToast(toast, STRINGS.job_applied_successfully, 'success');
+          if (currentSelectedJob !== null) {
+            dispatch(
+              applyJobAction({
+                ...currentSelectedJob,
+                status: IJobPostStatus.APPLIED,
+              }),
+            );
+          }
         }
       }
     },
@@ -158,29 +172,33 @@ const EmployeeHome = () => {
   return (
     <View style={styles.container}>
       <HomeTopView height={scrollY} onPress={displayModal} />
-      <CustomList
-        data={isLoading ? mockJobPostsLoading : jobs}
-        onScroll={onScroll}
-        renderItem={isLoading ? renderItemLoading : renderItemListing}
-        stickyHeaderIndices={[0]}
-        ListHeaderComponent={
-          <View style={styles.headingView}>
-            <HomeListHeaderView
-              title={STRINGS.jobListing}
-              displayRightArrow={false}
-            />
-          </View>
-        }
-        getItemType={(item: any) => `${item?.id}`}
-        estimatedItemSize={verticalScale(177)}
-        betweenItemSpace={verticalScale(12)}
-        ListFooterComponent={<View />}
-        ListFooterComponentStyle={styles.footer}
-        error={error}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.1}
-        isLastPage={isLastPage}
-      />
+      <View style={styles.containerList}>
+        <CustomList
+          data={isLoading ? mockJobPostsLoading : jobs}
+          onScroll={onScroll}
+          renderItem={isLoading ? renderItemLoading : renderItemListing}
+          stickyHeaderIndices={[0]}
+          ListHeaderComponent={
+            <View style={styles.headingView}>
+              <HomeListHeaderView
+                title={STRINGS.jobListing}
+                displayRightArrow={false}
+              />
+            </View>
+          }
+          getItemType={(item: any) => `${item?.id}`}
+          estimatedItemSize={verticalScale(177)}
+          betweenItemSpace={verticalScale(12)}
+          ListFooterComponent={<View />}
+          ListFooterComponentStyle={styles.footer}
+          error={error}
+          emptyListMessage={STRINGS.no_jobs_available}
+          emptyListSubTitle={STRINGS.no_jobs_available_description}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.1}
+          isLastPage={isLastPage}
+        />
+      </View>
       <FilterListBottomSheet
         ref={bottomSheetRef}
         filters={provincesAndCities}
@@ -203,7 +221,12 @@ const getStyles = ({color}: Theme) => {
       flex: 1,
       backgroundColor: color.backgroundWhite,
     },
+    containerList: {
+      paddingHorizontal: verticalScale(24),
+      flex: 1,
+    },
     mainView: {marginTop: verticalScale(24)},
+
     scrollView: {},
     content: {
       flexGrow: 1,

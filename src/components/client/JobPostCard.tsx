@@ -26,7 +26,6 @@ import {STRINGS} from 'src/locales/english';
 import AnimatedPressable from '@components/atoms/AnimatedPressable';
 import {useTheme} from '@theme/Theme.context';
 
-import JobStatusChip from '@components/employee/JobStatusChip';
 import {Circle, Svg} from 'react-native-svg';
 import {
   dateFormatter,
@@ -39,6 +38,8 @@ import {IJobPostStatus} from '@utils/enums';
 import {useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {isClientDetails} from '@utils/constants';
+import JobTypeChip from '@components/employee/JobStatusChip';
+import JobStatusChip from './JobStatusChip';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
   onPress?: () => void;
@@ -68,8 +69,6 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     location,
     salary,
   } = cardProps;
-
-  console.log(cardProps);
 
   return (
     <Pressable onPress={onPress} style={styles.container}>
@@ -117,11 +116,14 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
               )}
             </View>
             <Row alignCenter style={styles.statusRow}>
-              <JobStatusChip
+              <JobTypeChip
                 backgroundColor={theme.theme.color.lightGrey}
                 color={theme.theme.color.textPrimary}
                 status={job_type}
               />
+              {status !== IJobPostStatus.OPEN && (
+                <JobStatusChip status={status} />
+              )}
             </Row>
           </Row>
         </View>
@@ -244,7 +246,11 @@ const createStyles = ({color}: Theme) => {
       height: verticalScale(40),
       borderRadius: verticalScale(20),
     },
-    statusRow: {},
+    statusRow: {
+      gap: verticalScale(4),
+      width: 'auto',
+      justifyContent: 'flex-end',
+    },
 
     dividerVertical: {
       width: verticalScale(1),
@@ -255,6 +261,7 @@ const createStyles = ({color}: Theme) => {
 
     jobDetails: {
       flex: 1,
+
       marginLeft: verticalScale(12),
     },
 

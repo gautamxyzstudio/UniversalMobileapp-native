@@ -4,11 +4,13 @@ import {apiEndPoints} from '@api/endpoints';
 import {
   IApplyForJobRequest,
   ICustomizedJobsResponse,
+  IGetAppliedJobsResponse,
   IGetJobsResponse,
   IJobTypes,
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
+import {IJobPostStatus} from '@utils/enums';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -22,28 +24,31 @@ const employeeApi = baseApi.injectEndpoints({
       ): ICustomizedJobsResponse => {
         let customizedJobs: IJobTypes[] = [];
         response.data.forEach(job => {
-          let details: IJobTypes = {
-            job_name: job.attributes.job_name,
-            endShift: job.attributes.endShift,
-            publishedAt: job.attributes.publishedAt,
-            location: job.attributes.location,
-            id: job.id,
-            job_type: job.attributes.job_type,
-            jobDuties: job.attributes.jobDuties,
-            description: job.attributes.description,
-            eventDate: job.attributes.eventDate,
-            startShift: job.attributes.startShift,
-            city: job.attributes.city,
-            address: job.attributes.address,
-            postalCode: job.attributes.postalCode,
-            gender: job.attributes.gender,
-            salary: job.attributes.salary,
-            client_details: job.client_details[0],
-            required_certificates: job.attributes.required_certificates,
-            state: job.attributes.state,
-            postID: job.attributes.postID,
-          };
-          customizedJobs.push(details);
+          if (job.job_applications[0] === undefined) {
+            let details: IJobTypes = {
+              job_name: job.attributes.job_name,
+              endShift: job.attributes.endShift,
+              publishedAt: job.attributes.publishedAt,
+              location: job.attributes.location,
+              id: job.id,
+              job_type: job.attributes.job_type,
+              jobDuties: job.attributes.jobDuties,
+              description: job.attributes.description,
+              eventDate: job.attributes.eventDate,
+              startShift: job.attributes.startShift,
+              city: job.attributes.city,
+              status: job.attributes.status,
+              address: job.attributes.address,
+              postalCode: job.attributes.postalCode,
+              gender: job.attributes.gender,
+              salary: job.attributes.salary,
+              client_details: job.client_details[0],
+              required_certificates: job.attributes.required_certificates,
+              state: job.attributes.state,
+              postID: job.attributes.postID,
+            };
+            customizedJobs.push(details);
+          }
         });
 
         return {
@@ -72,10 +77,39 @@ const employeeApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+    fetchAppliedJobs: builder.query<IJobTypes[], number>({
+      query: (id: number) => ({
+        url: apiEndPoints.getAppliedJobs(id),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (response: IGetAppliedJobsResponse): IJobTypes[] => {
+        let jobs: IJobTypes[] = [];
+        response.forEach(details => {
+          jobs.push({
+            ...details.jobs[0],
+            status: details.status,
+            client_details: details.jobs[0].client_details[0],
+          });
+        });
+        return jobs;
+      },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
   }),
 });
 
-export const {useLazyFetchJobsQuery, useApplyForJobMutation} = employeeApi;
+export const {
+  useLazyFetchJobsQuery,
+  useApplyForJobMutation,
+  useLazyFetchAppliedJobsQuery,
+} = employeeApi;
 
 //  getPostedJob: builder.query({
 //       query: () => ({

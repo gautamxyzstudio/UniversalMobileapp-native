@@ -21,11 +21,7 @@ import JobDetailsRenderer from './JobDetailsRenderer';
 
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import Spacers from '@components/atoms/Spacers';
-import {
-  jobDescriptionMock,
-  jobRequirementsMock,
-  requiredCertificatesMock,
-} from '@api/mockData';
+
 import {IJobPostTypes} from '@api/features/client/types';
 import {useSelector} from 'react-redux';
 import {
@@ -43,6 +39,8 @@ import {
 } from '@utils/constants';
 import JobDetailsKey from './JobDetailsKeys';
 import {useTheme} from '@theme/Theme.context';
+import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';
+import {colors} from 'react-native-keyboard-controller/lib/typescript/components/KeyboardToolbar/colors';
 
 type IJobDetailsBottomSheetProps = {
   jobDetails: IJobPostTypes | null;
@@ -85,6 +83,11 @@ const JobDetailsBottomSheet = React.forwardRef<
   const jobsDate = `${extractDayAndMonthFromDate(
     jobDetails?.eventDate ?? new Date(),
   )}`;
+
+  const statusAttributes = getStatusStylesFromStatus(
+    jobDetails?.status ?? IJobPostStatus.OPEN,
+    theme,
+  );
 
   return (
     <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onClose}>
@@ -204,11 +207,21 @@ const JobDetailsBottomSheet = React.forwardRef<
         {user?.user_type === 'emp' &&
           user.details &&
           !isClientDetails(user.details) && (
-            <BottomButtonView
-              disabled={false}
-              title={STRINGS.applyNow}
-              onButtonPress={onPressApply}
-            />
+            <>
+              {jobDetails?.status === IJobPostStatus.OPEN && (
+                <BottomButtonView
+                  disabled={false}
+                  title={STRINGS.applyNow}
+                  onButtonPress={onPressApply}
+                />
+              )}
+              {jobDetails?.status !== IJobPostStatus.OPEN && (
+                <Text
+                  style={[styles.statusText, {color: statusAttributes?.color}]}>
+                  {statusAttributes?.title}
+                </Text>
+              )}
+            </>
           )}
       </View>
     </BaseBottomSheet>
@@ -300,6 +313,7 @@ const createStyles = ({color}: Theme) => {
     },
     statusText: {
       ...fonts.mediumBold,
+      marginTop: verticalScale(16),
     },
   });
   return styles;

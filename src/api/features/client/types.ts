@@ -10,26 +10,27 @@ export type IClientSliceInitialState = {
 };
 
 export interface IJobPostTypes {
-  id?: number;
-  job_name?: string;
-  city: string;
+  id: number;
+  job_name: string;
   required_certificates: string[] | null;
-  postedBy?: string;
-  jobDuties: string;
-  job_type: IJobTypesEnum;
-  status?: IJobPostStatus;
-  location: string;
-  requiredEmployee?: number;
-  startShift: Date;
-  endShift: Date;
-  description: string;
-  gender: string;
-  eventDate: Date;
-  publishedAt: Date;
-  salary: string;
+  city: string;
+  state: string;
   address: string;
   postalCode: string;
-  client_details?: {
+  postID?: number | null;
+  gender: string;
+  salary: string;
+  jobDuties: string;
+  job_type: IJobTypesEnum;
+  publishedAt: Date;
+  location: string;
+  description: string;
+  eventDate: Date;
+  endShift: Date;
+  requiredEmployee?: number;
+  status: IJobPostStatus;
+  startShift: Date;
+  client_details: {
     id: number;
     Name: string;
     companyname: string;

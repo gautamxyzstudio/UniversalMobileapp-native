@@ -15,8 +15,8 @@ const EmployeeSchedules = () => {
       title={STRINGS.schedules}>
       <HorizontalCalendar />
       <View style={styles.mainView}>
-        <ScheduledJobCard jobDetails={scheduledMockJobs[0]} />
-        <ScheduledJobCard jobDetails={scheduledMockJobs[1]} />
+        {/* <ScheduledJobCard jobDetails={scheduledMockJobs[0]} />
+        <ScheduledJobCard jobDetails={scheduledMockJobs[1]} /> */}
       </View>
     </OnBoardingBackground>
   );

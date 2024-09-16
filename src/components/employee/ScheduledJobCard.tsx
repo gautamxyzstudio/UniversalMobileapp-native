@@ -7,19 +7,21 @@ import {fonts} from '@utils/common.styles';
 import {useTheme} from '@theme/Theme.context';
 import {getJobStatus} from '@screens/employeeScreens/employeeJobs/types';
 import {CLOCK, LOCATION_TERNARY, MEAT_BALL} from '@assets/exporter';
-import {getStatusStylesFromStatus} from '@components/molecules/customList/types';
+
 import {getJobStartAndEndTime} from '@utils/utils.common';
-import {IJobTypes} from '@api/types';
 import {verticalScale} from '@utils/metrics';
+import {getStatusAttributesFromStatus} from '@components/doucment/PreUploadedDocCardWithView';
+import {IJobPostStatus} from '@utils/enums';
+import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';
 
 type IScheduledJobCardProps = {
-  jobDetails: IJobTypes;
+  jobDetails: IJobPostStatus;
 };
 
 const ScheduledJobCard: React.FC<IScheduledJobCardProps> = ({jobDetails}) => {
   const styles = useThemeAwareObject(getStyles);
   const {theme} = useTheme();
-  const cardStyles = getStatusStylesFromStatus(jobDetails.status, theme);
+  const cardStyles = getStatusStylesFromStatus(jobDetails, theme);
   return (
     <View
       style={[

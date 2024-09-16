@@ -12,7 +12,7 @@ type IJobStatusChipProps = {
   status: IJobTypesEnum;
 };
 
-const JobStatusChip: React.FC<IJobStatusChipProps> = ({
+const JobTypeChip: React.FC<IJobStatusChipProps> = ({
   backgroundColor,
   color,
   status,
@@ -28,7 +28,7 @@ const JobStatusChip: React.FC<IJobStatusChipProps> = ({
   );
 };
 
-export default JobStatusChip;
+export default JobTypeChip;
 
 const createStyles = ({color}: Theme) => {
   const styles = StyleSheet.create({

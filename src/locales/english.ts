@@ -173,6 +173,7 @@ export const STRINGS = {
   type_your_issue: 'Type your issue...',
   send: 'Send',
   cancel: 'Cancel',
+  canceled: 'Canceled',
   filter: 'Filter',
   apply: 'Apply',
   view: 'View',
@@ -257,4 +258,15 @@ export const STRINGS = {
   create_job_to_find: 'Create your job and find the perfect candidate',
   edit_draft: 'Update Draft',
   job_applied_successfully: 'Job applied successfully',
+  confirmed: 'Confirmed',
+  no_show: 'No show',
+  completed: 'Completed',
+  declined: 'Declined',
+  applied: 'Applied',
+  no_jobs_applied: 'No Jobs Applied',
+  no_jobs_applied_description:
+    ' You have not applied for any jobs yet. Start exploring and apply to jobs that match your skills and interests.',
+  no_jobs_available_description:
+    ' Currently, there are no jobs available for you to apply. Please check back later or explore other categories to find your next opportunity.',
+  no_jobs_available: 'No Jobs Available',
 };

@@ -89,7 +89,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
         if (response) {
           dispatch(addNewJob(response));
           showToast(toast, 'job posted successfully', 'success');
-          // navigation.navigate('clientTabBar');
+          navigation.navigate('clientTabBar');
         }
       }
     } catch (error) {
