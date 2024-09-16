@@ -2,6 +2,8 @@ import {ICompanyDetails, INotification} from './types';
 import {IFilterSheet} from '@components/molecules/filterListBottomSheet/types';
 import {IImage} from '@utils/photomanager';
 import {IDocument} from '@utils/doumentManager';
+import {ICandidateStatusEnum} from '@utils/enums';
+import {IDocumentStatus, IEmployeeDocument} from './features/user/types';
 
 export const appendMockJob = {
   id: 1,
@@ -17,6 +19,485 @@ export const appendMockJob = {
   postedTime: null,
   event: '',
 };
+
+export type ICandidate = {
+  id: number;
+  name: string;
+  date: Date;
+  time: Date;
+  url: string | null;
+  details: {
+    name: string;
+    contactNumber: string;
+    gender: string;
+    workStatus: string;
+    resume: IEmployeeDocument;
+  };
+  status: ICandidateStatusEnum;
+  jobDetails: {
+    jobId: string;
+    location: string;
+  };
+};
+
+export const CandidateListPendingData: ICandidate[] = [
+  {
+    id: 1,
+    name: 'Nusuf Khatri',
+    url: 'https://placehold.co/600x400',
+    date: new Date('2024-09-10'), // Specific date for example
+    time: new Date('2024-09-10T10:00:00'), // Specific time for example
+    status: ICandidateStatusEnum.pending,
+    details: {
+      name: 'Nusuf Khatri',
+      contactNumber: '1234567890',
+      gender: 'Male',
+      workStatus: 'Employed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J101',
+      location: 'New York',
+    },
+  },
+  {
+    id: 2,
+    name: 'Sara Ali',
+    date: new Date('2024-09-11'),
+    url: null,
+    time: new Date('2024-09-11T11:30:00'),
+    status: ICandidateStatusEnum.pending,
+    details: {
+      name: 'Sara Ali',
+      contactNumber: '9876543210',
+      gender: 'Female',
+      workStatus: 'Unemployed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J102',
+      location: 'San Francisco',
+    },
+  },
+  {
+    id: 3,
+    name: 'John Doe',
+    url: null,
+    date: new Date('2024-09-12'),
+    time: new Date('2024-09-12T09:00:00'),
+    status: ICandidateStatusEnum.pending,
+    details: {
+      name: 'John Doe',
+      contactNumber: '5432167890',
+      gender: 'Male',
+      workStatus: 'Employed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J103',
+      location: 'Los Angeles',
+    },
+  },
+  {
+    id: 4,
+    name: 'Emily Davis',
+    url: null,
+    date: new Date('2024-09-13'),
+    time: new Date('2024-09-13T14:45:00'),
+    status: ICandidateStatusEnum.pending,
+    details: {
+      name: 'Emily Davis',
+      contactNumber: '1122334455',
+      gender: 'Female',
+      workStatus: 'Freelancer',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J104',
+      location: 'Chicago',
+    },
+  },
+  {
+    id: 5,
+    name: 'Michael Brown',
+    url: null,
+    date: new Date('2024-09-14'),
+    time: new Date('2024-09-14T16:00:00'),
+    status: ICandidateStatusEnum.pending,
+    details: {
+      name: 'Michael Brown',
+      contactNumber: '6677889900',
+      gender: 'Male',
+      workStatus: 'Unemployed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J105',
+      location: 'Austin',
+    },
+  },
+];
+
+export const CandidateListSelectedData: ICandidate[] = [
+  {
+    id: 1,
+    name: 'Nusuf Khatri',
+    url: 'https://placehold.co/600x400',
+    date: new Date('2024-09-10'), // Specific date for example
+    time: new Date('2024-09-10T10:00:00'), // Specific time for example
+    status: ICandidateStatusEnum.selected,
+    details: {
+      name: 'Nusuf Khatri',
+      contactNumber: '1234567890',
+      gender: 'Male',
+      workStatus: 'Employed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J101',
+      location: 'New York',
+    },
+  },
+  {
+    id: 2,
+    name: 'Sara Ali',
+    date: new Date('2024-09-11'),
+    url: null,
+    time: new Date('2024-09-11T11:30:00'),
+    status: ICandidateStatusEnum.selected,
+    details: {
+      name: 'Sara Ali',
+      contactNumber: '9876543210',
+      gender: 'Female',
+      workStatus: 'Unemployed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J102',
+      location: 'San Francisco',
+    },
+  },
+  {
+    id: 3,
+    name: 'John Doe',
+    url: null,
+    date: new Date('2024-09-12'),
+    time: new Date('2024-09-12T09:00:00'),
+    status: ICandidateStatusEnum.selected,
+    details: {
+      name: 'John Doe',
+      contactNumber: '5432167890',
+      gender: 'Male',
+      workStatus: 'Employed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J103',
+      location: 'Los Angeles',
+    },
+  },
+  {
+    id: 4,
+    name: 'Emily Davis',
+    url: null,
+    date: new Date('2024-09-13'),
+    time: new Date('2024-09-13T14:45:00'),
+    status: ICandidateStatusEnum.selected,
+    details: {
+      name: 'Emily Davis',
+      contactNumber: '1122334455',
+      gender: 'Female',
+      workStatus: 'Freelancer',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J104',
+      location: 'Chicago',
+    },
+  },
+  {
+    id: 5,
+    name: 'Michael Brown',
+    url: null,
+    date: new Date('2024-09-14'),
+    time: new Date('2024-09-14T16:00:00'),
+    status: ICandidateStatusEnum.selected,
+    details: {
+      name: 'Michael Brown',
+      contactNumber: '6677889900',
+      gender: 'Male',
+      workStatus: 'Unemployed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J105',
+      location: 'Austin',
+    },
+  },
+];
+
+export const CandidateListDeclinedData: ICandidate[] = [
+  {
+    id: 1,
+    name: 'Nusuf Khatri',
+    url: 'https://placehold.co/600x400',
+    date: new Date('2024-09-10'), // Specific date for example
+    time: new Date('2024-09-10T10:00:00'), // Specific time for example
+    status: ICandidateStatusEnum.declined,
+    details: {
+      name: 'Nusuf Khatri',
+      contactNumber: '1234567890',
+      gender: 'Male',
+      workStatus: 'Employed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J101',
+      location: 'New York',
+    },
+  },
+  {
+    id: 2,
+    name: 'Sara Ali',
+    date: new Date('2024-09-11'),
+    url: null,
+    time: new Date('2024-09-11T11:30:00'),
+    status: ICandidateStatusEnum.declined,
+    details: {
+      name: 'Sara Ali',
+      contactNumber: '9876543210',
+      gender: 'Female',
+      workStatus: 'Unemployed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J102',
+      location: 'San Francisco',
+    },
+  },
+  {
+    id: 3,
+    name: 'John Doe',
+    url: null,
+    date: new Date('2024-09-12'),
+    time: new Date('2024-09-12T09:00:00'),
+    status: ICandidateStatusEnum.declined,
+    details: {
+      name: 'John Doe',
+      contactNumber: '5432167890',
+      gender: 'Male',
+      workStatus: 'Employed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J103',
+      location: 'Los Angeles',
+    },
+  },
+  {
+    id: 4,
+    name: 'Emily Davis',
+    url: null,
+    date: new Date('2024-09-13'),
+    time: new Date('2024-09-13T14:45:00'),
+    status: ICandidateStatusEnum.declined,
+    details: {
+      name: 'Emily Davis',
+      contactNumber: '1122334455',
+      gender: 'Female',
+      workStatus: 'Freelancer',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J104',
+      location: 'Chicago',
+    },
+  },
+  {
+    id: 5,
+    name: 'Michael Brown',
+    url: null,
+    date: new Date('2024-09-14'),
+    time: new Date('2024-09-14T16:00:00'),
+    status: ICandidateStatusEnum.declined,
+    details: {
+      name: 'Michael Brown',
+      contactNumber: '6677889900',
+      gender: 'Male',
+      workStatus: 'Unemployed',
+      resume: {
+        docName: 'CV.pdf',
+        docStatus: IDocumentStatus.APPROVED,
+        doc: {
+          url: '/uploads/thumbnail_3_B4_FD_42_E_954_F_45_C5_8_DEA_FAB_74_E301901_0d3b12fc48.jpg',
+          mime: 'image/jpeg',
+          id: 605,
+          name: 'thumbnail_3B4FD42E-954F-45C5-8DEA-FAB74E301901.jpg',
+          size: 11595,
+        },
+        docId: 605,
+      },
+    },
+    jobDetails: {
+      jobId: 'J105',
+      location: 'Austin',
+    },
+  },
+];
 
 export const mockJobPostsLoading: any = [
   {

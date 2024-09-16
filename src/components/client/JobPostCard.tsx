@@ -18,15 +18,12 @@ import {
   ICONS,
   JOB_ID,
   LOCATION_SMALL,
-  MEAT_BALL,
 } from '@assets/exporter';
 import {Row} from '@components/atoms/Row';
 import {STRINGS} from 'src/locales/english';
 
-import AnimatedPressable from '@components/atoms/AnimatedPressable';
 import {useTheme} from '@theme/Theme.context';
 
-import {Circle, Svg} from 'react-native-svg';
 import {
   dateFormatter,
   fromNowOn,
@@ -43,14 +40,12 @@ import JobStatusChip from './JobStatusChip';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
   onPress?: () => void;
-  cardWidth?: number;
   isDraft?: boolean;
 }
 
 const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
   onPress,
   isDraft,
-  cardWidth,
   ...cardProps
 }) => {
   const styles = useThemeAwareObject(createStyles);

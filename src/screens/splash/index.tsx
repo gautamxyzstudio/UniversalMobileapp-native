@@ -12,7 +12,6 @@ import Animated, {
 import {useTheme} from '@theme/Theme.context';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
-import {StatusBar} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   userAdvanceDetailsFromState,
@@ -46,7 +45,7 @@ const Splash = () => {
       const response = await getUserDetails(null).unwrap();
       if (response) {
         let userDetails = response as IClientDetails;
-        if (userDetails.status === 'approved') {
+        if (userDetails.status !== 'approved') {
           return true;
         }
       }

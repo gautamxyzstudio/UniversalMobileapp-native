@@ -20,6 +20,15 @@ export const capitalizeFirstLetter = (string: string | null) => {
   return '';
 };
 
+export const capitalizeAndReturnFirstLetter = (name: string) => {
+  let regex = /^[a-zA-Z]/;
+  if (regex.test(name)) {
+    return name.slice(0, 1).toUpperCase();
+  } else {
+    return null;
+  }
+};
+
 export const dateFormatter = (date: Date) => {
   const UtcDate = moment(date);
   return UtcDate.format('DD-MM-YYYY');

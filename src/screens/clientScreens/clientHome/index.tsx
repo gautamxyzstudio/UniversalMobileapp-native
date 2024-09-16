@@ -1,10 +1,9 @@
-import {ScrollView, StatusBar, StyleSheet, View} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import React, {useRef, useState} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import HomeTopView from '@components/employee/HomeTopView';
 import {PaperProvider} from 'react-native-paper';
 import {verticalScale, windowWidth} from '@utils/metrics';
-import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import SegmentView from '@components/organisms/segmentView';
 import Spacers from '@components/atoms/Spacers';
 import ClientOpenJobs from '@components/client/ClientOpenJobs';
@@ -53,10 +52,6 @@ const ClientHome = () => {
           <View style={styles.tab}>
             <ClientClosedJobs />
           </View>
-          {/* <View style={styles.home}>
-            <JobPostCard {...mockJobPosts[0]} />
-           
-          </View> */}
         </ScrollView>
         <FloatingButton />
       </View>

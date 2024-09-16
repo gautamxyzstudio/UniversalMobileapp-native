@@ -23,3 +23,9 @@ export enum IUserTypeEnum {
   CLIENT = 'client',
   EMPLOYEE = 'emp',
 }
+
+export enum ICandidateStatusEnum {
+  pending = 1,
+  selected = 2,
+  declined = 3,
+}

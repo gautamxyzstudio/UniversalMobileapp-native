@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   StyleProp,
   StyleSheet,
@@ -6,9 +7,8 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  useAnimatedValue,
 } from 'react-native';
-import React, {Ref, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 
 import Animated, {
   useAnimatedStyle,

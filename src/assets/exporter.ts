@@ -94,6 +94,9 @@ import PENCIL from './icons/svg/pensil.svg';
 import POST from './icons/svg/post.svg';
 import NO_INTERNET from './icons/svg/noInternet.svg';
 import EMPTY from './icons/svg/emptyIcon.svg';
+import CROSS_BUTTON from './icons/svg/cross_buttom.svg';
+import ACCEPT_BUTTON from './icons/svg/accept_button.svg';
+import SWITCH from './icons/svg/switch.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -158,6 +161,7 @@ export {
   ARROW_LEFT,
   STATUS,
   GALLERY,
+  SWITCH,
   FAQ,
   CONTACT,
   RATE,
@@ -216,4 +220,6 @@ export {
   JOB_SEEKER,
   RECRUITER,
   IC_EDIT,
+  CROSS_BUTTON,
+  ACCEPT_BUTTON,
 };

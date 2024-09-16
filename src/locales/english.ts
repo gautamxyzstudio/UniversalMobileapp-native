@@ -241,7 +241,7 @@ export const STRINGS = {
   post: 'Post',
   draft: 'Draft',
   check_in: 'Check In',
-  view_applicants: 'View Applicants',
+  applicants: 'Applicants',
   view_details: 'View Details',
   stop: 'Stop',
   quick_links: 'Quick Links',
@@ -269,4 +269,7 @@ export const STRINGS = {
   no_jobs_available_description:
     ' Currently, there are no jobs available for you to apply. Please check back later or explore other categories to find your next opportunity.',
   no_jobs_available: 'No Jobs Available',
+  applicants: 'Applicants (48)',
+  shortlisted: 'Shortlisted',
+  deny: 'Deny',
 };

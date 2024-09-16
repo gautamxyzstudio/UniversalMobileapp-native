@@ -35,7 +35,7 @@ export const getStyles = (theme: Theme) => {
       paddingHorizontal: verticalScale(24),
       paddingTop: verticalScale(24),
       flex: 1,
-      backgroundColor: theme.color.primary,
+      backgroundColor: theme.color.backgroundWhite,
     },
     flexBox: {
       flexDirection: 'row',

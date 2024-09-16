@@ -67,7 +67,7 @@ const EmployeeJobHistory = () => {
         </>
       )}
       <View style={styles.list}>
-        <CustomList
+        {/* <CustomList
           data={userMockJobs}
           renderItem={renderItemListing}
           getItemType={item => `${item.id}`}
@@ -75,7 +75,7 @@ const EmployeeJobHistory = () => {
           estimatedItemSize={verticalScale(177)}
           error={undefined}
           isLastPage={false}
-        />
+        /> */}
       </View>
       <DatePickerModal
         mode="range"

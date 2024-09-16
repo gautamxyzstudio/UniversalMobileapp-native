@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {mockJobPostsLoading} from '@api/mockData';
@@ -9,13 +10,7 @@ import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {IJobPostTypes} from '@api/features/client/types';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {
-  BIN_SECONDARY,
-  CHECK_IN,
-  IC_DOCUMENT,
-  PAUSE,
-  PERSON_SECONDARY,
-} from '@assets/exporter';
+import {CHECK_IN, IC_DOCUMENT, PAUSE, PERSON_SECONDARY} from '@assets/exporter';
 import {STRINGS} from 'src/locales/english';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -23,11 +18,14 @@ import {
   saveOpenJobs,
 } from '@api/features/client/clientSlice';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {withAsyncErrorHandlingPost} from '@utils/constants';
+import {useToast} from 'react-native-toast-notifications';
 
 const ClientOpenJobs = () => {
   const [getJobPosts, {isLoading, error}] = useLazyGetPostedJobQuery();
   const openJobs = useSelector(openJobsFromState);
   const dispatch = useDispatch();
+  const toast = useToast();
   const user = useSelector(userBasicDetailsFromState);
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
@@ -51,17 +49,19 @@ const ClientOpenJobs = () => {
       ) : (
         <JobPostCard onPress={onPressCard} {...item} />
       ),
-    [isLoading, openJobs],
+    [isLoading, jobPosts],
   );
 
-  const getJobPostsHandler = async () => {
-    try {
+  const getJobPostsHandler = withAsyncErrorHandlingPost(
+    async () => {
       const response = await getJobPosts(user?.details?.detailsId).unwrap();
-      if (response.data) dispatch(saveOpenJobs(response.data));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      if (response.data) {
+        dispatch(saveOpenJobs(response.data));
+      }
+    },
+    toast,
+    dispatch,
+  );
 
   return (
     <>

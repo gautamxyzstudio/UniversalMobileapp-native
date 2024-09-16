@@ -2,7 +2,6 @@
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
@@ -11,7 +10,6 @@ import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
 import HomeTopView from '@components/employee/HomeTopView';
 import {verticalScale} from '@utils/metrics';
-import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
 import {useSharedValue} from 'react-native-reanimated';
 import CustomList from '@components/molecules/customList';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
@@ -52,6 +50,7 @@ const EmployeeHome = () => {
   const [isLastPage, setIsLastPage] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
   const scrollY = useSharedValue(0);
   const [currentSelectedJob, setCurrentSelectedJob] =
@@ -128,6 +127,7 @@ const EmployeeHome = () => {
       const usersJobsResponse = await getJobs(page).unwrap();
       if (usersJobsResponse) {
         dispatch(updateJobs({currentPage: page, jobs: usersJobsResponse.data}));
+        setIsRefreshing(false);
         setCurrentPage(page);
         setIsLastPage(
           usersJobsResponse.data.length === 0 ||
@@ -135,6 +135,7 @@ const EmployeeHome = () => {
         );
       }
     } catch (err) {
+      setIsRefreshing(false);
       console.log(err, 'ERROR GETTING JOB POSTS');
     }
   };
@@ -150,7 +151,7 @@ const EmployeeHome = () => {
     jobDetailsSheetRef.current?.snapToIndex(1);
   };
 
-  const renderItemLoading = ({index}: {index: number}) => (
+  const renderItemLoading = () => (
     <View style={styles.list}>
       <JobPostCardLoading />
     </View>
@@ -164,6 +165,12 @@ const EmployeeHome = () => {
     ),
     [isLoading, jobs],
   );
+
+  const onRefreshHandler = () => {
+    setCurrentPage(1);
+    setIsRefreshing(true);
+    getJobsPosts(true);
+  };
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollY.value = e.nativeEvent.contentOffset.y;
@@ -195,6 +202,8 @@ const EmployeeHome = () => {
           emptyListMessage={STRINGS.no_jobs_available}
           emptyListSubTitle={STRINGS.no_jobs_available_description}
           onEndReached={loadMore}
+          onRefresh={onRefreshHandler}
+          isRefreshing={isRefreshing}
           onEndReachedThreshold={0.1}
           isLastPage={isLastPage}
         />

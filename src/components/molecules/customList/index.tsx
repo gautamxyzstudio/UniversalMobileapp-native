@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -62,6 +62,14 @@ const CustomList = <T,>({
   ...flatlistProps
 }: ICustomList<T>) => {
   const theme = useTheme();
+  const [refreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (isRefreshing !== undefined) {
+      setIsRefreshing(isRefreshing);
+    }
+  }, [isRefreshing]);
+
   const itemSeparatorComponent = useCallback(() => {
     return <View style={{height: verticalScale(betweenItemSpace ?? 20)}} />;
   }, [data]);
@@ -106,6 +114,10 @@ const CustomList = <T,>({
         ItemSeparatorComponent={
           ItemSeparatorComponent ?? itemSeparatorComponent
         }
+        refreshControl={
+          <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+        }
+        refreshing={refreshing}
         ListFooterComponent={ListFooterComponent ?? itemFooterComponent}
         {...flatlistProps}
       />

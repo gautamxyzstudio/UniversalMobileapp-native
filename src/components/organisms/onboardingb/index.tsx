@@ -1,4 +1,4 @@
-import {Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {LinearGradient} from 'react-native-linear-gradient';
 import {IOnboardingProps} from './types';
@@ -10,7 +10,6 @@ import {touchSlope} from 'src/constants/constants';
 import {verticalScale} from '@utils/metrics';
 import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {Row} from '@components/atoms/Row';
-import {useTheme} from '@theme/Theme.context';
 
 const OnBoardingBackground: React.FC<IOnboardingProps> = ({
   children,
@@ -25,7 +24,6 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
   const {insetsTop, insetsBottom} = useScreenInsets();
 
   const styles = useThemeAwareObject(getStyles);
-  const {theme} = useTheme();
   const navigation = useNavigation();
 
   const onPressBack = () => {

@@ -6,9 +6,8 @@ import Filters, {IFilter} from '@components/molecules/Fiilters';
 
 import {getJobStatus} from './types';
 import CustomList from '@components/molecules/customList';
-import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
 import {verticalScale} from '@utils/metrics';
-import {mockJobFilters, mockJobPostsLoading, userMockJobs} from '@api/mockData';
+import {mockJobFilters, mockJobPostsLoading} from '@api/mockData';
 import {useLazyFetchAppliedJobsQuery} from '@api/features/employee/employeeApi';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {useDispatch, useSelector} from 'react-redux';
@@ -29,6 +28,7 @@ const EmployeeJobs = () => {
   const [fetchJobs, {isLoading, error}] = useLazyFetchAppliedJobsQuery();
   const [jobs, updateJobs] = useState<IJobPostTypes[]>([]);
   const dispatch = useDispatch();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentSelectedJob, setCurrentSelectedJob] =
     useState<IJobPostTypes | null>(null);
   const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
@@ -69,7 +69,7 @@ const EmployeeJobs = () => {
     );
   }, []);
 
-  const renderItemLoading = ({index}: {index: number}) => (
+  const renderItemLoading = () => (
     <View>
       <JobPostCardLoading />
     </View>
@@ -82,7 +82,13 @@ const EmployeeJobs = () => {
     if (appliedJobResponse) {
       dispatch(updateAppliedJobs(appliedJobResponse));
     }
+    setIsRefreshing(false);
   });
+
+  const onRefreshHandler = () => {
+    setIsRefreshing(true);
+    fetchAppliedJobsHandler(true);
+  };
 
   return (
     <OnBoardingBackground
@@ -104,6 +110,8 @@ const EmployeeJobs = () => {
           emptyListSubTitle={STRINGS.no_jobs_applied_description}
           estimatedItemSize={verticalScale(177)}
           error={error}
+          isRefreshing={isRefreshing}
+          onRefresh={onRefreshHandler}
           isLastPage={true}
         />
         <JobDetailsBottomSheet
