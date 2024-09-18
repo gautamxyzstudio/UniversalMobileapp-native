@@ -13,12 +13,14 @@ import {fonts} from '@utils/common.styles';
 type ICandidateProfilePictureViewProps = {
   name: string;
   url: string | null;
+  size?: number;
+  textSize?: 'small' | 'medium';
   status: ICandidateStatusEnum;
 };
 
 const CandidateProfilePictureView: React.FC<
   ICandidateProfilePictureViewProps
-> = ({name, url, status}) => {
+> = ({name, url, status, size, textSize}) => {
   const styles = useThemeAwareObject(createStyles);
   const {theme} = useTheme();
   const profilePictureAttributes = getProfileStylesFromSelectionStatus(
@@ -32,11 +34,20 @@ const CandidateProfilePictureView: React.FC<
           defaultSource={ICONS.imagePlaceholder}
           image={url}
           resizeMode="cover"
-          customStyle={[styles.image, {...profilePictureAttributes}]}
+          customStyle={[
+            styles.image,
+            size ? {width: size, height: size} : null,
+            {...profilePictureAttributes},
+          ]}
         />
       ) : (
-        <View style={[styles.image, {...profilePictureAttributes}]}>
-          <Text style={styles.name}>
+        <View
+          style={[
+            styles.image,
+            size ? {width: size, height: size} : null,
+            {...profilePictureAttributes},
+          ]}>
+          <Text style={[textSize === 'small' ? styles.nameSmall : styles.name]}>
             {capitalizeAndReturnFirstLetter(name)}
           </Text>
         </View>
@@ -61,6 +72,10 @@ const createStyles = (theme: Theme) =>
     name: {
       color: theme.color.textPrimary,
       ...fonts.mediumBold,
+    },
+    nameSmall: {
+      color: theme.color.textPrimary,
+      ...fonts.small,
     },
   });
 

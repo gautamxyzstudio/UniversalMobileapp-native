@@ -4,8 +4,7 @@ import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';
 
 import CandidateCard from '@components/client/CandidateCard';
-import CustomList from '@components/molecules/customList';
-import {CandidateListSelectedData, ICandidate} from '@api/mockData';
+import {ICandidate} from '@api/mockData';
 
 const CandidateListSelected = () => {
   const styles = useThemeAwareObject(getStyles);

@@ -1,4 +1,4 @@
-import {Alert, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useRef, useState} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';

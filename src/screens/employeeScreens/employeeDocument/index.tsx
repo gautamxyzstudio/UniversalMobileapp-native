@@ -61,6 +61,7 @@ const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
   const user = useSelector(userAdvanceDetailsFromState) as IEmployeeDetails;
   const userBasic = useSelector(userBasicDetailsFromState);
+
   const {uploadImage} = useUploadAssets();
   const resumePopupRef = useRef<BottomSheetModal | null>(null);
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
@@ -287,6 +288,7 @@ const EmployeeDocuments = () => {
                 <PreUploadedDocCardWithView
                   document={user.resume}
                   withTitle={false}
+                  navigation={navigation}
                 />
               </View>
             </>
@@ -297,10 +299,18 @@ const EmployeeDocuments = () => {
           </View>
           <View style={styles.listView}>
             {user.documents?.primary?.map(doc => (
-              <PreUploadedDocCardWithView document={doc} withTitle={true} />
+              <PreUploadedDocCardWithView
+                document={doc}
+                withTitle={true}
+                navigation={navigation}
+              />
             ))}
             {user.documents?.secondary?.map(doc => (
-              <PreUploadedDocCardWithView document={doc} withTitle={true} />
+              <PreUploadedDocCardWithView
+                document={doc}
+                withTitle={true}
+                navigation={navigation}
+              />
             ))}
           </View>
           <Spacers type="vertical" scalable />
@@ -330,6 +340,7 @@ const EmployeeDocuments = () => {
               <PreUploadedDocCardWithView
                 document={user.bankDetails?.cheque}
                 withTitle={true}
+                navigation={navigation}
               />
             )}
           </View>

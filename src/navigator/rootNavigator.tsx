@@ -29,14 +29,12 @@ import SignUp from '@screens/auth/signup';
 import RecruiterDetails from '@screens/auth/signup/recruiterDetails';
 import RegisterNewCompany from '@screens/auth/signup/registerNewCompany';
 import EmployeeSchedules from '@screens/employeeScreens/employeeSchedules';
-import JobPosting, {
-  IJobPostingPropType,
-} from '@screens/clientScreens/jobPosting';
+import JobPosting from '@screens/clientScreens/jobPosting';
 import EmployeeDocuments from '@screens/employeeScreens/employeeDocument';
 import ReviewJobPost from '@screens/clientScreens/reviewJobPost';
 import TextEditorView from '@screens/common/textEditorView';
-import {PaperProvider} from 'react-native-paper';
 import JobPostDrafts from '@screens/clientScreens/jobPostDrafts';
+import ShortListedCandidates from '@screens/clientScreens/shortlistedCandidiates';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -163,6 +161,10 @@ const RootNavigator = () => {
             animation: 'slide_from_bottom',
           }}
           component={TextEditorView as React.ComponentType<any>}
+        />
+        <Stack.Screen
+          name={routNames.shortlistedCandidates}
+          component={ShortListedCandidates as React.ComponentType<any>}
         />
       </Stack.Navigator>
     </NavigationContainer>

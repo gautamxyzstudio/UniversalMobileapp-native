@@ -12,9 +12,13 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
   backgroundColor,
   onButtonPress,
   isMultiple,
+  secondaryButtonStyles,
+  primaryButtonStyles,
   isLoading,
   disabled,
   onPressSecondaryButton,
+  secondaryButtonTitleStyles,
+  primaryButtonTitleStyles,
   secondaryButtonTitles,
   buttonType,
   rippleColor,
@@ -29,9 +33,10 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
             disabled={disabled}
             type="outline"
             onButtonPress={onPressSecondaryButton}
-            buttonStyle={styles.button}
+            buttonStyle={[styles.button, secondaryButtonStyles]}
             rippleColor={rippleColor}
             title={secondaryButtonTitles}
+            titleStyles={[secondaryButtonTitleStyles]}
             backgroundColor={backgroundColor}
           />
         )}
@@ -39,9 +44,13 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
           disabled={disabled}
           onButtonPress={onButtonPress}
           isLoading={isLoading}
-          buttonStyle={[isMultiple ? styles.button : {width: windowWidth - 48}]}
+          buttonStyle={[
+            isMultiple ? styles.button : {width: windowWidth - 48},
+            primaryButtonStyles,
+          ]}
           rippleColor={rippleColor}
           type={buttonType}
+          titleStyles={[primaryButtonTitleStyles]}
           title={title}
           backgroundColor={backgroundColor}
         />

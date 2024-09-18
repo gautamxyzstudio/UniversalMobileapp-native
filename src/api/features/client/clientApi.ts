@@ -3,6 +3,7 @@ import {baseApi} from '@api/baseApi';
 import {apiEndPoints} from '@api/endpoints';
 import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {
+  IDraftResponse,
   IJobPostCustomizedResponse,
   IJobPostTypes,
   INewPostedJobResponse,
@@ -12,7 +13,6 @@ import {
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
-import {JOB_ID} from '@assets/exporter';
 
 const clientApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -23,14 +23,12 @@ const clientApi = baseApi.injectEndpoints({
         body,
       }),
       transformResponse: (response: INewPostedJobResponse): IJobPostTypes => {
-        console.log(response, 'API REs');
         return {
           id: response.data.id,
-          job_name: response.data.attributes?.job_name,
+          job_name: response.data.attributes?.job_name ?? 'job Name',
           city: response.data.attributes?.city ?? '',
           required_certificates:
             response.data.attributes?.required_certificates ?? [],
-          postedBy: 'Posted by yash',
           jobDuties: response.data.attributes?.jobDuties ?? '',
           job_type: response.data.attributes?.job_type ?? IJobTypesEnum.EVENT,
           status: IJobPostStatus.OPEN,
@@ -43,6 +41,14 @@ const clientApi = baseApi.injectEndpoints({
           eventDate: response.data.attributes?.eventDate ?? new Date(),
           publishedAt: response.data.attributes?.publishedAt ?? new Date(),
           salary: response.data.attributes?.salary ?? '0',
+          client_details: {
+            id: 0,
+            Name: '',
+            companyname: '',
+            Industry: '',
+            Email: '',
+            location: '',
+          },
           address: response.data.attributes?.address ?? '0',
           postalCode: response.data.attributes?.postalCode ?? '0',
         };
@@ -57,13 +63,15 @@ const clientApi = baseApi.injectEndpoints({
         response: IPostedJobsResponse,
       ): IJobPostCustomizedResponse => {
         let data: IJobPostTypes[] = [];
-        response.data.forEach((job, index) => {
-          if (job.id && job.attributes) {
+        response.data.forEach(job => {
+          if (job.id) {
             data.push({
-              ...job.attributes,
+              ...job,
               id: job.id,
-              postedBy: 'posted by Yash',
               status: IJobPostStatus.OPEN,
+              client_details: {
+                ...job.client_details,
+              },
             });
           }
         });
@@ -99,16 +107,23 @@ const clientApi = baseApi.injectEndpoints({
         method: apiMethodType.get,
       }),
       transformResponse: (
-        response: IPostedJobsResponse,
+        response: IDraftResponse,
       ): IJobPostCustomizedResponse => {
         let data: IJobPostTypes[] = [];
-        response.data.forEach((job, index) => {
+        response.data.forEach(job => {
           if (job.id && job.attributes) {
             data.push({
               ...job.attributes,
               id: job.id,
-              postedBy: 'posted by Yash',
               status: IJobPostStatus.OPEN,
+              client_details: {
+                id: 0,
+                Name: '',
+                companyname: '',
+                Industry: '',
+                Email: '',
+                location: '',
+              },
             });
           }
         });
@@ -146,11 +161,10 @@ const clientApi = baseApi.injectEndpoints({
       transformResponse: (response: INewPostedJobResponse): IJobPostTypes => {
         return {
           id: response.data.id,
-          job_name: response.data.attributes?.job_name,
+          job_name: response.data.attributes?.job_name ?? '',
           city: response.data.attributes?.city ?? '',
           required_certificates:
             response.data.attributes?.required_certificates ?? [],
-          postedBy: 'Posted by yash',
           jobDuties: response.data.attributes?.jobDuties ?? '',
           job_type: response.data.attributes?.job_type ?? IJobTypesEnum.EVENT,
           status: IJobPostStatus.OPEN,
@@ -165,6 +179,14 @@ const clientApi = baseApi.injectEndpoints({
           salary: response.data.attributes?.salary ?? '0',
           address: response.data.attributes?.address ?? '0',
           postalCode: response.data.attributes?.postalCode ?? '0',
+          client_details: {
+            id: 0,
+            Name: '',
+            companyname: '',
+            Industry: '',
+            Email: '',
+            location: '',
+          },
         };
       },
       transformErrorResponse: (

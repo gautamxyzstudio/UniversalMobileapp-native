@@ -97,6 +97,10 @@ import EMPTY from './icons/svg/emptyIcon.svg';
 import CROSS_BUTTON from './icons/svg/cross_buttom.svg';
 import ACCEPT_BUTTON from './icons/svg/accept_button.svg';
 import SWITCH from './icons/svg/switch.svg';
+import IC_MAIL from './icons/svg/ic_mail.svg';
+import IC_PHONE from './icons/svg/ic_phone.svg';
+import IC_CHECKIN_GREEN from './icons/svg/checkin_green.svg';
+import IC_CHECKOUT from './icons/svg/checkout.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -136,6 +140,8 @@ export {
   DRAFT,
   DOCUMENTS_SECONDARY,
   NOTIFICATION_READ,
+  IC_MAIL,
+  IC_PHONE,
   CROSS,
   LOGOUT,
   PENCIL_GREY,
@@ -144,6 +150,8 @@ export {
   MEAT_BALL,
   ERROR,
   DROPDOWN_SECONDARY,
+  IC_CHECKIN_GREEN,
+  IC_CHECKOUT,
   CLOCK_SEC,
   PROFILE,
   BIN_SECONDARY,

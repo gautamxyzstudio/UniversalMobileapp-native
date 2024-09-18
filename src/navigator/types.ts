@@ -34,6 +34,7 @@ export type RootStackParamList = {
   registerNewCompany: undefined;
   schedule: undefined;
   notifications: undefined;
+  shortlistedCandidates: undefined;
   reviewJobPost:
     | {
         postDetails: IJobPostInterface;
@@ -73,6 +74,7 @@ type IScreenType = {
   registerNewCompany: 'registerNewCompany';
   pdfViewer: 'pdfViewer';
   employeeTabBar: 'employeeTabBar';
+  shortlistedCandidates: 'shortlistedCandidates';
   clientTabBar: 'clientTabBar';
   updateEmployeeDetails: 'updateEmployeeDetails';
   employeeDocuments: 'employeeDocuments';
@@ -96,6 +98,7 @@ export const routNames: IScreenType = {
   welcome: 'welcome',
   approval: 'approval',
   selectLocation: 'selectLocation',
+  shortlistedCandidates: 'shortlistedCandidates',
   addLocationManually: 'addLocationManually',
   login: 'login',
   registerNewCompany: 'registerNewCompany',

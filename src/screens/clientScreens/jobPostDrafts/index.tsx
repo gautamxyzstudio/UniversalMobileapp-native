@@ -1,4 +1,5 @@
-import {StyleSheet, View} from 'react-native';
+/* eslint-disable no-catch-shadow */
+import {StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
@@ -6,7 +7,7 @@ import JobPostCard from '@components/client/JobPostCard';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {verticalScale} from '@utils/metrics';
-import {BIN, BIN_SECONDARY, IC_DOCUMENT, PENCIL, POST} from '@assets/exporter';
+import {BIN_SECONDARY, IC_DOCUMENT, PENCIL, POST} from '@assets/exporter';
 import {
   useDeleteADraftMutation,
   useLazyGetDraftsQuery,
@@ -18,7 +19,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import JobPostCardLoading from '@components/client/JobPostCardLoading';
 import {
-  addNewDraft,
   addNewJob,
   jobDraftFromState,
   removeADraft,
@@ -28,7 +28,6 @@ import {mockJobPosts} from '@api/mockData';
 import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
-import EmptyState from '@screens/common/emptyAndErrorScreen';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
@@ -97,7 +96,7 @@ const JobPostDrafts = () => {
               postalCode: currentSelectedDraft.postalCode,
               gender: currentSelectedDraft.gender,
               salary: currentSelectedDraft.salary,
-              requiredEmployee: currentSelectedDraft.requiredEmployee,
+              requiredEmployee: currentSelectedDraft.requiredEmployee ?? 0,
               required_certificates:
                 currentSelectedDraft.required_certificates ?? [],
             },

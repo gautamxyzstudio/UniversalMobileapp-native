@@ -8,6 +8,7 @@ export interface IOnboardingProps {
   title?: string;
   subTitle?: string;
   displayRightIcon?: boolean;
+  isInlineTitle?: boolean;
   isProfile?: boolean;
   rightIconPressHandler?: () => void;
   rightIcon?: React.FC<SvgProps>;

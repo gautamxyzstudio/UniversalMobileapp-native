@@ -15,6 +15,7 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
   children,
   title,
   subTitle,
+  isInlineTitle,
   rightIcon,
   rightIconPressHandler,
   displayRightIcon,
@@ -45,12 +46,15 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
         <View style={styles.flexBox}>
           {!hideBack && (
             <>
-              <TouchableOpacity hitSlop={touchSlope} onPress={onPressBack}>
-                <ARROW_HEADER
-                  width={verticalScale(24)}
-                  height={verticalScale(24)}
-                />
-              </TouchableOpacity>
+              <Row style={styles.inlineTitleContainer} alignCenter>
+                <TouchableOpacity hitSlop={touchSlope} onPress={onPressBack}>
+                  <ARROW_HEADER
+                    width={verticalScale(24)}
+                    height={verticalScale(24)}
+                  />
+                </TouchableOpacity>
+                {isInlineTitle && <Text style={styles.title}>{title}</Text>}
+              </Row>
               {displayRightIcon && SecondIcon && (
                 <TouchableOpacity
                   hitSlop={touchSlope}
@@ -66,7 +70,7 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
         </View>
 
         <View style={styles.titleContainer}>
-          {title && (
+          {title && !isInlineTitle && (
             <Row spaceBetween alignCenter>
               <Text style={styles.title}>{title}</Text>
               {hideBack && displayRightIcon && SecondIcon && (

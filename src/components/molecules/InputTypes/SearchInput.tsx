@@ -115,7 +115,7 @@ const createStyles = (theme: Theme) => {
     leftIcon: {
       justifyContent: 'center',
       alignItems: 'center',
-      marginLeft: verticalScale(16),
+      marginLeft: verticalScale(8),
     },
     rightIcon: {
       justifyContent: 'center',

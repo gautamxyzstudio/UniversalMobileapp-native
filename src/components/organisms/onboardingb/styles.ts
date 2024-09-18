@@ -54,6 +54,9 @@ export const getStyles = (theme: Theme) => {
       ...fonts.medium,
       color: theme.color.textPrimary,
     },
+    inlineTitleContainer: {
+      gap: verticalScale(12),
+    },
   });
   return styles;
 };

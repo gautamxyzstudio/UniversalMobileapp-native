@@ -184,7 +184,6 @@ const EmployeeHome = () => {
           data={isLoading ? mockJobPostsLoading : jobs}
           onScroll={onScroll}
           renderItem={isLoading ? renderItemLoading : renderItemListing}
-          stickyHeaderIndices={[0]}
           ListHeaderComponent={
             <View style={styles.headingView}>
               <HomeListHeaderView

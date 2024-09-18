@@ -11,23 +11,25 @@ import {STRINGS} from 'src/locales/english';
 import ImageView from 'react-native-image-viewing';
 import {IDocumentStatus, IEmployeeDocument} from '@api/features/user/types';
 import {useTheme} from '@theme/Theme.context';
-import {useNavigation} from '@react-navigation/native';
 import {getFileExtension} from '@utils/utils.common';
 import {NavigationProps} from 'src/navigator/types';
 
 type IPreUploadedDocCardWithView = {
   document: IEmployeeDocument;
   withTitle: boolean;
+  hideStatus?: boolean;
+  navigation: NavigationProps;
 };
 
 const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
   document,
+  navigation,
+  hideStatus,
   withTitle = true,
 }) => {
   const styles = useThemeAwareObject(getStyles);
   const [visible, setIsVisible] = useState(false);
   const theme = useTheme();
-  const navigation = useNavigation<NavigationProps>();
   const doc = document.doc;
   const onPressView = () => {
     const fileExtension = getFileExtension(doc?.url ?? '');
@@ -51,9 +53,11 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
         <>
           <Row alignCenter spaceBetween>
             <Text style={styles.title}>{document.docName}</Text>
-            <Text style={[styles.status, {color: statusAttributes.color}]}>
-              {statusAttributes.title}
-            </Text>
+            {!hideStatus && (
+              <Text style={[styles.status, {color: statusAttributes.color}]}>
+                {statusAttributes.title}
+              </Text>
+            )}
           </Row>
           <Spacers type="vertical" size={8} />
         </>

@@ -10,7 +10,13 @@ import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {IJobPostTypes} from '@api/features/client/types';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {CHECK_IN, IC_DOCUMENT, PAUSE, PERSON_SECONDARY} from '@assets/exporter';
+import {
+  CHECK_IN,
+  IC_DOCUMENT,
+  NO_INTERNET,
+  PAUSE,
+  PERSON_SECONDARY,
+} from '@assets/exporter';
 import {STRINGS} from 'src/locales/english';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -20,22 +26,44 @@ import {
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {useToast} from 'react-native-toast-notifications';
+import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
+import {useNavigation} from '@react-navigation/native';
+import {NavigationProps} from 'src/navigator/types';
 
 const ClientOpenJobs = () => {
   const [getJobPosts, {isLoading, error}] = useLazyGetPostedJobQuery();
   const openJobs = useSelector(openJobsFromState);
   const dispatch = useDispatch();
   const toast = useToast();
+  const navigation = useNavigation<NavigationProps>();
   const user = useSelector(userBasicDetailsFromState);
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
+  const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
+  const [currentSelectedDraft, setCurrentSelectedDraft] =
+    useState<IJobPostTypes | null>(null);
+
+  const onPressJobDetails = () => {
+    quickActionSheetRef.current?.close();
+    setTimeout(() => {
+      jobDetailsSheetRef.current?.snapToIndex(1);
+    }, 300);
+  };
 
   useEffect(() => {
     getJobPostsHandler();
   }, []);
 
-  const onPressCard = () => {
+  const onPressCard = (post: IJobPostTypes) => {
+    setCurrentSelectedDraft(post);
     quickActionSheetRef.current?.snapToIndex(1);
+  };
+
+  const navigateToCheckIn = () => {
+    quickActionSheetRef.current?.close();
+    setTimeout(() => {
+      navigation.navigate('shortlistedCandidates');
+    }, 300);
   };
 
   useEffect(() => {
@@ -47,7 +75,7 @@ const ClientOpenJobs = () => {
       isLoading ? (
         <JobPostCardLoading />
       ) : (
-        <JobPostCard onPress={onPressCard} {...item} />
+        <JobPostCard onPress={() => onPressCard(item)} {...item} />
       ),
     [isLoading, jobPosts],
   );
@@ -72,6 +100,7 @@ const ClientOpenJobs = () => {
         error={error}
         getItemType={item => item.id}
         emptyListMessage={STRINGS.no_jobs_posted_yet}
+        emptyListIllustration={NO_INTERNET}
         emptyListSubTitle={STRINGS.create_job_to_find}
         ListFooterComponentStyle={{height: verticalScale(150)}}
         isLastPage={true}
@@ -86,17 +115,17 @@ const ClientOpenJobs = () => {
           {
             icon: CHECK_IN,
             title: STRINGS.check_in,
-            onPress: () => console.log('void'),
+            onPress: navigateToCheckIn,
           },
           {
             icon: PERSON_SECONDARY,
-            title: STRINGS.view_applicants,
-            onPress: () => console.log('void'),
+            title: STRINGS.viewApplicants,
+            onPress: onPressJobDetails,
           },
           {
             icon: IC_DOCUMENT,
             title: STRINGS.viewDetails,
-            onPress: () => console.log('void'),
+            onPress: onPressJobDetails,
           },
           {
             icon: PAUSE,
@@ -104,6 +133,10 @@ const ClientOpenJobs = () => {
             onPress: () => console.log('void'),
           },
         ]}
+      />
+      <JobDetailsBottomSheet
+        ref={jobDetailsSheetRef}
+        jobDetails={currentSelectedDraft}
       />
     </>
   );

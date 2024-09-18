@@ -62,7 +62,10 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
       )}
       {errorObj && errorObj?.statusCode !== 'FETCH_ERROR' && (
         <>
-          {/* <Image source={IMAGES.commonError_image} /> */}
+          <EmptyListIcon
+            width={verticalScale(230)}
+            height={verticalScale(163)}
+          />
           <Text style={styles.errorHeader}>{error}</Text>
           <Text style={styles.errorSubHeader}>{errorMessage}</Text>
         </>

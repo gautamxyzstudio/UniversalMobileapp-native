@@ -19,6 +19,7 @@ export const STRINGS = {
   doc: 'Document',
   candidateList: 'Candidate list',
   userName: 'Username',
+  viewApplicants: 'View Applicants',
   jobPosting: 'Job Posting',
   email: 'E-mail',
   emailOrUsername: 'Email / Username',
@@ -269,7 +270,10 @@ export const STRINGS = {
   no_jobs_available_description:
     ' Currently, there are no jobs available for you to apply. Please check back later or explore other categories to find your next opportunity.',
   no_jobs_available: 'No Jobs Available',
-  applicants: 'Applicants (48)',
   shortlisted: 'Shortlisted',
   deny: 'Deny',
+  contact_details: 'Contact details',
+  general: 'General',
+  approve: 'Approve',
+  selected: 'Selected',
 };
