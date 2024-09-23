@@ -27,6 +27,7 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
     {
       left,
       right,
+      labelContainerStyles,
       value,
       outerContainerStyles,
       title,
@@ -119,6 +120,7 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
                   style={[
                     styles.labelContainer,
                     isMultiline && {top: verticalScale(33) / 2},
+                    labelContainerStyles,
                     labelAnimation,
                   ]}>
                   <Text
@@ -196,7 +198,7 @@ const getStyles = (theme: Theme) => {
       flexDirection: 'row',
       position: 'absolute',
       marginLeft: verticalScale(16),
-      backgroundColor: '#fff',
+      backgroundColor: theme.color.backgroundWhite,
       textAlign: 'center',
 
       pointerEvents: 'none',

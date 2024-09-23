@@ -1,7 +1,6 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import {IEmployeeSliceInitialState, IJobTypes} from './types';
 import {RootState} from '@api/store';
-import {IJobPostStatus} from '@utils/enums';
 
 const initialState: IEmployeeSliceInitialState = {
   jobs: [],

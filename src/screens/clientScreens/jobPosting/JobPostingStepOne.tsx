@@ -11,6 +11,8 @@ import {IJobPostingStepOneFields, IJobPostRef} from './types';
 import {ValidationError} from 'yup';
 import {verticalScale} from '@utils/metrics';
 import EditorTextInputView from '@components/molecules/editorTextInputView';
+import {Theme} from '@theme/Theme.type';
+import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 
 type IJobPostingStepOneState = {
   jobTitle: string;
@@ -46,6 +48,7 @@ const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
       jobTypeError: '',
     },
   );
+  const styles = useThemeAwareObject(createStyles);
 
   useImperativeHandle(ref, () => ({
     validate: validate,
@@ -122,6 +125,7 @@ const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
             handleValueChange(Object.keys(jobBasicDetails)[0], value)
           }
           title={STRINGS.job_title}
+          labelContainerStyles={styles.labelContainer}
           errorMessage={jobBasicDetails.jobTitleError}
         />
         <Spacers type={'vertical'} size={16} />
@@ -159,17 +163,21 @@ const JobPostingStepOne = React.forwardRef<any, IJobPostRef>(({}, ref) => {
 });
 
 export default JobPostingStepOne;
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    flex: 1,
-  },
-  container: {
-    flexGrow: 1,
-  },
-  multiline: {height: verticalScale(200)},
-  textInput: {
-    paddingTop: verticalScale(10),
-    height: '100%',
-  },
-});
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    inputContainer: {
+      flex: 1,
+      backgroundColor: theme.color.backgroundWhite,
+    },
+    container: {
+      flexGrow: 1,
+    },
+    multiline: {height: verticalScale(200)},
+    textInput: {
+      paddingTop: verticalScale(10),
+      height: '100%',
+    },
+    labelContainer: {
+      backgroundColor: '#fff',
+    },
+  });

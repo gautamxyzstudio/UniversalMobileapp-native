@@ -1,5 +1,6 @@
 import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import {IDoc} from '../user/types';
 
 export type IClientSliceInitialState = {
   jobs: {
@@ -7,6 +8,14 @@ export type IClientSliceInitialState = {
     closed: IJobPostTypes[];
     drafts: IJobPostTypes[];
   };
+  candidateList: Map<number, ICandidateListTypes>;
+};
+
+export type ICandidateListTypes = {
+  jobDetails: IJobPostTypes;
+  open: Map<number, ICandidateTypes[]>;
+  shortlisted: Map<number, ICandidateTypes[]>;
+  denied: Map<number, ICandidateTypes[]>;
 };
 
 export interface IJobPostTypes {
@@ -38,6 +47,46 @@ export interface IJobPostTypes {
     location: string;
   };
 }
+
+export interface ICandidateTypes {
+  id: number;
+  applicationDate: Date;
+  status: IJobPostStatus;
+  jobId: number;
+  jobLocation: string;
+  employeeDetails: {
+    id: number;
+    name: string;
+    selfie: IDoc;
+    dob: string;
+    gender: string;
+    email: string;
+    phone: string;
+    resume: IDoc | null;
+  };
+}
+
+export type IGetCandidateListResponse = {
+  data: {
+    id: number;
+    applicationDate: Date;
+    status: IJobPostStatus;
+    jobs: {
+      id: number;
+      location: string;
+    }[];
+    employee_details: {
+      id: number;
+      name: string;
+      dob: string;
+      gender: string;
+      email: string;
+      phone: string;
+      resume: IDoc | null;
+      certificates: IDoc[] | null;
+    };
+  }[];
+};
 
 export interface IJobPostCustomizedResponse {
   data: IJobPostTypes[] | null;

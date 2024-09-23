@@ -28,6 +28,7 @@ type ISearchInputProps = {
   onPressCross: () => void;
   placeHolder: string;
   leftIcon?: boolean;
+  innerContainerStyle?: StyleProp<ViewStyle>;
   containerStyles?: StyleProp<ViewStyle>;
   navigation: Omit<
     NavigationProp<ReactNavigation.RootParamList>,
@@ -46,6 +47,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
   withBack = true,
   containerStyles,
   leftIcon = true,
+  innerContainerStyle,
   placeHolder,
   onPressCross,
   inputRef,
@@ -57,7 +59,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
     <CustomTextInput
       title={''}
       ref={inputRef}
-      innerContainerStyles={styles.innerContainerStyles}
+      innerContainerStyles={(styles.innerContainerStyles, innerContainerStyle)}
       outerContainerStyles={[styles.outerContainerStyles, containerStyles]}
       placeholder={placeHolder}
       textInputStyles={styles.textInput}
@@ -120,6 +122,7 @@ const createStyles = (theme: Theme) => {
     rightIcon: {
       justifyContent: 'center',
       alignItems: 'center',
+      height: '100%',
       marginRight: verticalScale(12),
     },
   });

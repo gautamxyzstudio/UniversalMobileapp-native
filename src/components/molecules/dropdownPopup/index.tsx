@@ -172,7 +172,7 @@ const getStyles = (theme: Theme) => {
     },
     label: {
       position: 'absolute',
-      backgroundColor: 'white',
+      backgroundColor: theme.color.red,
       left: 22,
       top: 8,
       zIndex: 999,
@@ -187,7 +187,7 @@ const getStyles = (theme: Theme) => {
       position: 'absolute',
       zIndex: 1,
       marginLeft: verticalScale(16),
-      backgroundColor: '#fff',
+      backgroundColor: theme.color.backgroundWhite,
       textAlign: 'center',
       pointerEvents: 'none',
     },

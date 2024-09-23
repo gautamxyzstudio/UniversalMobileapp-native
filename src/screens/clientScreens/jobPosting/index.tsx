@@ -1,4 +1,5 @@
-import {FlatList, StatusBar, StyleSheet, View} from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import {FlatList, StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {useScreenInsets} from 'src/hooks/useScreenInsets';
@@ -17,10 +18,9 @@ import {
   IJobPostRef,
   IJobPostStepThreeRef,
   IJobPostStepTwoRef,
-  IJobPostingStepOneFields,
 } from './types';
-import {useNavigation, StackActions} from '@react-navigation/native';
-import {NavigationProps, routNames} from 'src/navigator/types';
+import {useNavigation} from '@react-navigation/native';
+import {NavigationProps} from 'src/navigator/types';
 import {fonts} from '@utils/common.styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -34,7 +34,6 @@ import {IJobPostStatus} from '@utils/enums';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {showToast} from '@components/organisms/customToast';
 import {AppDispatch} from '@api/store';
-import {IJobPostTypes} from '@api/features/client/types';
 
 export type IJobPostingPropType = {
   route: {
@@ -278,7 +277,7 @@ export const getStyles = (colors: Theme) => {
       marginTop: verticalScale(24),
       paddingTop: verticalScale(24),
       flex: 1,
-      backgroundColor: colors.color.primary,
+      backgroundColor: colors.color.red,
     },
     bottomView: {
       flexDirection: 'row',

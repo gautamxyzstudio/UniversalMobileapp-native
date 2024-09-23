@@ -1,5 +1,9 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
-import {IClientSliceInitialState, IJobPostTypes} from './types';
+import {
+  ICandidateListTypes,
+  IClientSliceInitialState,
+  IJobPostTypes,
+} from './types';
 import {RootState} from '@api/store';
 
 const initialState: IClientSliceInitialState = {
@@ -8,6 +12,7 @@ const initialState: IClientSliceInitialState = {
     closed: [],
     drafts: [],
   },
+  candidateList: new Map(),
 };
 
 const clientSlice = createSlice({
@@ -63,6 +68,22 @@ const clientSlice = createSlice({
     addNewDraft: (state, action: PayloadAction<IJobPostTypes>) => {
       state.jobs.drafts.unshift(action.payload);
     },
+    initializeCandidateList: (
+      state,
+      action: PayloadAction<IJobPostTypes[]>,
+    ) => {
+      let candidateListMap = new Map<number, ICandidateListTypes>();
+      action.payload.forEach((job: IJobPostTypes) => {
+        console.log(job, 'MAP JOB');
+        candidateListMap.set(job.id, {
+          open: new Map(),
+          jobDetails: job,
+          shortlisted: new Map(),
+          denied: new Map(),
+        });
+      });
+      state.candidateList = new Map(candidateListMap);
+    },
   },
 });
 export default clientSlice.reducer;
@@ -71,6 +92,7 @@ export const {
   addNewDraft,
   saveClosedJobs,
   saveDrafts,
+  initializeCandidateList,
   removeADraft,
   closeAJob,
   saveOpenJobs,
@@ -83,3 +105,5 @@ export const openJobsFromState = (state: RootState) => state.client.jobs.open;
 export const closedJobsFromState = (state: RootState) =>
   state.client.jobs.closed;
 export const jobDraftFromState = (state: RootState) => state.client.jobs.drafts;
+export const candidateListFromSate = (state: RootState) =>
+  state.client.candidateList;

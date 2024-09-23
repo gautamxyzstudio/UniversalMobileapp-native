@@ -21,6 +21,7 @@ export interface ICustomTextInputProps extends TextInputProps {
   title: string;
   left?: React.ReactNode;
   hideTitle?: boolean;
+  labelContainerStyles?: StyleProp<ViewStyle>;
   right?: React.ReactNode;
   onTextChange?: (text: string) => void;
   errorMessage: string | undefined;

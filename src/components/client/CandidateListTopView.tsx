@@ -1,4 +1,4 @@
-import {Image, StyleSheet, View, Text} from 'react-native';
+import {Image, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale} from '@utils/metrics';
@@ -12,11 +12,17 @@ import {STRINGS} from 'src/locales/english';
 type ICandidateListTopViewProps = {
   currentIndex: number;
   onClick: (index: number) => void;
+  onPressFilter: () => void;
+  jobName: string;
+  jobId: number;
 };
 
 const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
   currentIndex,
   onClick,
+  jobId,
+  jobName,
+  onPressFilter,
 }) => {
   const styles = useThemeAwareObject(createStyles);
   return (
@@ -29,14 +35,14 @@ const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
             source={ICONS.imagePlaceholder}
           />
           <View style={styles.detailsView}>
-            <Text style={styles.title}>Security gg Guard</Text>
-            <Text style={styles.jobId}>Job ID- S1</Text>
+            <Text style={styles.title}>{jobName}</Text>
+            <Text style={styles.jobId}>{`Job ID-${jobId}`}</Text>
           </View>
         </Row>
-        <View>
+        <TouchableOpacity onPress={onPressFilter}>
           <SWITCH />
           <View style={styles.redDot} />
-        </View>
+        </TouchableOpacity>
       </Row>
       <View style={styles.segmentView}>
         <SegmentView

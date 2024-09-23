@@ -20,6 +20,7 @@ import {
 import {STRINGS} from 'src/locales/english';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  initializeCandidateList,
   openJobsFromState,
   saveOpenJobs,
 } from '@api/features/client/clientSlice';
@@ -36,6 +37,7 @@ const ClientOpenJobs = () => {
   const dispatch = useDispatch();
   const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
+
   const user = useSelector(userBasicDetailsFromState);
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
@@ -85,6 +87,7 @@ const ClientOpenJobs = () => {
       const response = await getJobPosts(user?.details?.detailsId).unwrap();
       if (response.data) {
         dispatch(saveOpenJobs(response.data));
+        dispatch(initializeCandidateList(response.data));
       }
     },
     toast,

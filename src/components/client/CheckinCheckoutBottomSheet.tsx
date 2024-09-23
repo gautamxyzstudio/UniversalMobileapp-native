@@ -24,7 +24,7 @@ const CheckinCheckoutBottomSheet = React.forwardRef<
 
   const onPressConfirm = () => {
     onClose;
-    onPressButton(date);
+    onPressButton(date, 'checkin');
   };
 
   return (
