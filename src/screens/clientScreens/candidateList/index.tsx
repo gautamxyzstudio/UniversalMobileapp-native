@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {ScrollView, StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -11,15 +12,28 @@ import CandidateListDeclined from './CandidateListDeclined';
 import CandidateListSelected from './CandidateListSelected';
 import OpenJobsBottomSheet from '@components/client/OpenJobsBottomSheet';
 import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
-import {useSelector} from 'react-redux';
-import {openJobsFromState} from '@api/features/client/clientSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  openJobsFromState,
+  saveOpenJobs,
+} from '@api/features/client/clientSlice';
 import {IJobPostTypes} from '@api/features/client/types';
+import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
+import {withAsyncErrorHandlingGet} from '@utils/constants';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 
 const CandidateList = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const styles = useThemeAwareObject(getStyles);
+  const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
+  const user = useSelector(userBasicDetailsFromState);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
   const scrollViewRef = useRef<ScrollView | null>(null);
   const openJobFromState = useSelector(openJobsFromState);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isLastPage, setIsLastPage] = useState(true);
   const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
   const [currentSelectedJob, setCurrentSelectedJob] =
     useState<IJobPostTypes | null>(null);
@@ -30,6 +44,28 @@ const CandidateList = () => {
       animated: true,
     });
   };
+
+  const getJobPostsHandler = withAsyncErrorHandlingGet(
+    async (isFirstPage: boolean = false) => {
+      let page = isFirstPage ? 1 : currentPage + 1;
+      let perPageRecord = 10;
+      if (isFirstPage) {
+        setIsRefreshing(true);
+      }
+      const response = await getJobPosts(user?.details?.detailsId).unwrap();
+      if (response.data) {
+        setIsRefreshing(false);
+        setCurrentPage(page);
+        setIsLastPage(
+          response.data.length === 0 || response.data.length !== perPageRecord,
+        );
+        dispatch(saveOpenJobs({pageNo: page, jobs: response.data}));
+      }
+    },
+    () => {
+      setIsRefreshing(false);
+    },
+  );
 
   useEffect(() => {
     setCurrentSelectedJob(openJobFromState[0]);
@@ -43,6 +79,16 @@ const CandidateList = () => {
   const onPressFilter = () => {
     bottomSheetRef.current?.snapToIndex(1);
   };
+
+  const loadMore = () => {
+    if (!isLastPage) {
+      getJobPostsHandler();
+    }
+  };
+
+  useEffect(() => {
+    getJobPostsHandler(true);
+  }, []);
 
   return (
     <OnBoardingBackground
@@ -78,6 +124,9 @@ const CandidateList = () => {
         jobs={openJobFromState}
         currentSelectedJob={currentSelectedJob}
         onPressCard={onChangeSelectedJobHandler}
+        onReachEnd={loadMore}
+        onRefresh={() => getJobPostsHandler(true)}
+        isRefreshing={isRefreshing}
       />
     </OnBoardingBackground>
   );

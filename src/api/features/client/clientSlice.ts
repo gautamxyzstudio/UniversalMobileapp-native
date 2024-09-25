@@ -18,11 +18,25 @@ const clientSlice = createSlice({
   name: 'CLIENT',
   initialState,
   reducers: {
-    saveOpenJobs: (state, action) => {
-      state.jobs.open = [...action.payload];
+    saveOpenJobs: (
+      state,
+      action: PayloadAction<{jobs: IJobPostTypes[]; pageNo: number}>,
+    ) => {
+      if (action.payload.pageNo === 1) {
+        state.jobs.open = [...action.payload.jobs];
+      } else {
+        state.jobs.open = [...state.jobs.open, ...action.payload.jobs];
+      }
     },
-    saveClosedJobs: (state, action) => {
-      state.jobs.open = [...state.jobs.closed, ...action.payload];
+    saveClosedJobs: (
+      state,
+      action: PayloadAction<{jobs: IJobPostTypes[]; pageNo: number}>,
+    ) => {
+      if (action.payload.pageNo === 1) {
+        state.jobs.closed = [...action.payload.jobs];
+      } else {
+        state.jobs.closed = [...state.jobs.closed, ...action.payload.jobs];
+      }
     },
     saveDrafts: (state, action: PayloadAction<IJobPostTypes[]>) => {
       state.jobs.drafts = [...action.payload];
@@ -53,15 +67,6 @@ const clientSlice = createSlice({
       );
       if (draftIndex !== -1) {
         state.jobs.drafts[draftIndex] = {...action.payload};
-      }
-    },
-    closeAJob: (state, action: PayloadAction<IJobPostTypes>) => {
-      const jobIndex = state.jobs.open.findIndex(
-        job => job.id === action.payload.id,
-      );
-      if (jobIndex >= 0) {
-        state.jobs.open.splice(jobIndex, 1);
-        state.jobs.closed.unshift(action.payload);
       }
     },
     addNewDraft: (state, action: PayloadAction<IJobPostTypes>) => {
@@ -270,6 +275,16 @@ const clientSlice = createSlice({
         }
       }
     },
+    stopAJobPostReducer: (state, action: PayloadAction<{jobId: number}>) => {
+      let openJobs = [...state.jobs.open];
+      const jobIndex = openJobs.findIndex(
+        job => job.id === action.payload.jobId,
+      );
+      if (jobIndex !== -1) {
+        openJobs[jobIndex].notAccepting = true;
+      }
+      state.jobs.open = openJobs;
+    },
     restoreDeclinedCandidate: (
       state,
       action: PayloadAction<{applicant: ICandidateTypes; jobId: number}>,
@@ -311,7 +326,6 @@ export const {
   saveDrafts,
   removeADraft,
   updateDeclinedApplications,
-  closeAJob,
   confirmCandidate,
   updateOpenApplication,
   declineShortlistedCandidate,
@@ -319,6 +333,7 @@ export const {
   saveOpenJobs,
   postADraft,
   updateDraftReducer,
+  stopAJobPostReducer,
 } = clientSlice.actions;
 
 //state extractors

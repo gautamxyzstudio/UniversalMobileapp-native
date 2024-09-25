@@ -193,7 +193,7 @@ const CandidateListSelected: React.FC<ICandidateListSelectedProps> = ({
         jobStatus={ICandidateStatusEnum.selected}
       />
       <SelectOptionBottomSheet
-        modalHeight={280 + insetsBottom}
+        modalHeight={verticalScale(280) + insetsBottom}
         ref={optionSheetRef}
         options={[
           {

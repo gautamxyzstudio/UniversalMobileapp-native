@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-catch-shadow */
 import {StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -42,7 +43,8 @@ const JobPostDrafts = () => {
     useState<IJobPostTypes | null>(null);
   const [drafts, setDrafts] = useState<IJobPostTypes[]>([]);
   const dispatch = useDispatch();
-  const [getDrafts, {isFetching, error}] = useLazyGetDraftsQuery();
+  const [isLoading, setIsLoading] = useState(true);
+  const [getDrafts, {error}] = useLazyGetDraftsQuery();
   const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
   const user = useSelector(userBasicDetailsFromState);
@@ -61,9 +63,11 @@ const JobPostDrafts = () => {
     try {
       const posts = await getDrafts(null).unwrap();
       if (posts.data) {
+        setIsLoading(false);
         dispatch(saveDrafts(posts.data));
       }
     } catch (e) {
+      setIsLoading(false);
       console.error('Error fetching drafts:', e);
     }
   };
@@ -160,21 +164,20 @@ const JobPostDrafts = () => {
   };
 
   const renderItem = useCallback(
-    ({item}: {item: IJobPostTypes}) =>
-      isFetching ? (
-        <JobPostCardLoading isDraft />
-      ) : (
-        <JobPostCard isDraft onPress={() => onPressDraftCard(item)} {...item} />
-      ),
-    [isFetching],
+    ({item}: {item: IJobPostTypes}) => (
+      <JobPostCard isDraft onPress={() => onPressDraftCard(item)} {...item} />
+    ),
+    [rootDrafts, isLoading],
   );
+
+  const renderLoadingItem = () => <JobPostCardLoading isDraft />;
 
   return (
     <OnBoardingBackground title={STRINGS.draft}>
       <CustomList
-        data={isFetching ? mockJobPosts : drafts}
+        data={isLoading ? mockJobPosts : drafts}
         estimatedItemSize={verticalScale(130)}
-        renderItem={renderItem}
+        renderItem={isLoading ? renderLoadingItem : renderItem}
         emptyListMessage={STRINGS.emptyTitleDrafts}
         emptyListSubTitle={STRINGS.emptySubTitleDrafts}
         error={error}

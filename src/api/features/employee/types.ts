@@ -10,7 +10,6 @@ export type IJobTypes = {
   job_name: string;
   required_certificates: string[] | null;
   city: string;
-  state: string;
   address: string;
   postalCode: string;
   postID?: number | null;

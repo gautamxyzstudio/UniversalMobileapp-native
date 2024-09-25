@@ -34,6 +34,7 @@ const clientApi = baseApi.injectEndpoints({
           jobDuties: response.data.attributes?.jobDuties ?? '',
           job_type: response.data.attributes?.job_type ?? IJobTypesEnum.EVENT,
           status: IJobPostStatus.OPEN,
+          notAccepting: false,
           location: response.data.attributes?.location ?? '',
           requiredEmployee: response.data.attributes?.requiredEmployee ?? 0,
           startShift: response.data.attributes?.startShift ?? new Date(),
@@ -59,7 +60,7 @@ const clientApi = baseApi.injectEndpoints({
     }),
     getPostedJob: builder.query({
       query: client_id => ({
-        url: apiEndPoints.getJobPost(client_id),
+        url: apiEndPoints.getOpenJobPost(client_id),
         method: apiMethodType.get,
       }),
       transformResponse: (
@@ -73,6 +74,7 @@ const clientApi = baseApi.injectEndpoints({
                 ...job,
                 id: job.id,
                 status: IJobPostStatus.OPEN,
+                notAccepting: job?.notAccepting ?? false,
                 applicants: null,
                 client_details: {
                   ...job.client_details,
@@ -85,10 +87,55 @@ const clientApi = baseApi.injectEndpoints({
         return {
           data: data,
           pagination: response?.meta && {
-            page: response.meta?.pagination?.page ?? 1,
-            pageSize: response?.meta.pagination?.pageSize ?? 1,
-            pageCount: response?.meta.pagination?.pageCount ?? 1,
-            total: response?.meta.pagination?.total ?? 1,
+            page: response.meta?.page ?? 1,
+            pageSize: response?.meta.pageSize ?? 1,
+            pageCount: response?.meta.total ?? 1,
+            total: response?.meta.totalPages ?? 1,
+          },
+        };
+      },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
+    getClosedJobs: builder.query({
+      query: client_id => ({
+        url: apiEndPoints.getClosedJobPost(client_id),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (
+        response: IPostedJobsResponse,
+      ): IJobPostCustomizedResponse => {
+        let data: IJobPostTypes[] = [];
+        if (response.data) {
+          response.data.forEach(job => {
+            if (job.id) {
+              data.push({
+                ...job,
+                id: job.id,
+                status: IJobPostStatus.CLOSED,
+                notAccepting: job?.notAccepting ?? false,
+                applicants: null,
+                client_details: {
+                  ...job.client_details,
+                },
+              });
+            }
+          });
+        }
+
+        return {
+          data: data,
+          pagination: response?.meta && {
+            page: response.meta?.page ?? 1,
+            pageSize: response?.meta.pageSize ?? 1,
+            pageCount: response?.meta.total ?? 1,
+            total: response?.meta.totalPages ?? 1,
           },
         };
       },
@@ -260,6 +307,15 @@ const clientApi = baseApi.injectEndpoints({
         };
       },
     }),
+    stopAJobPost: builder.mutation({
+      query: (body: {jobId: number}) => ({
+        url: apiEndPoints.stopAJobPost(body.jobId),
+        method: apiMethodType.patch,
+        body: {
+          notAccepting: true,
+        },
+      }),
+    }),
     updateJobApplicationStatus: builder.mutation({
       query: (body: {applicationId: number; status: IJobPostStatus}) => ({
         url: apiEndPoints.updateJobApplicationStatus(body.applicationId),
@@ -274,11 +330,14 @@ const clientApi = baseApi.injectEndpoints({
 
 export const {
   usePostAJobMutation,
+  useStopAJobPostMutation,
   usePatchADraftMutation,
   useLazyGetPostedJobQuery,
   useLazyGetCandidatesListQuery,
   useUpdateJobApplicationStatusMutation,
   useDeleteADraftMutation,
+  useGetPostedJobQuery,
   useSaveAsDraftMutation,
+  useLazyGetClosedJobsQuery,
   useLazyGetDraftsQuery,
 } = clientApi;

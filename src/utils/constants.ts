@@ -210,12 +210,14 @@ export const withErrorHandling = (fn: (...args: any[]) => any) => {
 
 export const withAsyncErrorHandlingGet = (
   fn: (...args: any[]) => Promise<any>,
+  onError?: () => void,
 ) => {
   return async (...args: any[]) => {
     try {
       return await fn(...args);
     } catch (error) {
       console.error('An error occurred:', error);
+      onError && onError();
     }
   };
 };
@@ -224,6 +226,7 @@ export const withAsyncErrorHandlingPost = (
   fn: (...args: any[]) => Promise<any>,
   toast: typeof Toast,
   dispatch: Dispatch,
+  onError?: () => void,
 ) => {
   return async (...args: any[]) => {
     try {
@@ -236,6 +239,7 @@ export const withAsyncErrorHandlingPost = (
         customError.message ?? STRINGS.someting_went_wrong,
         'error',
       );
+      onError && onError();
     } finally {
       dispatch(setLoading(false));
     }

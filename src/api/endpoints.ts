@@ -17,8 +17,10 @@ export const apiEndPoints = {
   uploadOtherDocuments: `${process.env.BASE_URL}/api/other-documents/bulk-create`,
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
-  getJobPost: (detailsId: number) =>
-    `${process.env.BASE_URL}/api/jobs/client/${detailsId}?sort=createdAt:desc`,
+  getOpenJobPost: (detailsId: number) =>
+    `${process.env.BASE_URL}/api/jobs/client/open/${detailsId}?sort=createdAt:desc`,
+  getClosedJobPost: (detailsId: number) =>
+    `${process.env.BASE_URL}/api/jobs/client/closed/${detailsId}?sort=createdAt:desc`,
   getJobsEmployee: (pageNumber: number) =>
     `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&pagination[page]=${
       pageNumber ?? 1
@@ -34,4 +36,6 @@ export const apiEndPoints = {
   ) => `${process.env.BASE_URL}/api/job-applications/${type}/${jobId}`,
   updateJobApplicationStatus: (applicationId: number) =>
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/status`,
+  stopAJobPost: (jobId: number) =>
+    `${process.env.BASE_URL}/api/jobs/${jobId}/not-accepting`,
 };

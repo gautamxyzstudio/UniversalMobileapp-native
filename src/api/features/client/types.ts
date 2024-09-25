@@ -26,6 +26,7 @@ export interface IJobPostTypes {
   postID?: number | null;
   gender: string;
   salary: string;
+  notAccepting?: boolean;
   jobDuties: string;
   job_type: IJobTypesEnum;
   publishedAt: Date;
@@ -114,7 +115,9 @@ export type IPostedJobsResponse = {
     eventDate: Date;
     salary: string;
     createdAt: Date;
+    notAccepting: boolean;
     updatedAt: Date;
+    status: IJobPostStatus;
     publishedAt: Date;
     jobDuties: string;
     job_type: IJobTypesEnum;
@@ -134,12 +137,10 @@ export type IPostedJobsResponse = {
   }[];
 
   meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
   } | null;
 };
 

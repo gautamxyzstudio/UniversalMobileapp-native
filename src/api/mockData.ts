@@ -922,7 +922,7 @@ export const requiredCertificatesMock = `
 </ul>
 `;
 
-export const scheduledMockJobs: IJobTypes[] = [
+export const scheduledMockJobs: any[] = [
   {
     id: 1,
     title: 'Software Engineer',
@@ -1279,7 +1279,7 @@ export const companyDetails: ICompanyDetails[] = [
   },
 ];
 
-export const mockJobPosts: IJobPostTypes[] = [
+export const mockJobPosts: any[] = [
   {
     id: 1,
     positionName: 'Software Engineer',

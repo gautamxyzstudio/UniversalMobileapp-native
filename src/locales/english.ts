@@ -249,13 +249,14 @@ export const STRINGS = {
   edit: 'Edit',
   open: 'Open',
   closed: 'Closed',
-  closed_position: 'Closed Position',
+  closed_position: 'Position Closed',
   draft_deleted_successful: 'Draft Deleted Successfully',
   draft_updated_successful: 'Draft updated Successfully',
   emptyTitleDrafts: 'You Have No Drafts',
   emptySubTitleDrafts:
     'Create new job drafts to keep track of your potential postings',
   no_jobs_posted_yet: 'No Jobs Posted Yet',
+  no_completed_jobs_posted_yet: 'No Completed Jobs Yet',
   create_job_to_find: 'Create your job and find the perfect candidate',
   edit_draft: 'Update Draft',
   job_applied_successfully: 'Job applied successfully',
@@ -284,5 +285,7 @@ export const STRINGS = {
     'Please review the available applications to find potential matches for the role.',
   no_candidates_declined: 'No Applicants',
   remove_from_shortlist: 'Remove from shortlist',
+  job_closed_success: 'Job closed successfully',
   block: 'Block',
+  close: 'Close',
 };

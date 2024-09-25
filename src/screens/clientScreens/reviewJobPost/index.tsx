@@ -22,8 +22,7 @@ import BottomButtonView from '@components/organisms/bottomButtonView';
 import JobDetailsKey from '@components/employee/JobDetailsKeys';
 import {useDispatch, useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
-import {IClientDetails} from '@api/features/user/types';
-import {IJobPostStatus, IPayDuration} from '@utils/enums';
+import {IJobPostStatus} from '@utils/enums';
 import {
   convertArrayOfStringsToUlLi,
   extractDayAndMonthFromDate,

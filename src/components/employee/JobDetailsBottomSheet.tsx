@@ -1,4 +1,4 @@
-import {Alert, Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React, {useMemo} from 'react';
 import {BaseBottomSheet} from '@components/molecules/bottomsheet';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
@@ -29,7 +29,7 @@ import {
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {IClientDetails} from '@api/features/user/types';
-import {IJobPostStatus, IJobTypesEnum, IUserTypeEnum} from '@utils/enums';
+import {IJobPostStatus, IUserTypeEnum} from '@utils/enums';
 import {
   extractTimeFromDate,
   extractDayAndMonthFromDate,
@@ -40,7 +40,6 @@ import {
 import JobDetailsKey from './JobDetailsKeys';
 import {useTheme} from '@theme/Theme.context';
 import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';
-import {colors} from 'react-native-keyboard-controller/lib/typescript/components/KeyboardToolbar/colors';
 
 type IJobDetailsBottomSheetProps = {
   jobDetails: IJobPostTypes | null;
@@ -70,6 +69,8 @@ const JobDetailsBottomSheet = React.forwardRef<
     jobDetails?.status ?? IJobPostStatus.OPEN,
     theme,
   );
+
+  console.log(jobDetails, 'detailsStatus');
 
   const companyName =
     user?.user_type === 'emp'

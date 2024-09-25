@@ -18,7 +18,7 @@ const ClientHome = () => {
 
   const handleTabsChange = (index: number) => {
     updateTabIndex(index);
-    console.log(index * windowWidth);
+
     scrollViewRef.current?.scrollTo({
       x: index * windowWidth,
       animated: true,

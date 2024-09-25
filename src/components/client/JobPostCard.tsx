@@ -34,7 +34,7 @@ import {IJobPostTypes} from '@api/features/client/types';
 import {IJobPostStatus} from '@utils/enums';
 import {useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
-import {isClientDetails} from '@utils/constants';
+import {extractDayAndMonthFromDate, isClientDetails} from '@utils/constants';
 import JobTypeChip from '@components/employee/JobStatusChip';
 import JobStatusChip from './JobStatusChip';
 
@@ -58,6 +58,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     job_type,
     client_details,
     eventDate,
+    notAccepting,
     status,
     startShift,
     endShift,
@@ -93,10 +94,12 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
               isClientDetails(user.details) ? (
                 <>
                   {isDraft ? (
-                    <Text style={styles.postedDate}>8 may</Text>
+                    <Text style={styles.postedDate}>
+                      {extractDayAndMonthFromDate(publishedAt)}
+                    </Text>
                   ) : (
                     <>
-                      {status === IJobPostStatus.CLOSED && (
+                      {notAccepting && status === IJobPostStatus.OPEN && (
                         <Text style={styles.notAccepting}>
                           {STRINGS.not_accepting}
                         </Text>

@@ -62,8 +62,6 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
     compRef.current?.snapToIndex(1);
   };
 
-  console.log(openJobFromState, 'APPLICATRIONS');
-
   useEffect(() => {
     getApplications();
   }, [jobId]);
