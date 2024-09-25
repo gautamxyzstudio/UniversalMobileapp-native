@@ -28,4 +28,10 @@ export const apiEndPoints = {
   applyForJob: `${process.env.BASE_URL}/api/job-applications`,
   getAppliedJobs: (id: number) =>
     `${process.env.BASE_URL}/api/job-applications/employee/${id}`,
+  getCandidatesList: (
+    jobId: number,
+    type: 'open' | 'shortlisted' | 'denylist',
+  ) => `${process.env.BASE_URL}/api/job-applications/${type}/${jobId}`,
+  updateJobApplicationStatus: (applicationId: number) =>
+    `${process.env.BASE_URL}/api/job-applications/${applicationId}/status`,
 };

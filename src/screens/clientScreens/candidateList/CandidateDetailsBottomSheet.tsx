@@ -1,6 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React from 'react';
-import {ICandidate} from '@api/mockData';
 import {verticalScale, windowHeight, windowWidth} from '@utils/metrics';
 import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import {BaseBottomSheet} from '@components/molecules/bottomsheet';
@@ -21,15 +20,18 @@ import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {ICandidateStatusEnum} from '@utils/enums';
 import BottomButtonView from '@components/organisms/bottomButtonView';
+import {ICandidateTypes} from '@api/features/client/types';
+import {IDocumentStatus, IEmployeeDocsApiKeys} from '@api/features/user/types';
 
-type ICandidateDetailsBottomSheet = {
-  details: ICandidate | undefined;
-};
+interface ICandidateDetailsBottomSheet {
+  details: ICandidateTypes | undefined;
+  jobStatus: ICandidateStatusEnum;
+}
 
 const CandidateDetailsBottomSheet = React.forwardRef<
   BottomSheetModalMethods,
   ICandidateDetailsBottomSheet
->(({details}, ref) => {
+>(({details, jobStatus}, ref) => {
   const height = windowHeight * 0.75;
   const snapPoints = [0.1, height];
   const navigation = useNavigation<NavigationProps>();
@@ -52,23 +54,23 @@ const CandidateDetailsBottomSheet = React.forwardRef<
           <View style={styles.container}>
             <View style={styles.topView}>
               <CandidateProfilePictureView
-                name={details?.details.name}
-                url={details?.url}
-                status={details?.status}
+                name={details?.employeeDetails.name}
+                url={details?.employeeDetails.selfie?.url ?? null}
+                status={jobStatus}
               />
               <CustomText
-                value={details.details.name}
+                value={details.employeeDetails.name}
                 marginVertical={verticalScale(8)}
                 size={textSizeEnum.mediumBold}
               />
               <CustomText
-                value={`job ID- ${details.jobDetails.jobId}`}
+                value={`job ID- ${details.jobId}`}
                 size={textSizeEnum.small}
                 customTextStyles={styles.text}
               />
               <TextWithIcon
                 icon={LOCATION_ICON}
-                value={details.jobDetails.location}
+                value={details.jobLocation}
                 size={textSizeEnum.small}
                 customTextStyles={styles.text}
                 marginTop={verticalScale(8)}
@@ -77,8 +79,8 @@ const CandidateDetailsBottomSheet = React.forwardRef<
             <Spacers type="vertical" size={24} scalable />
             <View style={styles.midContainer}>
               <CandidatesContactDetails
-                email={'anshu@exapmle.com'}
-                phoneNumber={details.details.contactNumber}
+                email={details.employeeDetails.email}
+                phoneNumber={details.employeeDetails.phone}
               />
             </View>
             <Spacers type="vertical" size={24} scalable />
@@ -88,24 +90,34 @@ const CandidateDetailsBottomSheet = React.forwardRef<
             />
             <CandidatesGeneralDetailsView />
             <Spacers type="vertical" size={24} scalable />
-            <SectionHeader
-              value={STRINGS.documents}
-              size={textSizeEnum.mediumBold}
-            />
-            <View style={styles.midContainer}>
-              <Spacers type="vertical" size={24} scalable />
-              <PreUploadedDocCardWithView
-                hideStatus
-                document={details.details.resume}
-                withTitle={true}
-                navigation={navigation}
-              />
-              <Spacers type="vertical" size={24} scalable />
-            </View>
+            {details.employeeDetails.resume && (
+              <>
+                <SectionHeader
+                  value={STRINGS.documents}
+                  size={textSizeEnum.mediumBold}
+                />
+                <View style={styles.midContainer}>
+                  <Spacers type="vertical" size={24} scalable />
+                  <PreUploadedDocCardWithView
+                    hideStatus
+                    document={{
+                      apiKey: IEmployeeDocsApiKeys.RESUME,
+                      docName: 'resume',
+                      docId: details.employeeDetails.resume?.id ?? 0,
+                      docStatus: IDocumentStatus.APPROVED,
+                      doc: details.employeeDetails.resume,
+                    }}
+                    withTitle={true}
+                    navigation={navigation}
+                  />
+                  <Spacers type="vertical" size={24} scalable />
+                </View>
+              </>
+            )}
           </View>
         )}
       </BottomSheetScrollView>
-      {details?.status === ICandidateStatusEnum.pending && (
+      {jobStatus === ICandidateStatusEnum.pending && (
         <BottomButtonView
           isMultiple
           secondaryButtonStyles={styles.secondaryButton}
@@ -122,7 +134,7 @@ const CandidateDetailsBottomSheet = React.forwardRef<
           <CustomText
             value={''}
             size={
-             
+
             }
           />
         </View>

@@ -3,7 +3,9 @@ import {baseApi} from '@api/baseApi';
 import {apiEndPoints} from '@api/endpoints';
 import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {
+  ICandidateTypes,
   IDraftResponse,
+  IGetCandidateListResponse,
   IJobPostCustomizedResponse,
   IJobPostTypes,
   INewPostedJobResponse,
@@ -41,6 +43,7 @@ const clientApi = baseApi.injectEndpoints({
           eventDate: response.data.attributes?.eventDate ?? new Date(),
           publishedAt: response.data.attributes?.publishedAt ?? new Date(),
           salary: response.data.attributes?.salary ?? '0',
+          applicants: null,
           client_details: {
             id: 0,
             Name: '',
@@ -63,18 +66,22 @@ const clientApi = baseApi.injectEndpoints({
         response: IPostedJobsResponse,
       ): IJobPostCustomizedResponse => {
         let data: IJobPostTypes[] = [];
-        response.data.forEach(job => {
-          if (job.id) {
-            data.push({
-              ...job,
-              id: job.id,
-              status: IJobPostStatus.OPEN,
-              client_details: {
-                ...job.client_details,
-              },
-            });
-          }
-        });
+        if (response.data) {
+          response.data.forEach(job => {
+            if (job.id) {
+              data.push({
+                ...job,
+                id: job.id,
+                status: IJobPostStatus.OPEN,
+                applicants: null,
+                client_details: {
+                  ...job.client_details,
+                },
+              });
+            }
+          });
+        }
+
         return {
           data: data,
           pagination: response?.meta && {
@@ -110,23 +117,27 @@ const clientApi = baseApi.injectEndpoints({
         response: IDraftResponse,
       ): IJobPostCustomizedResponse => {
         let data: IJobPostTypes[] = [];
-        response.data.forEach(job => {
-          if (job.id && job.attributes) {
-            data.push({
-              ...job.attributes,
-              id: job.id,
-              status: IJobPostStatus.OPEN,
-              client_details: {
-                id: 0,
-                Name: '',
-                companyname: '',
-                Industry: '',
-                Email: '',
-                location: '',
-              },
-            });
-          }
-        });
+        if (response.data) {
+          response.data.forEach(job => {
+            if (job.id && job.attributes) {
+              data.push({
+                ...job.attributes,
+                id: job.id,
+                status: IJobPostStatus.OPEN,
+                applicants: null,
+                client_details: {
+                  id: 0,
+                  Name: '',
+                  companyname: '',
+                  Industry: '',
+                  Email: '',
+                  location: '',
+                },
+              });
+            }
+          });
+        }
+
         return {
           data: data,
           pagination: response?.meta && {
@@ -187,6 +198,7 @@ const clientApi = baseApi.injectEndpoints({
             Email: '',
             location: '',
           },
+          applicants: null,
         };
       },
       transformErrorResponse: (
@@ -198,6 +210,65 @@ const clientApi = baseApi.injectEndpoints({
         };
       },
     }),
+    getCandidatesList: builder.query({
+      query: ({
+        jobId,
+        type,
+      }: {
+        type: 'open' | 'shortlisted' | 'denylist';
+        jobId: number;
+      }) => ({
+        url: apiEndPoints.getCandidatesList(jobId, type),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (
+        response: IGetCandidateListResponse,
+      ): ICandidateTypes[] => {
+        let candidates: ICandidateTypes[] = [];
+        if (response.data) {
+          response.data.forEach(candidate => {
+            candidates.push({
+              id: candidate.id,
+              applicationDate: candidate.applicationDate,
+              status: candidate.status,
+              jobId: candidate.jobs[0]?.id ?? 0,
+              jobLocation: candidate.jobs[0]?.location ?? '',
+              employeeDetails: {
+                id: candidate?.employee_details[0]?.id ?? 0,
+                name: candidate?.employee_details[0]?.name ?? '',
+                selfie:
+                  (candidate?.employee_details[0]?.selfie &&
+                    candidate?.employee_details[0]?.selfie[0]) ??
+                  null,
+                dob: candidate?.employee_details[0]?.dob ?? null,
+                gender: candidate?.employee_details[0]?.dob ?? '',
+                email: candidate?.employee_details[0]?.email ?? '',
+                phone: candidate?.employee_details[0]?.phone ?? '',
+                resume: candidate?.employee_details[0]?.resume ?? null,
+              },
+            });
+          });
+        }
+        return candidates;
+      },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
+    updateJobApplicationStatus: builder.mutation({
+      query: (body: {applicationId: number; status: IJobPostStatus}) => ({
+        url: apiEndPoints.updateJobApplicationStatus(body.applicationId),
+        method: apiMethodType.patch,
+        body: {
+          status: body.status,
+        },
+      }),
+    }),
   }),
 });
 
@@ -205,6 +276,8 @@ export const {
   usePostAJobMutation,
   usePatchADraftMutation,
   useLazyGetPostedJobQuery,
+  useLazyGetCandidatesListQuery,
+  useUpdateJobApplicationStatusMutation,
   useDeleteADraftMutation,
   useSaveAsDraftMutation,
   useLazyGetDraftsQuery,

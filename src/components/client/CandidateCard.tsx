@@ -13,57 +13,70 @@ import {ACCEPT_BUTTON, CROSS_BUTTON, MEAT_BALL} from '@assets/exporter';
 import {Row} from '@components/atoms/Row';
 import {fonts} from '@utils/common.styles';
 import CandidateProfilePictureView from './CandidateProfilePictureView';
-import {ICandidate} from '@api/mockData';
 import {convertDateToDobFormat, extractTimeFromDate} from '@utils/constants';
 import {ICandidateStatusEnum} from '@utils/enums';
+import {ICandidateTypes} from '@api/features/client/types';
 
 type ICandidateCardProps = {
-  item: ICandidate;
-  onPressCard: (item: ICandidate) => void;
+  item: ICandidateTypes;
+  status: ICandidateStatusEnum;
+  onPressCard: (item: ICandidateTypes) => void;
+  onPressDecline?: (item: ICandidateTypes) => void;
+  onPressThreeDots?: (item: ICandidateTypes) => void;
+  onPressAccept?: (item: ICandidateTypes) => void;
 };
 
-const CandidateCard: React.FC<ICandidateCardProps> = ({item, onPressCard}) => {
+const CandidateCard: React.FC<ICandidateCardProps> = ({
+  item,
+  onPressCard,
+  onPressThreeDots,
+  onPressAccept,
+  onPressDecline,
+  status,
+}) => {
   const styles = useThemeAwareObject(createStyles);
   return (
-    <Pressable onPress={() => onPressCard(item)} style={styles.background}>
+    <Pressable
+      onLayout={event => console.log(event.nativeEvent.layout.height)}
+      onPress={() => onPressCard(item)}
+      style={styles.background}>
       <Row
         style={[
-          item.status === ICandidateStatusEnum.pending
+          status === ICandidateStatusEnum.pending
             ? styles.alignCenter
             : styles.alignStart,
         ]}
         spaceBetween>
         <Row alignCenter>
-          {/* <Image
-            resizeMode="cover"
-            style={styles.image}
-            source={ICONS.imagePlaceholder}
-          /> */}
           <CandidateProfilePictureView
-            name={item?.name}
-            url={item?.url}
-            status={item?.status}
+            name={item?.employeeDetails.name}
+            url={item?.employeeDetails.selfie?.url ?? null}
+            status={status}
           />
           <View style={styles.description}>
-            <Text style={styles.nameFirst}>{item?.name}</Text>
+            <Text style={styles.nameFirst}>{item?.employeeDetails.name}</Text>
             <Row alignCenter>
               <Text style={styles.date}>
-                {convertDateToDobFormat(item?.date)}
+                {convertDateToDobFormat(item?.applicationDate)}
               </Text>
               <View style={styles.divider} />
-              <Text style={styles.date}>{extractTimeFromDate(item?.time)}</Text>
+              <Text style={styles.date}>
+                {extractTimeFromDate(item?.applicationDate)}
+              </Text>
             </Row>
           </View>
         </Row>
-        {item.status === ICandidateStatusEnum.pending ? (
+        {status === ICandidateStatusEnum.pending ? (
           <Row style={styles.row}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => onPressDecline && onPressDecline(item)}>
               <CROSS_BUTTON
                 width={verticalScale(40)}
                 height={verticalScale(40)}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => onPressAccept && onPressAccept(item)}>
               <ACCEPT_BUTTON
                 width={verticalScale(40)}
                 height={verticalScale(40)}
@@ -71,7 +84,9 @@ const CandidateCard: React.FC<ICandidateCardProps> = ({item, onPressCard}) => {
             </TouchableOpacity>
           </Row>
         ) : (
-          <TouchableOpacity hitSlop={{top: 5, left: 5, right: 5, bottom: 5}}>
+          <TouchableOpacity
+            onPress={() => onPressThreeDots && onPressThreeDots(item)}
+            hitSlop={{top: 5, left: 5, right: 5, bottom: 5}}>
             <MEAT_BALL width={verticalScale(16)} height={verticalScale(16)} />
           </TouchableOpacity>
         )}
@@ -87,6 +102,8 @@ const createStyles = (theme: Theme) =>
     background: {
       backgroundColor: theme.color.primary,
       padding: verticalScale(12),
+      borderWidth: 1,
+      borderColor: 'rgba(18, 18, 18, 0.08)',
       borderRadius: 8,
     },
     nameFirst: {

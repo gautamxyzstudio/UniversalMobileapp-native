@@ -27,11 +27,10 @@ const useUploadAssets = () => {
       const form = new FormData();
       args.asset.forEach(asset => {
         form.append('files', {
-          // Use an object with properties for form-data
           name: asset.fileName,
           type: asset.extension,
           uri: asset.uri,
-        } as any); // Workaround for typescript error on `FormData`
+        } as any);
       });
 
       args.asset.forEach(asset => {
@@ -39,7 +38,6 @@ const useUploadAssets = () => {
       });
       updateState({assets: args.asset});
 
-      // Make the API call to upload the files.
       const uploadAsset: AxiosResponse<IUploadAssetsResponse> =
         await axios.post(apiEndPoints.upload, form, {
           headers: {

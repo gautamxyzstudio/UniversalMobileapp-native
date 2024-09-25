@@ -1,5 +1,4 @@
 import {verticalScale} from '@utils/metrics';
-import {Platform} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 export const useScreenInsets = () => {

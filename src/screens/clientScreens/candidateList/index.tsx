@@ -57,15 +57,19 @@ const CandidateList = () => {
         jobId={currentSelectedJob?.id ?? 0}
       />
       <View style={styles.container}>
-        <ScrollView ref={scrollViewRef} horizontal>
+        <ScrollView
+          snapToAlignment="center"
+          pagingEnabled
+          ref={scrollViewRef}
+          horizontal>
           <View style={styles.screen}>
-            <CandidateListOpen />
+            <CandidateListOpen jobId={currentSelectedJob?.id ?? null} />
           </View>
           <View style={styles.screen}>
-            <CandidateListSelected />
+            <CandidateListSelected jobId={currentSelectedJob?.id ?? null} />
           </View>
           <View style={styles.screen}>
-            <CandidateListDeclined />
+            <CandidateListDeclined jobId={currentSelectedJob?.id ?? null} />
           </View>
         </ScrollView>
       </View>

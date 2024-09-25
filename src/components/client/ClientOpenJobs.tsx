@@ -20,7 +20,6 @@ import {
 import {STRINGS} from 'src/locales/english';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  initializeCandidateList,
   openJobsFromState,
   saveOpenJobs,
 } from '@api/features/client/clientSlice';
@@ -87,7 +86,6 @@ const ClientOpenJobs = () => {
       const response = await getJobPosts(user?.details?.detailsId).unwrap();
       if (response.data) {
         dispatch(saveOpenJobs(response.data));
-        dispatch(initializeCandidateList(response.data));
       }
     },
     toast,

@@ -101,6 +101,10 @@ import IC_MAIL from './icons/svg/ic_mail.svg';
 import IC_PHONE from './icons/svg/ic_phone.svg';
 import IC_CHECKIN_GREEN from './icons/svg/checkin_green.svg';
 import IC_CHECKOUT from './icons/svg/checkout.svg';
+import IC_REMOVE from './icons/svg/remove.svg';
+import IC_RESTORE from './icons/svg/restore.svg';
+import IC_DENY from './icons/svg/block.svg';
+import IC_BLOCK from './icons/svg/ic_ban.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -143,6 +147,7 @@ export {
   IC_MAIL,
   IC_PHONE,
   CROSS,
+  IC_DENY,
   LOGOUT,
   PENCIL_GREY,
   CHECK_IN,
@@ -158,6 +163,9 @@ export {
   PAUSE,
   MEAT_BALL_WHiTE,
   LANGUAGE_ICON,
+  IC_BLOCK,
+  IC_REMOVE,
+  IC_RESTORE,
   PLUS,
   HELP_SECONDARY,
   ORANGE_LOGOUT,

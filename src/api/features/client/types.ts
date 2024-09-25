@@ -8,14 +8,12 @@ export type IClientSliceInitialState = {
     closed: IJobPostTypes[];
     drafts: IJobPostTypes[];
   };
-  candidateList: Map<number, ICandidateListTypes>;
 };
 
 export type ICandidateListTypes = {
-  jobDetails: IJobPostTypes;
-  open: Map<number, ICandidateTypes[]>;
-  shortlisted: Map<number, ICandidateTypes[]>;
-  denied: Map<number, ICandidateTypes[]>;
+  open: Map<number, ICandidateTypes> | null;
+  shortlisted: Map<number, ICandidateTypes> | null;
+  denied: Map<number, ICandidateTypes> | null;
 };
 
 export interface IJobPostTypes {
@@ -31,6 +29,7 @@ export interface IJobPostTypes {
   jobDuties: string;
   job_type: IJobTypesEnum;
   publishedAt: Date;
+  applicants?: ICandidateListTypes | null | undefined;
   location: string;
   description: string;
   eventDate: Date;
@@ -54,38 +53,43 @@ export interface ICandidateTypes {
   status: IJobPostStatus;
   jobId: number;
   jobLocation: string;
-  employeeDetails: {
-    id: number;
-    name: string;
-    selfie: IDoc;
-    dob: string;
-    gender: string;
-    email: string;
-    phone: string;
-    resume: IDoc | null;
-  };
+  employeeDetails: ICandidateListEmployeeDetailsTypes;
+}
+
+export interface ICandidateListEmployeeDetailsTypes {
+  id: number;
+  name: string;
+  selfie: IDoc | null;
+  dob: string;
+  gender: string;
+  email: string;
+  phone: string;
+  resume: IDoc | null;
 }
 
 export type IGetCandidateListResponse = {
-  data: {
-    id: number;
-    applicationDate: Date;
-    status: IJobPostStatus;
-    jobs: {
-      id: number;
-      location: string;
-    }[];
-    employee_details: {
-      id: number;
-      name: string;
-      dob: string;
-      gender: string;
-      email: string;
-      phone: string;
-      resume: IDoc | null;
-      certificates: IDoc[] | null;
-    };
-  }[];
+  data:
+    | {
+        id: number;
+        applicationDate: Date;
+        status: IJobPostStatus;
+        jobs: {
+          id: number;
+          location: string;
+        }[];
+        employee_details: {
+          id: number;
+          name: string;
+          dob: string;
+          gender: string;
+          email: string;
+          phone: string;
+          selfie: IDoc[] | null;
+          resume: IDoc | null;
+          certificates: IDoc[] | null;
+        }[];
+      }[]
+    | null;
 };
 
 export interface IJobPostCustomizedResponse {

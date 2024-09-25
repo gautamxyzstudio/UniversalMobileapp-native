@@ -276,4 +276,13 @@ export const STRINGS = {
   general: 'General',
   approve: 'Approve',
   selected: 'Selected',
+  noApplicantsYet: 'No Applicants',
+  be_the_first:
+    "Be the first to discover talent by reviewing new applications once they're submitted",
+  no_shortlisted: 'No Shortlisted Candidates',
+  please_review:
+    'Please review the available applications to find potential matches for the role.',
+  no_candidates_declined: 'No Applicants',
+  remove_from_shortlist: 'Remove from shortlist',
+  block: 'Block',
 };

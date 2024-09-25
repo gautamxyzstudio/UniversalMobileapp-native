@@ -75,6 +75,7 @@ export enum IEmployeeDocsApiKeys {
   SUPPORTING_DOCUMENT = 'supportingDocument',
   GOVT_ID = 'govtid',
   CHEQUE = 'directDepositVoidCheque',
+  RESUME = 'resume',
 }
 
 // requestsArgs and responses

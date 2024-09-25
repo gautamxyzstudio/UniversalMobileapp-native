@@ -6,7 +6,6 @@ import CustomTextInput from '@components/atoms/customtextInput';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {getStyles} from './styles';
 import {APPLE, GOOGLE} from '@assets/exporter';
-import FocusedText from '@components/atoms/focusedText';
 import CustomButton from '@components/molecules/customButton';
 import Statement from '@components/molecules/statement';
 import {googleSignInHandler} from '@utils/googleSignin';
@@ -98,7 +97,7 @@ const Login = () => {
       const emailStatusResponse = await checkEmailStatus({
         email: response.email ?? '',
       }).unwrap();
-      if (emailStatusResponse.verified) {
+      if (!emailStatusResponse.verified) {
         reduxDispatch(saveUserDetails(response));
         const userDetails = await getUserDetails({
           userId: response.id,

@@ -1,7 +1,7 @@
 import {configureStore, Store} from '@reduxjs/toolkit';
 import {persistReducer, persistStore} from 'redux-persist';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
-
+import {enableMapSet} from 'immer';
 import {baseApi} from './baseApi';
 import rootReducer from './rootReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,6 +13,7 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+enableMapSet();
 const store: Store = configureStore({
   reducer: persistedReducer,
   middleware: gdm =>
