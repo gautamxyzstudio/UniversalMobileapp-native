@@ -215,6 +215,14 @@ const getStyles = (theme: Theme) => {
       paddingBottom: 0,
       color: theme.color.textPrimary,
       ...fonts.medium,
+      ...Platform.select({
+        ios: {
+          lineHeight: moderateScale(20),
+        },
+        android: {
+          lineHeight: undefined,
+        },
+      }),
     },
     label: {
       color: theme.color.disabled,

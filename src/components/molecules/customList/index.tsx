@@ -18,6 +18,7 @@ import {FlashList, FlashListProps, ListRenderItem} from '@shopify/flash-list';
 import {useTheme} from '@theme/Theme.context';
 import EmptyState from '@screens/common/emptyAndErrorScreen';
 import {SvgProps} from 'react-native-svg';
+import {NO_INTERNET} from '@assets/exporter';
 
 export interface ICustomList<T> extends FlashListProps<T> {
   data: T[];

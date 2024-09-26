@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
   footer: {padding: verticalScale(20), alignItems: 'center'},
   activityIndicatorView: {marginTop: verticalScale(15)},
   blankView: {
-    ...StyleSheet.absoluteFillObject,
     alignSelf: 'center',
     height: windowHeight / 2,
     alignItems: 'center',

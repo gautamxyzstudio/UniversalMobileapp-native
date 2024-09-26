@@ -45,7 +45,7 @@ const Splash = () => {
       const response = await getUserDetails(null).unwrap();
       if (response) {
         let userDetails = response as IClientDetails;
-        if (userDetails.status !== 'approved') {
+        if (userDetails.status === 'approved') {
           return true;
         }
       }

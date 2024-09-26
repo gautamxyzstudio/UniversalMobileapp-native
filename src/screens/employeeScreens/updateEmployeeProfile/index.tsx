@@ -106,6 +106,8 @@ const UpdateEmployeeProfile = () => {
     });
   }, []);
 
+  console.log(defaultValues, 'SLEE');
+
   useEffect(() => {
     const myOBj = {
       name: state.name,

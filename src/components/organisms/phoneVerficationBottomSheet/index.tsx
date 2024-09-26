@@ -125,7 +125,7 @@ const PhoneVerificationBottomSheet = React.forwardRef<
             x: 2 * windowWidth - verticalScale(16),
             animated: true,
           });
-          setRestartTimer(true);
+          setRestartTimer(!restartTimer);
         }, 500);
         return true;
       }
@@ -197,6 +197,7 @@ const PhoneVerificationBottomSheet = React.forwardRef<
     scrollViewRef.current?.scrollTo({x: 0});
     setIsOtpView(false);
     setInputState({inputDisplay: '', inputError: ''});
+    setRestartTimer(!restartTimer);
     setOtp('');
     setHeaderTitle('Contact');
   };

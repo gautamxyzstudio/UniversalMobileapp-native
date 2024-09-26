@@ -24,7 +24,7 @@ const OtpInput: React.FC<OtpInputPropsType> = ({
   restartTimer,
 }) => {
   const {theme} = useTheme();
-  const countTime = 30;
+  const countTime = 45;
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [countDown, setCountDown] = useState(countTime);
   const styles = createStyles(theme);

@@ -50,6 +50,7 @@ const getStyles = (theme: Theme) => {
     },
     buttonText: {
       color: theme.color.textPrimary,
+      lineHeight: 12,
       ...fonts.small,
     },
   });

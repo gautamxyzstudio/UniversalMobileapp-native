@@ -49,7 +49,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
       email: userDetails?.email ?? '',
       emailError: '',
       selfie: [],
-      phone: '9646106068',
+      phone: '',
       gender: '',
       genderError: '',
       workStatus: '',

@@ -1,4 +1,4 @@
-import {FlatList, StatusBar, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import React, {useRef, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -77,12 +77,12 @@ const JobSeekerDetailsAndDocs = () => {
           gender: stepOneResult.fields.gender,
         };
         setEmployeeDocuments(prev => ({...prev, ...basicDetails}));
+        setCurrentIndex(currentIndex + 1);
+        FlatListRef.current?.scrollToIndex({
+          animated: true,
+          index: currentIndex + 1,
+        });
       }
-      setCurrentIndex(currentIndex + 1);
-      FlatListRef.current?.scrollToIndex({
-        animated: true,
-        index: currentIndex + 1,
-      });
     }
 
     if (stepTwoRef?.current?.validate && currentIndex === 1) {

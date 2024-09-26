@@ -14,6 +14,9 @@ export const fonts = {
       ios: {
         lineHeight: moderateScale(20),
       },
+      android: {
+        lineHeight: moderateScale(16),
+      },
     }),
   },
   mediumBold: {
@@ -22,6 +25,9 @@ export const fonts = {
     ...Platform.select({
       ios: {
         lineHeight: moderateScale(20),
+      },
+      android: {
+        lineHeight: moderateScale(16),
       },
     }),
   },
@@ -32,6 +38,9 @@ export const fonts = {
       ios: {
         lineHeight: moderateScale(28),
       },
+      android: {
+        lineHeight: moderateScale(24),
+      },
     }),
   },
   regular: {
@@ -40,6 +49,9 @@ export const fonts = {
     ...Platform.select({
       ios: {
         lineHeight: moderateScale(18),
+      },
+      android: {
+        lineHeight: moderateScale(14),
       },
     }),
   },
@@ -50,6 +62,9 @@ export const fonts = {
       ios: {
         lineHeight: moderateScale(18),
       },
+      android: {
+        lineHeight: moderateScale(14),
+      },
     }),
   },
   headingSmall: {
@@ -58,6 +73,9 @@ export const fonts = {
     ...Platform.select({
       ios: {
         lineHeight: moderateScale(24),
+      },
+      android: {
+        lineHeight: moderateScale(20),
       },
     }),
   },
@@ -68,6 +86,9 @@ export const fonts = {
       ios: {
         lineHeight: moderateScale(16),
       },
+      android: {
+        lineHeight: moderateScale(12),
+      },
     }),
   },
   smallBold: {
@@ -77,6 +98,9 @@ export const fonts = {
       ios: {
         lineHeight: moderateScale(16),
       },
+      android: {
+        lineHeight: moderateScale(12),
+      },
     }),
   },
   extraSmall: {
@@ -85,6 +109,9 @@ export const fonts = {
     ...Platform.select({
       ios: {
         lineHeight: moderateScale(14),
+      },
+      android: {
+        lineHeight: moderateScale(10),
       },
     }),
   },

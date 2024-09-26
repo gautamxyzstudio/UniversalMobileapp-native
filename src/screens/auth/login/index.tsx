@@ -97,14 +97,14 @@ const Login = () => {
       const emailStatusResponse = await checkEmailStatus({
         email: response.email ?? '',
       }).unwrap();
-      if (!emailStatusResponse.verified) {
+      if (emailStatusResponse.verified) {
         reduxDispatch(saveUserDetails(response));
         const userDetails = await getUserDetails({
           userId: response.id,
         }).unwrap();
         if (response.user_type === 'emp') {
           let employeeDetails = userDetails as IEmployeeDetails;
-          if (employeeDetails.detailsId) {
+          if (employeeDetails?.detailsId) {
             navigation.reset({
               index: 0,
               routes: [{name: 'employeeTabBar'}],
@@ -119,7 +119,6 @@ const Login = () => {
           let client = userDetails as IClientDetails;
           if (client.detailsId) {
             reduxDispatch(updateClientDetails(client));
-
             if (client.status === 'pending') {
               navigation.reset({
                 index: 0,
