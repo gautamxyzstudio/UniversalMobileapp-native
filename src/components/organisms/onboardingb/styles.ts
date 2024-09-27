@@ -34,7 +34,7 @@ export const getStyles = (theme: Theme) => {
       overflow: 'hidden',
       paddingHorizontal: verticalScale(24),
       paddingTop: verticalScale(24),
-      flex: 1,
+      flexGrow: 1,
       backgroundColor: theme.color.primary,
     },
     flexBox: {

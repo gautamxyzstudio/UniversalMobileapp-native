@@ -7,7 +7,7 @@ export const getStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     title: {
       paddingHorizontal: verticalScale(8),
-      backgroundColor: theme.color.backgroundWhite,
+      backgroundColor: theme.color.primary,
       position: 'absolute',
       left: verticalScale(16),
       top: verticalScale(-8),

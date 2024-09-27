@@ -106,3 +106,39 @@ export const getStatusStylesFromStatus = (
       return null;
   }
 };
+
+export const getEventCardStylesFromJobStatus = (
+  status: IJobPostStatus,
+  theme: Theme,
+) => {
+  switch (status) {
+    case IJobPostStatus.OPEN:
+      return {
+        backgroundColor: theme.color.yellowLight,
+        borderColor: theme.color.yellow,
+        shadowColor: theme.color.shadow,
+        title: STRINGS.pending,
+      };
+    case IJobPostStatus.CLOSED:
+      return {
+        backgroundColor: theme.color.skyBlueLight,
+        color: theme.color.darkBlue,
+        borderColor: theme.color.blue,
+        title: STRINGS.completed,
+      };
+    case IJobPostStatus.CANCELED:
+      return {
+        backgroundColor: theme.color.redLight,
+        color: theme.color.red,
+        borderColor: theme.color.red,
+        title: STRINGS.canceled,
+      };
+    default:
+      return {
+        backgroundColor: theme.color.yellowLight,
+        borderColor: theme.color.yellow,
+        shadowColor: theme.color.shadow,
+        title: STRINGS.pending,
+      };
+  }
+};

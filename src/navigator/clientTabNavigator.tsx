@@ -1,34 +1,33 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {clientTabBarRoutes, employeeTabBarRoutes} from './types';
-import EmployeeProfile from '@screens/employeeScreens/employeeProfile';
-import EmployeeSchedules from '@screens/employeeScreens/employeeSchedules';
-import CustomBottomTab from './components/customBottomTab';
+import {
+  clientTabBarProps,
+  clientTabBarRoutes,
+  employeeTabBarRoutes,
+} from './types';
 import ClientHome from '@screens/clientScreens/clientHome';
 import CandidateList from '@screens/clientScreens/candidateList';
+import ClientSchedule from '@screens/clientScreens/clientSchedule';
+import ClientProfile from '@screens/clientScreens/clientProfile';
 
 const ClientTabNavigator = () => {
   const ClientTab = createBottomTabNavigator();
 
   return (
     <ClientTab.Navigator
-      tabBar={props => <CustomBottomTab {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}>
+      screenOptions={({route}) => clientTabBarProps({route})}>
       <ClientTab.Screen name={clientTabBarRoutes.home} component={ClientHome} />
       <ClientTab.Screen
         name={clientTabBarRoutes.contactList}
-        component={CandidateList}
+        component={CandidateList as any}
       />
       <ClientTab.Screen
-        name={employeeTabBarRoutes.schedules}
-        component={EmployeeSchedules}
+        name={clientTabBarRoutes.schedule}
+        component={ClientSchedule}
       />
       <ClientTab.Screen
         name={employeeTabBarRoutes.profile}
-        component={EmployeeProfile}
+        component={ClientProfile}
       />
     </ClientTab.Navigator>
   );

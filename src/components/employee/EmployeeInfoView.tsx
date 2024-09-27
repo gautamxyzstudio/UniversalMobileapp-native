@@ -1,13 +1,14 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {Row} from '@components/atoms/Row';
-import UploadProfilePhoto from '@components/molecules/uploadProfilePhoto';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';
 import {fontFamily, fonts} from '@utils/common.styles';
 import {EDIT_PROFILE} from '@assets/exporter';
 import {IDoc} from '@api/features/user/types';
+import CandidateProfilePictureView from '@components/client/CandidateProfilePictureView';
+import {ICandidateStatusEnum} from '@utils/enums';
 
 type IEmployeeInfoViewProps = {
   name: string;
@@ -28,12 +29,11 @@ const EmployeeInfoView: React.FC<IEmployeeInfoViewProps> = ({
   return (
     <Row style={styles.mainView} spaceBetween>
       <Row style={styles.innerContainer} alignCenter>
-        <UploadProfilePhoto
-          isEditable={false}
-          // getUploadedImageIds={function (ids: Array<number>): void {
-          //   throw new Error('Function not implemented.');
-          // }}
-          initialImage={profilePicture}
+        <CandidateProfilePictureView
+          name={name}
+          size={verticalScale(80)}
+          url={profilePicture?.url ?? null}
+          status={ICandidateStatusEnum.pending}
         />
         <View style={styles.userDetails}>
           <Text style={styles.userName}>{name}</Text>

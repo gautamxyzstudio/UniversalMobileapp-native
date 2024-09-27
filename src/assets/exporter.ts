@@ -105,6 +105,10 @@ import IC_REMOVE from './icons/svg/remove.svg';
 import IC_RESTORE from './icons/svg/restore.svg';
 import IC_DENY from './icons/svg/block.svg';
 import IC_BLOCK from './icons/svg/ic_ban.svg';
+import IC_CONTACT_LIST from './icons/svg/candidateList.svg';
+import IC_COMPANY_DETAIL from './icons/svg/company.svg';
+import IC_LOG_ACTIVITY from './icons/svg/log.svg';
+import IC_DOWNLOAD_SHEET from './icons/svg/downloadSheet.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -123,6 +127,8 @@ export const ICONS = {
   imagePlaceholder: require('./icons/png/imagePlaceholder.png'),
   cross: require('./icons/png/cross.png'),
   edit: require('./icons/png/edit.png'),
+  contactList: require('./icons/png/tabaricons/candidateList.png'),
+  contactListFilled: require('./icons/png/tabaricons/candidateListFill.png'),
 };
 
 export const ANIMATIONS = {
@@ -133,6 +139,8 @@ export const ANIMATIONS = {
 export {
   LOCATION_SMALL,
   PLUS_WHITE,
+  IC_LOG_ACTIVITY,
+  IC_DOWNLOAD_SHEET,
   NO_INTERNET,
   EMPTY,
   CROSS_ORANGE,
@@ -141,6 +149,7 @@ export {
   POST,
   PERSON_SECONDARY,
   JOB_ID,
+  IC_COMPANY_DETAIL,
   DRAFT,
   DOCUMENTS_SECONDARY,
   NOTIFICATION_READ,
@@ -149,6 +158,7 @@ export {
   CROSS,
   IC_DENY,
   LOGOUT,
+  IC_CONTACT_LIST,
   PENCIL_GREY,
   CHECK_IN,
   LOGOUT_WHITE,

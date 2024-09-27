@@ -65,7 +65,7 @@ const createStyles = (theme: Theme) =>
       height: verticalScale(48),
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: verticalScale(24),
+      borderRadius: 100,
       borderWidth: 1,
       borderColor: theme.color.lightGrey,
     },

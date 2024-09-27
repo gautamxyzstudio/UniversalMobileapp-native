@@ -10,10 +10,12 @@ import RecentSearches from '@components/molecules/recentSearch';
 import SearchJobListing from '@components/employee/SearchJobListing';
 import SearchJobTItleList from '@components/employee/SearchJobTItleList';
 import {mockJobTitles, mockRecentSearches, mockJobs} from '@api/mockData';
+import {useNavigation} from '@react-navigation/native';
 
 const EmployeeSearch = () => {
   const {theme} = useTheme();
   const [search, setSearch] = useState('');
+  const navigation = useNavigation();
   const [jobTitles, setJobTitles] = useState<{id: number; title: string}[]>([]);
   const [searchState, updateSearchState] = useState<
     'idle' | 'searching' | 'fetched'
@@ -52,9 +54,11 @@ const EmployeeSearch = () => {
       paddingHorizontal>
       <SearchInput
         value={search}
+        innerContainerStyle={styles.search}
         onChangeText={handleTextChange}
         onPressCross={onPressCross}
         placeHolder={STRINGS.search_by_job_title}
+        navigation={navigation}
       />
       <View style={styles.mainView}>
         {searchState === 'idle' && (
@@ -85,5 +89,9 @@ const styles = StyleSheet.create({
   mainView: {
     flex: 1,
     marginTop: verticalScale(24),
+  },
+  search: {
+    borderRadius: 40,
+    height: verticalScale(44),
   },
 });

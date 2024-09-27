@@ -1,8 +1,19 @@
+import React from 'react';
 import {IUser} from '@api/features/user/types';
-import {NavigationProp} from '@react-navigation/native';
+import {ICONS} from '@assets/exporter';
+import {BottomTabNavigationOptions} from '@react-navigation/bottom-tabs';
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native';
 import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
+import {verticalScale} from '@utils/metrics';
+import {Image, Platform, Text} from 'react-native';
 import {Source} from 'react-native-pdf';
-
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {styles} from './styles';
+import {Row} from '@components/atoms/Row';
 //type of params which are required by the screen;
 export type RootStackParamList = {
   splash: undefined;
@@ -129,13 +140,114 @@ export const routNames: IScreenType = {
 export const employeeTabBarRoutes = {
   home: 'home',
   jobs: 'jobs',
-  schedules: 'schedules',
+  schedule: 'schedule',
   profile: 'profile',
 };
 
 export const clientTabBarRoutes = {
   home: 'home',
-  contactList: 'contactList',
-  schedule: 'clientSchedule',
+  contactList: 'candidates',
+  schedule: 'schedule',
   profile: 'profile',
 };
+
+const getTabBarIconClient = (route: string, focused: boolean) => {
+  switch (route) {
+    case clientTabBarRoutes.home:
+      return focused ? ICONS.homeFilled : ICONS.home;
+    case clientTabBarRoutes.contactList:
+      return focused ? ICONS.contactListFilled : ICONS.contactList;
+    case clientTabBarRoutes.schedule:
+      return focused ? ICONS.schedulesFilled : ICONS.schedules;
+    case clientTabBarRoutes.profile:
+      return focused ? ICONS.profileFilled : ICONS.profile;
+    default:
+      return ICONS.home;
+  }
+};
+
+const getTabBarIconEmployee = (route: string, focused: boolean) => {
+  switch (route) {
+    case employeeTabBarRoutes.home:
+      return focused ? ICONS.homeFilled : ICONS.home;
+    case employeeTabBarRoutes.jobs:
+      return focused ? ICONS.jobsFilled : ICONS.jobs;
+    case employeeTabBarRoutes.schedule:
+      return focused ? ICONS.schedulesFilled : ICONS.schedules;
+    case employeeTabBarRoutes.profile:
+      return focused ? ICONS.profileFilled : ICONS.profile;
+    default:
+      return ICONS.home;
+  }
+};
+
+export const RenderTabBarItem = (
+  focused: boolean,
+  route: RouteProp<ParamListBase, string>,
+  type: 'client' | 'employee',
+) => {
+  const tabBarIcon =
+    type === 'client'
+      ? getTabBarIconClient(route.name, focused)
+      : getTabBarIconEmployee(route.name, focused);
+  if (focused) {
+    return (
+      <Row alignCenter style={styles.container}>
+        <Image style={styles.icon} source={tabBarIcon} />
+        <Text style={styles.text}>{route.name}</Text>
+      </Row>
+    );
+  } else {
+    return <Image style={styles.icon} source={tabBarIcon} />;
+  }
+};
+
+export const clientTabBarProps = ({
+  route,
+}: {
+  route: RouteProp<ParamListBase, string>;
+}): BottomTabNavigationOptions => ({
+  headerShown: false,
+  tabBarIcon: ({focused}: {focused: boolean}) => {
+    return RenderTabBarItem(focused, route, 'client');
+  },
+  tabBarStyle: {
+    height: verticalScale(Platform.OS === 'ios' ? 110 : 80),
+    justifyContent: 'space-between',
+    paddingTop: 0,
+    paddingHorizontal: verticalScale(12),
+    shadowColor: 'rgba(18, 18, 18, 0.12)',
+    shadowOffset: {width: 0, height: 0.4},
+    elevation: 10,
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
+  },
+  tabBarShowLabel: false,
+  tabBarActiveTintColor: Colors.primaryDark,
+  tabBarInactiveTintColor: Colors.textGrey,
+});
+
+export const employeeTabBarProps = ({
+  route,
+}: {
+  route: RouteProp<ParamListBase, string>;
+}): BottomTabNavigationOptions => ({
+  headerShown: false,
+  tabBarIcon: ({focused}: {focused: boolean}) => {
+    return RenderTabBarItem(focused, route, 'employee');
+  },
+  tabBarStyle: {
+    height: verticalScale(Platform.OS === 'ios' ? 110 : 80),
+    justifyContent: 'space-between',
+    paddingTop: 0,
+    paddingHorizontal: verticalScale(12),
+    shadowColor: 'rgba(18, 18, 18, 0.12)',
+    shadowOffset: {width: 0, height: 0.4},
+    elevation: 10,
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
+  },
+  tabBarShowLabel: false,
+  tabBarActiveTintColor: Colors.primaryDark,
+  tabBarInactiveTintColor: Colors.textGrey,
+});

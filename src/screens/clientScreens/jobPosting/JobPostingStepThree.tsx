@@ -4,16 +4,12 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CustomTextInput from '@components/atoms/customtextInput';
 import {STRINGS} from 'src/locales/english';
 import Spacers from '@components/atoms/Spacers';
-import {genderPreferences, paymentSchedulesMockData} from '@api/mockData';
+import {genderPreferences} from '@api/mockData';
 import DropdownComponent from '@components/molecules/dropdownPopup';
 import SelectCertificateInput from '@components/client/SelectCertificateInput';
 import AddCertificatePopup from '@components/molecules/addCertificatePopup';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {
-  IJobPostingStepThreeFields,
-  IJobPostRef,
-  IJobPostStepThreeRef,
-} from './types';
+import {IJobPostingStepThreeFields, IJobPostStepThreeRef} from './types';
 import {jobPostStep3Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';

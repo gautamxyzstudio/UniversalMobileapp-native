@@ -288,4 +288,7 @@ export const STRINGS = {
   job_closed_success: 'Job closed successfully',
   block: 'Block',
   close: 'Close',
+  companyDetail: 'Company Detail',
+  logActivity: 'Log activity',
+  downloadCheckinSheets: 'Download checkin sheets',
 };

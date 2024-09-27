@@ -1,3 +1,5 @@
+import {IJobPostStatus} from '@utils/enums';
+
 export enum IJobStatus {
   APPLIED = 1,
   IN_PROGRESS = 2,
@@ -7,20 +9,31 @@ export enum IJobStatus {
   COMPLETED = 6,
 }
 
-export const getJobStatus = (status: IJobStatus) => {
+export const getJobStatus = (status: IJobPostStatus) => {
   switch (status) {
-    case IJobStatus.APPLIED:
+    case IJobPostStatus.APPLIED:
       return 'Applied';
-    case IJobStatus.IN_PROGRESS:
-      return 'In Progress';
-    case IJobStatus.DECLINED:
+    case IJobPostStatus.DECLINED:
       return 'Declined';
-    case IJobStatus.CANCELED:
+    case IJobPostStatus.CANCELED:
       return 'Canceled';
-    case IJobStatus.CONFIRMED:
+    case IJobPostStatus.CONFIRMED:
       return 'Confirmed';
-    case IJobStatus.COMPLETED:
+    case IJobPostStatus.COMPLETED:
       return 'Completed';
+    default:
+      return 'Applied';
+  }
+};
+
+export const getEventStatus = (status: IJobPostStatus) => {
+  switch (status) {
+    case IJobPostStatus.OPEN:
+      return 'Applied';
+    case IJobPostStatus.CLOSED:
+      return 'Completed';
+    case IJobPostStatus.CANCELED:
+      return 'Canceled';
     default:
       return 'Applied';
   }

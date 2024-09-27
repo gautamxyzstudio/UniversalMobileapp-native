@@ -55,18 +55,6 @@ const FloatingButton = () => {
                 draftId: null,
               }),
           },
-          {
-            icon: PLUS_WHITE,
-            style: {
-              ...styles.subButton,
-              paddingLeft: verticalScale(6),
-              paddingTop: verticalScale(6),
-            },
-            labelStyle: styles.label,
-            labelTextColor: '#fff',
-            label: 'shortlisted Candidates',
-            onPress: () => navigation.navigate('shortlistedCandidates'),
-          },
         ]}
         onStateChange={onStateChange}
       />

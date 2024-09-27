@@ -125,6 +125,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
         <ScrollView
           snapToAlignment="center"
           pagingEnabled
+          contentContainerStyle={{flexGrow: 1}}
           ref={scrollViewRef}
           horizontal>
           <View style={styles.screen}>
@@ -157,7 +158,7 @@ const getStyles = ({color}: Theme) => {
   const styles = StyleSheet.create({
     container: {
       paddingVertical: verticalScale(16),
-      flex: 1,
+      flexGrow: 1,
     },
     mainView: {
       paddingTop: 0,

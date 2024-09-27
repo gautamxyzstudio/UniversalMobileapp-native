@@ -2,21 +2,17 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import EmployeeHome from '@screens/employeeScreens/employeeHome';
-import {employeeTabBarRoutes} from './types';
+import {employeeTabBarProps, employeeTabBarRoutes} from './types';
 import EmployeeJobs from '@screens/employeeScreens/employeeJobs';
 import EmployeeProfile from '@screens/employeeScreens/employeeProfile';
 import EmployeeSchedules from '@screens/employeeScreens/employeeSchedules';
-import CustomBottomTab from './components/customBottomTab';
 
 const EmployeeTabNavigation = () => {
   const EmployeeTab = createBottomTabNavigator();
 
   return (
     <EmployeeTab.Navigator
-      tabBar={props => <CustomBottomTab {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}>
+      screenOptions={({route}) => employeeTabBarProps({route})}>
       <EmployeeTab.Screen
         name={employeeTabBarRoutes.home}
         component={EmployeeHome}
@@ -26,7 +22,7 @@ const EmployeeTabNavigation = () => {
         component={EmployeeJobs}
       />
       <EmployeeTab.Screen
-        name={employeeTabBarRoutes.schedules}
+        name={employeeTabBarRoutes.schedule}
         component={EmployeeSchedules}
       />
       <EmployeeTab.Screen

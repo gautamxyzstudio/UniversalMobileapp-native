@@ -4,11 +4,11 @@ import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import HorizontalCalendar from '@components/employee/HorizontalCalendar';
 import {verticalScale} from '@utils/metrics';
-import ScheduledJobCard from '@components/employee/ScheduledJobCard';
 import {IJobPostTypes} from '@api/features/client/types';
-import {IJobTypesEnum, IJobPostStatus} from '@utils/enums';
+import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import ScheduledEventCard from '@components/client/ScheduleEventCard';
 
-const EmployeeSchedules = () => {
+const ClientSchedules = () => {
   return (
     <OnBoardingBackground
       childrenStyles={styles.children}
@@ -16,14 +16,14 @@ const EmployeeSchedules = () => {
       title={STRINGS.schedules}>
       <HorizontalCalendar />
       <View style={styles.mainView}>
-        <ScheduledJobCard jobDetails={mockJobPosts[0]} />
-        <ScheduledJobCard jobDetails={mockJobPosts[1]} />
+        <ScheduledEventCard jobDetails={mockJobPosts[0]} />
+        <ScheduledEventCard jobDetails={mockJobPosts[1]} />
       </View>
     </OnBoardingBackground>
   );
 };
 
-export default EmployeeSchedules;
+export default ClientSchedules;
 
 const styles = StyleSheet.create({
   children: {
@@ -64,7 +64,7 @@ export const mockJobPosts: IJobPostTypes[] = [
     endShift: new Date('2024-02-01T18:00:00'),
     startShift: new Date('2024-02-01T09:00:00'),
     requiredEmployee: 3,
-    status: IJobPostStatus.CONFIRMED,
+    status: IJobPostStatus.CLOSED,
     client_details: {
       id: 101,
       Name: 'John Doe',
@@ -97,7 +97,7 @@ export const mockJobPosts: IJobPostTypes[] = [
     endShift: new Date('2024-03-01T17:00:00'),
     startShift: new Date('2024-03-01T08:00:00'),
     requiredEmployee: 1,
-    status: IJobPostStatus.COMPLETED,
+    status: IJobPostStatus.OPEN,
     client_details: {
       id: 102,
       Name: 'Jane Smith',

@@ -34,7 +34,6 @@ import {
   addNewDocumentEmployee,
   updateEmployeeDetails,
   userAdvanceDetailsFromState,
-  userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import UploadNewDocumentFromProfilePopup, {
   INewSelectedDocument,
@@ -60,7 +59,6 @@ import {getImageUrl} from '@utils/constants';
 const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
   const user = useSelector(userAdvanceDetailsFromState) as IEmployeeDetails;
-  const userBasic = useSelector(userBasicDetailsFromState);
 
   const {uploadImage} = useUploadAssets();
   const resumePopupRef = useRef<BottomSheetModal | null>(null);

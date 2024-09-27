@@ -4,6 +4,7 @@ import {
   StyleProp,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
@@ -72,7 +73,9 @@ const SearchInput: React.FC<ISearchInputProps> = ({
           {leftIcon && (
             <View>
               {withBack ? (
-                <ARROW_LEFT onPress={() => navigation.goBack()} />
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <ARROW_LEFT />
+                </TouchableOpacity>
               ) : (
                 <Pressable style={styles.leftIcon}>
                   <SEARCH />
