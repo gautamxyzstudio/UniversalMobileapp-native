@@ -11,12 +11,10 @@ import {verticalScale} from '@utils/metrics';
 import {
   getMinimumDateJobPost,
   IJobPostingStepTwoFields,
-  IJobPostRef,
   IJobPostStepTwoRef,
 } from './types';
 import {jobPostStep2Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
-import {usePatchADraftMutation} from '@api/features/client/clientApi';
 
 type IJobPostingStepTwoState = {
   eventDate: Date | null;
@@ -230,6 +228,7 @@ export default JobPostingStepTwo;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   row: {
     width: '100%',

@@ -33,6 +33,13 @@ export type IJobTypes = {
     Email: string;
     location: string;
   };
+  job_applications?: {
+    id: number;
+    status: IJobPostStatus;
+    employee_details: {
+      id: number;
+    }[];
+  }[];
 };
 
 export type ICustomizedJobsResponse = {
@@ -62,6 +69,7 @@ export type IGetJobsResponse = {
       createdAt: Date;
       updatedAt: Date;
       publishedAt: Date;
+      notAccepting: boolean;
       jobDuties: string;
       job_type: IJobTypesEnum;
       location: string;
@@ -84,6 +92,9 @@ export type IGetJobsResponse = {
     job_applications: {
       id: number;
       status: IJobPostStatus;
+      employee_details: {
+        id: number;
+      }[];
     }[];
   }[];
   meta: {

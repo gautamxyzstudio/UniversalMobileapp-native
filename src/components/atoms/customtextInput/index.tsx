@@ -48,9 +48,11 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
     const textAnimation = useSharedValue(1);
     const theme = useTheme();
     const translationWidth = moderateScale(20);
-    const height = verticalScale(
-      65 / 2 + moderateScale(windowWidth > 400 ? 6 : 9),
-    );
+    const animationStartValue = Platform.OS === 'ios' ? 0 : verticalScale(4);
+    const height =
+      Platform.OS === 'ios'
+        ? verticalScale(60 / 2 + moderateScale(windowWidth > 400 ? 6 : 9))
+        : verticalScale(54 / 2 + moderateScale(windowWidth > 400 ? 6 : 9));
 
     const labelAnimation = useAnimatedStyle(() => {
       return {
@@ -62,7 +64,7 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
             translateY: interpolate(
               textAnimation.value,
               [1, 0.7],
-              [0, -height],
+              [animationStartValue, -height],
             ),
           },
           {
@@ -143,7 +145,6 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
                 editable={editable}
                 style={[
                   styles.textInput,
-
                   isMultiline && {
                     height: verticalScale(100),
                     marginTop: verticalScale(12),
@@ -198,9 +199,8 @@ const getStyles = (theme: Theme) => {
       flexDirection: 'row',
       position: 'absolute',
       marginLeft: verticalScale(16),
-      backgroundColor: theme.color.backgroundWhite,
+      backgroundColor: theme.color.primary,
       textAlign: 'center',
-
       pointerEvents: 'none',
     },
     inputMain: {

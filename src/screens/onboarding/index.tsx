@@ -10,6 +10,9 @@ import NextButton from './components/nextButton';
 import {onBoardingData} from './types';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
+import {debounce} from 'lodash';
+
+const viewConfig = {viewAreaCoveragePercentThreshold: 50};
 
 const OnBoarding = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -38,13 +41,10 @@ const OnBoarding = () => {
   };
 
   const viewableItemsChanged = useRef(
-    ({viewableItems}: {viewableItems: ViewToken[]}) => {
-      if (viewableItems[0]?.index) {
-        setCurrentIndex(viewableItems[0]?.index ?? 0);
-      } else {
-        setCurrentIndex(0);
-      }
-    },
+    debounce(({viewableItems}: {viewableItems: ViewToken[]}) => {
+      const index = viewableItems[0]?.index ?? 0;
+      setCurrentIndex(index);
+    }, 200),
   ).current;
 
   const renderItem = useCallback(
@@ -68,8 +68,6 @@ const OnBoarding = () => {
     [posterWidth],
   );
 
-  const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
-
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -83,7 +81,7 @@ const OnBoarding = () => {
             ref={flatlistReference}
             data={onBoardingData}
             scrollEnabled={false}
-            keyExtractor={(item, index) => `${index}${item.id}`}
+            keyExtractor={item => item.id.toString()}
             pagingEnabled
             bounces={false}
             onViewableItemsChanged={viewableItemsChanged}

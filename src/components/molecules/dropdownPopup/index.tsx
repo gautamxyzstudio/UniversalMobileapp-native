@@ -187,7 +187,7 @@ const getStyles = (theme: Theme) => {
       position: 'absolute',
       zIndex: 1,
       marginLeft: verticalScale(16),
-      backgroundColor: theme.color.backgroundWhite,
+      backgroundColor: theme.color.primary,
       textAlign: 'center',
       pointerEvents: 'none',
     },

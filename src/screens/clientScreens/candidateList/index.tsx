@@ -22,7 +22,17 @@ import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 
-const CandidateList = () => {
+type ICandidateListProps = {
+  route: {
+    params?: {
+      jobId: number | undefined;
+    };
+  };
+};
+
+const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
+  // console.log(route.params?.jobId, 'JOB ID');
+  let selectedJobId = route.params?.jobId;
   const [currentIndex, setCurrentIndex] = useState(0);
   const styles = useThemeAwareObject(getStyles);
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
@@ -70,6 +80,15 @@ const CandidateList = () => {
   useEffect(() => {
     setCurrentSelectedJob(openJobFromState[0]);
   }, []);
+
+  useEffect(() => {
+    if (selectedJobId) {
+      let jobIndex = openJobFromState.findIndex(j => j.id === selectedJobId);
+      if (jobIndex !== -1) {
+        setCurrentSelectedJob(openJobFromState[jobIndex]);
+      }
+    }
+  }, [selectedJobId]);
 
   const onChangeSelectedJobHandler = (job: IJobPostTypes) => {
     setCurrentSelectedJob(job);

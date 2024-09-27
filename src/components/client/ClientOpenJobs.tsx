@@ -147,8 +147,10 @@ const ClientOpenJobs = () => {
   };
 
   const onPressViewApplicants = () => {
+    quickActionSheetRef.current?.close();
     navigation.navigate('clientTabBar', {
       screen: clientTabBarRoutes.contactList,
+      params: {jobId: currentSelectedDraft?.id},
     });
   };
 

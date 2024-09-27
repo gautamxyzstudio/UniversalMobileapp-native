@@ -167,7 +167,7 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
     inputContainer: {
       flex: 1,
-      backgroundColor: theme.color.backgroundWhite,
+      backgroundColor: theme.color.primary,
     },
     container: {
       flexGrow: 1,

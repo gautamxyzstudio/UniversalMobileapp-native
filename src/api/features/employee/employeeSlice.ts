@@ -1,7 +1,6 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import {IEmployeeSliceInitialState, IJobTypes} from './types';
 import {RootState} from '@api/store';
-
 const initialState: IEmployeeSliceInitialState = {
   jobs: [],
   myJobs: [],
@@ -13,12 +12,24 @@ const employeeSlice = createSlice({
   reducers: {
     updateJobs: (
       state,
-      action: PayloadAction<{currentPage: number; jobs: IJobTypes[]}>,
+      action: PayloadAction<{
+        currentPage: number;
+        jobs: IJobTypes[];
+        detailsId: number;
+      }>,
     ) => {
+      const jobs = action.payload.jobs.filter(job => {
+        return !job.job_applications?.some(
+          jobApplication =>
+            jobApplication?.employee_details[0]?.id ===
+            action.payload.detailsId,
+        );
+      });
+
       if (action.payload.currentPage > 1) {
-        state.jobs = [...state.jobs, ...action.payload.jobs];
+        state.jobs = [...state.jobs, ...jobs];
       } else {
-        state.jobs = [...action.payload.jobs];
+        state.jobs = [...jobs];
       }
     },
     updateAppliedJobs: (state, action: PayloadAction<IJobTypes[]>) => {

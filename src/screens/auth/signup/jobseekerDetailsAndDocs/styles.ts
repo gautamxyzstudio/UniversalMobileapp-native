@@ -12,7 +12,7 @@ export const getStyles = (colors: Theme) => {
       marginTop: verticalScale(24),
       paddingTop: verticalScale(24),
       flex: 1,
-      backgroundColor: colors.color.backgroundWhite,
+      backgroundColor: colors.color.primary,
     },
     bottomView: {
       flexDirection: 'row',

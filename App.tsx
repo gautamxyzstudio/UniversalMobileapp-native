@@ -16,9 +16,18 @@ import {ToastProvider} from 'react-native-toast-notifications';
 import CustomToast from '@components/organisms/customToast';
 import {PortalProvider} from '@gorhom/portal';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-
+import {addEventListener} from '@react-native-community/netinfo';
 const App = () => {
   const {theme} = useTheme();
+
+  // Subscribe
+  const unsubscribe = addEventListener(state => {
+    console.log('Connection type', state.type);
+    console.log('Is connected?', state.isConnected);
+  });
+
+  // Unsubscribe
+  unsubscribe();
 
   const paperTheme = {
     ...DefaultTheme,

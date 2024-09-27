@@ -10,6 +10,7 @@ import {
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
+import {IJobPostStatus} from '@utils/enums';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -23,29 +24,34 @@ const employeeApi = baseApi.injectEndpoints({
       ): ICustomizedJobsResponse => {
         let customizedJobs: IJobTypes[] = [];
         response.data.forEach(job => {
-          let details: IJobTypes = {
-            job_name: job.attributes.job_name,
-            endShift: job.attributes.endShift,
-            publishedAt: job.attributes.publishedAt,
-            location: job.attributes.location,
-            id: job.id,
-            job_type: job.attributes.job_type,
-            jobDuties: job.attributes.jobDuties,
-            description: job.attributes.description,
-            eventDate: job.attributes.eventDate,
-            startShift: job.attributes.startShift,
-            city: job.attributes.city,
-            status: job.attributes.status,
-            address: job.attributes.address,
-            postalCode: job.attributes.postalCode,
-            gender: job.attributes.gender,
-            salary: job.attributes.salary,
-            client_details: job.client_details[0],
-            required_certificates: job.attributes.required_certificates,
-            state: job.attributes.state,
-            postID: job.attributes.postID,
-          };
-          customizedJobs.push(details);
+          if (
+            job.attributes.status !== IJobPostStatus.CLOSED &&
+            job.attributes.notAccepting !== true
+          ) {
+            let details: IJobTypes = {
+              job_name: job.attributes.job_name,
+              endShift: job.attributes.endShift,
+              publishedAt: job.attributes.publishedAt,
+              location: job.attributes.location,
+              id: job.id,
+              job_type: job.attributes.job_type,
+              job_applications: job.job_applications,
+              jobDuties: job.attributes.jobDuties,
+              description: job.attributes.description,
+              eventDate: job.attributes.eventDate,
+              startShift: job.attributes.startShift,
+              city: job.attributes.city,
+              status: job.attributes.status,
+              address: job.attributes.address,
+              postalCode: job.attributes.postalCode,
+              gender: job.attributes.gender,
+              salary: job.attributes.salary,
+              client_details: job.client_details[0],
+              required_certificates: job.attributes.required_certificates,
+              postID: job.attributes.postID,
+            };
+            customizedJobs.push(details);
+          }
         });
         return {
           data: customizedJobs,

@@ -71,8 +71,6 @@ const EmployeeHome = () => {
     getJobsPosts(true);
   }, []);
 
-  console.log(jobsInState, 'State_jobs');
-
   useEffect(() => {
     if (jobsInState) {
       setJobs(jobsInState);
@@ -126,7 +124,13 @@ const EmployeeHome = () => {
       let perPageRecord = 10;
       const usersJobsResponse = await getJobs(page).unwrap();
       if (usersJobsResponse) {
-        dispatch(updateJobs({currentPage: page, jobs: usersJobsResponse.data}));
+        dispatch(
+          updateJobs({
+            currentPage: page,
+            jobs: usersJobsResponse.data,
+            detailsId: user?.details?.detailsId ?? 0,
+          }),
+        );
         setIsRefreshing(false);
         setCurrentPage(page);
         setIsLastPage(
