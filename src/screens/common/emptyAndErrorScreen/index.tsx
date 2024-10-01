@@ -8,6 +8,7 @@ import {getStyles} from './styles';
 import {EMPTY, NO_INTERNET} from '@assets/exporter';
 import {verticalScale} from '@utils/metrics';
 import {SvgProps} from 'react-native-svg';
+import CustomButton from '@components/molecules/customButton';
 
 type IEmptyStateProps<T> = {
   errorObj: ICustomErrorResponse | null | undefined;
@@ -35,8 +36,6 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
   const styles = useThemeAwareObject(getStyles);
   const {theme} = useTheme();
   const error = errorHeader ?? 'OOPS !!';
-
-  console.log(errorObj, 'ERROR');
   const errorMessage = errorMsg ?? STRINGS.someting_went_wrong;
   const internetError = STRINGS.your_internet_is_a_little_wonky_right_now;
   const internetErrorMsg = STRINGS.internet_error_msg;
@@ -68,6 +67,11 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
           />
           <Text style={styles.errorHeader}>{error}</Text>
           <Text style={styles.errorSubHeader}>{errorMessage}</Text>
+          <CustomButton
+            title={STRINGS.retry}
+            onButtonPress={refreshHandler}
+            disabled={false}
+          />
         </>
       )}
     </View>

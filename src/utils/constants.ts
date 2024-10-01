@@ -210,14 +210,14 @@ export const withErrorHandling = (fn: (...args: any[]) => any) => {
 
 export const withAsyncErrorHandlingGet = (
   fn: (...args: any[]) => Promise<any>,
-  onError?: () => void,
+  onError?: (error?: ICustomErrorResponse) => void,
 ) => {
   return async (...args: any[]) => {
     try {
       return await fn(...args);
     } catch (error) {
       console.error('An error occurred:', error);
-      onError && onError();
+      onError && onError(error as ICustomErrorResponse);
     }
   };
 };

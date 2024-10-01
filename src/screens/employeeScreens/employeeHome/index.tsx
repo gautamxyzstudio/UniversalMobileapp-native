@@ -22,44 +22,33 @@ import {
 } from '@api/features/user/userSlice';
 import {IEmployeeDetails} from '@api/features/user/types';
 import {mockJobPostsLoading, provincesAndCities} from '@api/mockData';
-import {
-  useApplyForJobMutation,
-  useLazyFetchJobsQuery,
-} from '@api/features/employee/employeeApi';
-import {
-  applyJobAction,
-  jobsFromState,
-  updateJobs,
-} from '@api/features/employee/employeeSlice';
+import {useLazyFetchJobsQuery} from '@api/features/employee/employeeApi';
+import {jobsFromState, updateJobs} from '@api/features/employee/employeeSlice';
 import HomeListHeaderView from '@components/employee/HomeListHeaderView';
 import {STRINGS} from 'src/locales/english';
 import JobPostCard from '@components/client/JobPostCard';
 import {IJobTypes} from '@api/features/employee/types';
 import JobPostCardLoading from '@components/client/JobPostCardLoading';
-import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
+import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
 import {IJobPostTypes} from '@api/features/client/types';
-import {withAsyncErrorHandlingPost} from '@utils/constants';
-import {useToast} from 'react-native-toast-notifications';
-import {IJobPostStatus} from '@utils/enums';
 import {showToast} from '@components/organisms/customToast';
+import {useToast} from 'react-native-toast-notifications';
+import {ICustomErrorResponse} from '@api/types';
 
 const EmployeeHome = () => {
   const styles = useThemeAwareObject(getStyles);
   const [jobs, setJobs] = useState<any[]>([]);
-  const toast = useToast();
   const [isLastPage, setIsLastPage] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
   const scrollY = useSharedValue(0);
-  const [currentSelectedJob, setCurrentSelectedJob] =
-    useState<IJobPostTypes | null>(null);
   const [getUserDetails] = useLazyGetUserQuery();
-  const [applyForJob] = useApplyForJobMutation();
+  const toast = useToast();
   const [getJobs, {isLoading, error}] = useLazyFetchJobsQuery();
   const jobsInState = useSelector(jobsFromState);
-  const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
+  const {onPressSheet} = useJobDetailsContext();
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const displayModal = useCallback(
     () => bottomSheetRef.current?.snapToIndex(1),
@@ -85,38 +74,18 @@ const EmployeeHome = () => {
         dispatch(updateEmployeeDetails(details));
       }
     } catch (err) {
-      console.log(err, 'ERROR GETTING USER DETAILS');
+      let customError = err as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError?.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
     }
   };
 
-  const onPressJobHandler = withAsyncErrorHandlingPost(
-    async () => {
-      jobDetailsSheetRef.current?.close();
-      if (currentSelectedJob?.id && user?.id) {
-        const applyJobResponse = await applyForJob({
-          data: {
-            jobs: currentSelectedJob?.id,
-            applicationDate: new Date(),
-            status: IJobPostStatus.APPLIED,
-            employee_details: user.details?.detailsId ?? 0,
-          },
-        }).unwrap();
-        if (applyJobResponse) {
-          showToast(toast, STRINGS.job_applied_successfully, 'success');
-          if (currentSelectedJob !== null) {
-            dispatch(
-              applyJobAction({
-                ...currentSelectedJob,
-                status: IJobPostStatus.APPLIED,
-              }),
-            );
-          }
-        }
-      }
-    },
-    toast,
-    dispatch,
-  );
+  const onPressViewDetails = (details: IJobPostTypes) => {
+    onPressSheet('show', details);
+  };
 
   const getJobsPosts = async (isFirstPage: boolean = false) => {
     try {
@@ -150,11 +119,6 @@ const EmployeeHome = () => {
     }
   };
 
-  const viewJobDetailsHandler = (jobDetails: IJobTypes) => {
-    setCurrentSelectedJob(jobDetails);
-    jobDetailsSheetRef.current?.snapToIndex(1);
-  };
-
   const renderItemLoading = () => (
     <View style={styles.list}>
       <JobPostCardLoading />
@@ -164,7 +128,7 @@ const EmployeeHome = () => {
   const renderItemListing = useCallback(
     ({item}: {item: IJobTypes}) => (
       <View style={styles.list}>
-        <JobPostCard onPress={() => viewJobDetailsHandler(item)} {...item} />
+        <JobPostCard onPress={onPressViewDetails} {...item} />
       </View>
     ),
     [isLoading, jobs],
@@ -216,11 +180,6 @@ const EmployeeHome = () => {
         filters={provincesAndCities}
         snapPoints={[0.01, verticalScale(698)]}
         getAppliedFilters={() => console.log('Applied filters')}
-      />
-      <JobDetailsBottomSheet
-        ref={jobDetailsSheetRef}
-        onPressApply={onPressJobHandler}
-        jobDetails={currentSelectedJob}
       />
     </View>
   );

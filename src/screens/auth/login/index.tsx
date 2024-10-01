@@ -37,6 +37,7 @@ import {
   IUser,
 } from '@api/features/user/types';
 import {useToast} from 'react-native-toast-notifications';
+import {showToast} from '@components/organisms/customToast';
 
 const Login = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -90,18 +91,13 @@ const Login = () => {
     }
   };
 
-  const checkEmailStatusAndUserDetails = async (
-    response: IUser<'client' | 'emp'>,
-  ) => {
+  const updateUserDetails = async (response: IUser<'client' | 'emp'>) => {
     try {
-      const emailStatusResponse = await checkEmailStatus({
-        email: response.email ?? '',
+      console.log(response, 'apo response');
+      const userDetails = await getUserDetails({
+        userId: response.id,
       }).unwrap();
-      if (emailStatusResponse.verified) {
-        reduxDispatch(saveUserDetails(response));
-        const userDetails = await getUserDetails({
-          userId: response.id,
-        }).unwrap();
+      if (userDetails) {
         if (response.user_type === 'emp') {
           let employeeDetails = userDetails as IEmployeeDetails;
           if (employeeDetails?.detailsId) {
@@ -137,6 +133,22 @@ const Login = () => {
             });
           }
         }
+      }
+    } catch (error) {
+      showToast(toast, STRINGS.someting_went_wrong, 'error');
+    }
+  };
+
+  const checkEmailStatusAndUserDetails = async (
+    response: IUser<'client' | 'emp'>,
+  ) => {
+    try {
+      const emailStatusResponse = await checkEmailStatus({
+        email: response.email ?? '',
+      }).unwrap();
+      if (!emailStatusResponse.verified) {
+        reduxDispatch(saveUserDetails(response));
+        updateUserDetails(response);
       } else {
         navigation.navigate('otpVerification', {
           user: response,

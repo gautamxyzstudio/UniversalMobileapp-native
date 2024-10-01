@@ -5,6 +5,7 @@ import {Theme} from '@theme/Theme.type';
 import {verticalScale} from '@utils/metrics';
 import {fonts} from '@utils/common.styles';
 import RenderHtml from 'react-native-render-html';
+import {STRINGS} from 'src/locales/english';
 
 type IJobDetailsRendererPropTypes = {
   heading?: string;
@@ -18,7 +19,12 @@ const JobDetailsRenderer: React.FC<IJobDetailsRendererPropTypes> = ({
   const styles = useThemeAwareObject(createStyles);
   const {width} = useWindowDimensions();
 
-  console.log(heading, description);
+  if (heading === STRINGS.jobDuties) {
+    console.log('======================');
+    console.log(heading, description);
+    console.log('======================');
+  }
+
   return (
     <>
       {heading && <Text style={styles.heading}>{heading}</Text>}
@@ -65,6 +71,9 @@ const createStyles = ({color}: Theme) => {
     },
     div: {
       flex: 1,
+      color: color.textPrimary,
+      ...fonts.regular,
+      marginVertical: 0,
     },
     ul: {
       paddingLeft: verticalScale(10),

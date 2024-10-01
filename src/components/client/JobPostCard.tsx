@@ -39,7 +39,7 @@ import JobTypeChip from '@components/employee/JobStatusChip';
 import JobStatusChip from './JobStatusChip';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
-  onPress?: () => void;
+  onPress?: (details: IJobPostTypes) => void;
   isDraft?: boolean;
 }
 
@@ -67,7 +67,9 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
   } = cardProps;
 
   return (
-    <Pressable onPress={onPress} style={styles.container}>
+    <Pressable
+      onPress={() => onPress && onPress({...cardProps})}
+      style={styles.container}>
       {/* <CustomImageComponent
             defaultSource={ICONS.imagePlaceholder}
             image={banner}

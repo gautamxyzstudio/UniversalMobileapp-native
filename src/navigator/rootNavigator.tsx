@@ -35,6 +35,7 @@ import ReviewJobPost from '@screens/clientScreens/reviewJobPost';
 import TextEditorView from '@screens/common/textEditorView';
 import JobPostDrafts from '@screens/clientScreens/jobPostDrafts';
 import ShortListedCandidates from '@screens/clientScreens/shortlistedCandidiates';
+import JobDetailsContextProvider from 'src/contexts/displayJobDetailsContext';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,131 +44,136 @@ const RootNavigator = () => {
     SplashScreen.hide();
   }, []);
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={routNames.splash}
-        screenOptions={stackNavigatorConfigurations}>
-        <Stack.Screen
-          name={routNames.profileSettings}
-          component={ProfileSettings}
-        />
-        <Stack.Screen
-          name={routNames.employeeJobHistory}
-          component={JobHistory}
-        />
-        <Stack.Screen
-          name={routNames.clientTabBar}
-          component={ClientTabNavigator}
-        />
-        <Stack.Screen
-          name={routNames.employeeSearch}
-          component={EmployeeSearch}
-        />
-        <Stack.Screen
-          name={routNames.notifications}
-          component={Notifications}
-        />
-        <Stack.Screen name={routNames.schedule} component={EmployeeSchedules} />
-        <Stack.Screen
-          name={routNames.otpVerification}
-          component={OtpVerification as React.ComponentType}
-        />
-        <Stack.Screen name={routNames.splash} component={Splash} />
-        <Stack.Screen name={routNames.onBoarding} component={OnBoarding} />
-        <Stack.Screen
-          name={routNames.welcome}
-          component={Welcome as React.ComponentType}
-        />
-        <Stack.Screen
-          name={routNames.signup}
-          component={SignUp as React.ComponentType}
-        />
-        <Stack.Screen
-          name={routNames.recruiterDetails}
-          component={RecruiterDetails}
-        />
-        <Stack.Screen name={routNames.login} component={Login} />
-        <Stack.Screen name={routNames.approval} component={Approval} />
-        <Stack.Screen
-          name={routNames.jobSeekerDetailsAndDocs}
-          component={JobSeekerDetailsAndDocs}
-        />
-        <Stack.Screen
-          name={routNames.addLocationManually}
-          component={addLocationManually}
-        />
-        <Stack.Screen
-          name={routNames.selectLocation}
-          component={SelectLocation}
-        />
-        <Stack.Screen
-          name={routNames.forgotPassword}
-          component={ForgotPassword}
-        />
-        <Stack.Screen
-          name={routNames.confirmPassword}
-          component={ConfirmPassword}
-        />
-        <Stack.Screen
-          name={routNames.employeeTabBar}
-          component={EmployeeTabNavigation}
-        />
-        <Stack.Screen
-          options={{presentation: 'fullScreenModal'}}
-          name={routNames.updateEmployeeDetails}
-          component={UpdateEmployeeProfile}
-        />
-        <Stack.Screen
-          name={routNames.updateEmployeeDocuments}
-          component={UpdateEmployeeDocument}
-        />
-        <Stack.Screen
-          name={routNames.employeeDocuments}
-          component={EmployeeDocuments}
-        />
-        <Stack.Screen
-          name={routNames.pdfViewer}
-          options={{
-            animation: 'slide_from_bottom',
-          }}
-          component={PdfViewer as React.ComponentType<any>}
-        />
-        <Stack.Screen
-          name={routNames.updatedDocumentStatus}
-          component={updatedDocumentStatus as React.ComponentType<any>}
-        />
-        <Stack.Screen
-          name={routNames.registerNewCompany}
-          options={{
-            animation: 'slide_from_bottom',
-          }}
-          component={RegisterNewCompany}
-        />
-        <Stack.Screen
-          name={routNames.jobPosting}
-          component={JobPosting as React.ComponentType<any>}
-        />
-        <Stack.Screen
-          name={routNames.reviewJobPost}
-          component={ReviewJobPost as React.ComponentType<any>}
-        />
-        <Stack.Screen
-          name={routNames.jobPostDrafts}
-          component={JobPostDrafts}
-        />
-        <Stack.Screen
-          name={routNames.textEditor}
-          options={{
-            animation: 'slide_from_bottom',
-          }}
-          component={TextEditorView as React.ComponentType<any>}
-        />
-        <Stack.Screen
-          name={routNames.shortlistedCandidates}
-          component={ShortListedCandidates as React.ComponentType<any>}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <JobDetailsContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={routNames.splash}
+          screenOptions={stackNavigatorConfigurations}>
+          <Stack.Screen
+            name={routNames.profileSettings}
+            component={ProfileSettings}
+          />
+          <Stack.Screen
+            name={routNames.employeeJobHistory}
+            component={JobHistory}
+          />
+          <Stack.Screen
+            name={routNames.clientTabBar}
+            component={ClientTabNavigator}
+          />
+          <Stack.Screen
+            name={routNames.employeeSearch}
+            component={EmployeeSearch}
+          />
+          <Stack.Screen
+            name={routNames.notifications}
+            component={Notifications}
+          />
+          <Stack.Screen
+            name={routNames.schedule}
+            component={EmployeeSchedules}
+          />
+          <Stack.Screen
+            name={routNames.otpVerification}
+            component={OtpVerification as React.ComponentType}
+          />
+          <Stack.Screen name={routNames.splash} component={Splash} />
+          <Stack.Screen name={routNames.onBoarding} component={OnBoarding} />
+          <Stack.Screen
+            name={routNames.welcome}
+            component={Welcome as React.ComponentType}
+          />
+          <Stack.Screen
+            name={routNames.signup}
+            component={SignUp as React.ComponentType}
+          />
+          <Stack.Screen
+            name={routNames.recruiterDetails}
+            component={RecruiterDetails}
+          />
+          <Stack.Screen name={routNames.login} component={Login} />
+          <Stack.Screen name={routNames.approval} component={Approval} />
+          <Stack.Screen
+            name={routNames.jobSeekerDetailsAndDocs}
+            component={JobSeekerDetailsAndDocs}
+          />
+          <Stack.Screen
+            name={routNames.addLocationManually}
+            component={addLocationManually}
+          />
+          <Stack.Screen
+            name={routNames.selectLocation}
+            component={SelectLocation}
+          />
+          <Stack.Screen
+            name={routNames.forgotPassword}
+            component={ForgotPassword}
+          />
+          <Stack.Screen
+            name={routNames.confirmPassword}
+            component={ConfirmPassword}
+          />
+          <Stack.Screen
+            name={routNames.employeeTabBar}
+            component={EmployeeTabNavigation}
+          />
+          <Stack.Screen
+            options={{presentation: 'fullScreenModal'}}
+            name={routNames.updateEmployeeDetails}
+            component={UpdateEmployeeProfile}
+          />
+          <Stack.Screen
+            name={routNames.updateEmployeeDocuments}
+            component={UpdateEmployeeDocument}
+          />
+          <Stack.Screen
+            name={routNames.employeeDocuments}
+            component={EmployeeDocuments}
+          />
+          <Stack.Screen
+            name={routNames.pdfViewer}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
+            component={PdfViewer as React.ComponentType<any>}
+          />
+          <Stack.Screen
+            name={routNames.updatedDocumentStatus}
+            component={updatedDocumentStatus as React.ComponentType<any>}
+          />
+          <Stack.Screen
+            name={routNames.registerNewCompany}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
+            component={RegisterNewCompany}
+          />
+          <Stack.Screen
+            name={routNames.jobPosting}
+            component={JobPosting as React.ComponentType<any>}
+          />
+          <Stack.Screen
+            name={routNames.reviewJobPost}
+            component={ReviewJobPost as React.ComponentType<any>}
+          />
+          <Stack.Screen
+            name={routNames.jobPostDrafts}
+            component={JobPostDrafts}
+          />
+          <Stack.Screen
+            name={routNames.textEditor}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
+            component={TextEditorView as React.ComponentType<any>}
+          />
+          <Stack.Screen
+            name={routNames.shortlistedCandidates}
+            component={ShortListedCandidates as React.ComponentType<any>}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </JobDetailsContextProvider>
   );
 };
 

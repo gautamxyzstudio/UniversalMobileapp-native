@@ -517,25 +517,6 @@ export const mockJobPostsLoading: any = [
   },
 ];
 
-export const mockJobFilters = [
-  {
-    id: 1,
-    status: 1,
-  },
-  {
-    id: 2,
-    status: 2,
-  },
-  {
-    id: 3,
-    status: 3,
-  },
-  {
-    id: 4,
-    status: 4,
-  },
-];
-
 export const userMockJobs = [
   {
     id: 1,

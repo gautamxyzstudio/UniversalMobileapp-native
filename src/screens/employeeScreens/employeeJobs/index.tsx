@@ -1,13 +1,13 @@
-import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import {Alert, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
-import Filters, {IFilter} from '@components/molecules/Fiilters';
+import Filters from '@components/molecules/Fiilters';
 
-import {getJobStatus} from './types';
 import CustomList from '@components/molecules/customList';
 import {verticalScale} from '@utils/metrics';
-import {mockJobFilters, mockJobPostsLoading} from '@api/mockData';
+import {mockJobPostsLoading} from '@api/mockData';
 import {useLazyFetchAppliedJobsQuery} from '@api/features/employee/employeeApi';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {useDispatch, useSelector} from 'react-redux';
@@ -19,24 +19,18 @@ import {
   appliedJobsFromState,
   updateAppliedJobs,
 } from '@api/features/employee/employeeSlice';
-import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {IJobTypes} from '@api/features/employee/types';
+import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
+import {jobFilters} from 'src/constants/constants';
 
 const EmployeeJobs = () => {
-  const [selectedFilterId, setSelectedFilterId] = useState(0);
+  const [selectedFilterId, setSelectedFilterId] = useState(1);
   const [fetchJobs, {isLoading, error}] = useLazyFetchAppliedJobsQuery();
   const [jobs, updateJobs] = useState<IJobPostTypes[]>([]);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentSelectedJob, setCurrentSelectedJob] =
-    useState<IJobPostTypes | null>(null);
-  const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
   const appliedJobs = useSelector(appliedJobsFromState);
+  const {onPressSheet} = useJobDetailsContext();
   const user = useSelector(userBasicDetailsFromState);
-  const [filters, setFilters] = useState<IFilter[]>([
-    {id: 0, value: STRINGS.all},
-  ]);
 
   useEffect(() => {
     fetchAppliedJobsHandler();
@@ -46,28 +40,16 @@ const EmployeeJobs = () => {
     updateJobs(appliedJobs);
   }, [appliedJobs]);
 
-  useEffect(() => {
-    if (filters.length < 2) {
-      const newFilters = mockJobFilters.map(item => ({
-        id: item.id,
-        value: getJobStatus(item.status),
-      }));
-
-      setFilters(prevFilters => [...prevFilters, ...newFilters]);
-    }
-  }, [filters.length]);
-
-  const viewJobDetailsHandler = (jobDetails: IJobTypes) => {
-    setCurrentSelectedJob(jobDetails);
-    jobDetailsSheetRef.current?.snapToIndex(1);
+  const onPressViewDetails = (details: IJobPostTypes) => {
+    onPressSheet('show', details);
   };
 
-  const renderItemListing = useCallback(({item}: {item: IJobPostTypes}) => {
-    console.log(item.status, 'STATUS');
-    return (
-      <JobPostCard onPress={() => viewJobDetailsHandler(item)} {...item} />
-    );
-  }, []);
+  const renderItemListing = useCallback(
+    ({item}: {item: IJobPostTypes}) => {
+      return <JobPostCard onPress={onPressViewDetails} {...item} />;
+    },
+    [jobs],
+  );
 
   const renderItemLoading = () => (
     <View>
@@ -75,15 +57,20 @@ const EmployeeJobs = () => {
     </View>
   );
 
-  const fetchAppliedJobsHandler = withAsyncErrorHandlingGet(async () => {
-    const appliedJobResponse = await fetchJobs(
-      user?.details?.detailsId ?? 0,
-    ).unwrap();
-    if (appliedJobResponse) {
-      dispatch(updateAppliedJobs(appliedJobResponse));
-    }
-    setIsRefreshing(false);
-  });
+  const fetchAppliedJobsHandler = withAsyncErrorHandlingGet(
+    async () => {
+      const appliedJobResponse = await fetchJobs(
+        user?.details?.detailsId ?? 0,
+      ).unwrap();
+      if (appliedJobResponse) {
+        dispatch(updateAppliedJobs(appliedJobResponse));
+      }
+      setIsRefreshing(false);
+    },
+    () => {
+      setIsRefreshing(false);
+    },
+  );
 
   const onRefreshHandler = () => {
     setIsRefreshing(true);
@@ -96,7 +83,8 @@ const EmployeeJobs = () => {
       hideBack
       title={STRINGS.jobs}>
       <Filters
-        filters={filters}
+        isLoading={isLoading}
+        filters={jobFilters}
         onFilterPress={filter => setSelectedFilterId(filter.id)}
         selectedFilterId={selectedFilterId}
       />
@@ -110,13 +98,10 @@ const EmployeeJobs = () => {
           emptyListSubTitle={STRINGS.no_jobs_applied_description}
           estimatedItemSize={verticalScale(177)}
           error={error}
+          refreshAfterError={onRefreshHandler}
           isRefreshing={isRefreshing}
           onRefresh={onRefreshHandler}
           isLastPage={true}
-        />
-        <JobDetailsBottomSheet
-          ref={jobDetailsSheetRef}
-          jobDetails={currentSelectedJob}
         />
       </View>
     </OnBoardingBackground>
