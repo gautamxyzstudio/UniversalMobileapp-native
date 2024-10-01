@@ -97,7 +97,7 @@ const Login = () => {
       const emailStatusResponse = await checkEmailStatus({
         email: response.email ?? '',
       }).unwrap();
-      if (!emailStatusResponse.verified) {
+      if (emailStatusResponse.verified) {
         reduxDispatch(saveUserDetails(response));
         const userDetails = await getUserDetails({
           userId: response.id,

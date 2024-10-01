@@ -120,7 +120,9 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   console.log(jobDetails);
 
   return (
-    <OnBoardingBackground title={STRINGS.review}>
+    <OnBoardingBackground
+      childrenStyles={styles.children}
+      title={STRINGS.review}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Row alignCenter>
           <UploadProfilePhoto isEditable={false} />
@@ -227,6 +229,9 @@ export default ReviewJobPost;
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
+    children: {
+      flex: 1,
+    },
     titleContainer: {
       gap: verticalScale(4),
       marginLeft: verticalScale(12),

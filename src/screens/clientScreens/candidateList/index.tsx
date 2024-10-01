@@ -162,6 +162,7 @@ const getStyles = ({color}: Theme) => {
     },
     mainView: {
       paddingTop: 0,
+      paddingBottom: 0,
       paddingHorizontal: 0,
     },
     screen: {
