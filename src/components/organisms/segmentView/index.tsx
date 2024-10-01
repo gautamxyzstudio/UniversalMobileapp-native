@@ -8,7 +8,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useImperativeHandle, useState} from 'react';
 
 import Animated, {
   useAnimatedStyle,
@@ -19,6 +19,10 @@ import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale, windowWidth} from '@utils/metrics';
 import {fonts} from '@utils/common.styles';
 import {useTheme} from '@theme/Theme.context';
+
+export interface ISegmentViewRefMethods extends View {
+  getIndex: (index: number) => void;
+}
 
 type ISegmentProps = {
   outerContainerStyles?: StyleProp<ViewStyle>;
@@ -34,72 +38,65 @@ type ISegmentProps = {
   onClick?: (index: number) => void;
 };
 
-const SegmentView: React.FC<ISegmentProps> = ({
-  outerContainerStyles,
-  segmentTextStyles,
-  segmentHeight,
-  segmentWidth,
-  segmentContent,
-  currentIndex,
-  marginHorizontal,
-  segmentActiveTextStyles,
-  onClick,
-  tabs,
-  segmentViewStyles,
-}) => {
-  const styles = useThemeAwareObject(getStyles);
-  const viewRef = useRef<View | null>(null);
-  const width = segmentWidth ?? (windowWidth * 90) / 100;
-  const height = segmentHeight ?? 45;
-  const translateValue = (width - marginHorizontal * 2) / tabs.length;
-  const {theme} = useTheme();
-  const animationValue = useSharedValue(0);
+const SegmentView = React.forwardRef<ISegmentViewRefMethods, ISegmentProps>(
+  (
+    {
+      outerContainerStyles,
+      segmentTextStyles,
+      segmentHeight,
+      segmentWidth,
+      segmentContent,
+      marginHorizontal,
+      segmentActiveTextStyles,
+      onClick,
+      tabs,
+      segmentViewStyles,
+    },
+    ref,
+  ) => {
+    const styles = useThemeAwareObject(getStyles);
 
-  const segmentTransformation = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: animationValue.value,
-        },
-      ],
-    };
-  });
+    const width = segmentWidth ?? (windowWidth * 90) / 100;
+    const height = segmentHeight ?? 45;
+    const [currentI, setCurrentIndex] = useState(0);
+    const translateValue = (width - marginHorizontal * 2) / tabs.length;
+    const {theme} = useTheme();
+    const animationValue = useSharedValue(0);
 
-  useEffect(() => {
-    animationValue.value = withSpring(currentIndex * translateValue, {
-      stiffness: 180,
-      damping: 20,
-      mass: 1,
-    });
-  }, [currentIndex]);
-
-  const memoizedTabPressCallback = React.useCallback((index: number) => {
-    onClick && onClick(index);
-  }, []);
-
-  return (
-    <View
-      ref={viewRef}
-      style={[
-        styles.segmentContainer,
-        {
-          width: width,
-          height: height,
-        },
-        outerContainerStyles,
-      ]}>
-      <Animated.View
-        style={[
-          styles.segment,
+    const segmentTransformation = useAnimatedStyle(() => {
+      return {
+        transform: [
           {
-            width: (width - marginHorizontal * 2) / tabs.length,
-            marginHorizontal: marginHorizontal,
+            translateX: animationValue.value,
           },
-          segmentViewStyles,
-          segmentTransformation,
-        ]}></Animated.View>
-      {tabs.map((tab, index) => {
-        const isCurrentIndex = currentIndex === index;
+        ],
+      };
+    });
+
+    useImperativeHandle(
+      ref,
+      () =>
+        ({
+          getIndex: (index: number) => {
+            console.log(index);
+            animationValue.value = withSpring(index * translateValue, {
+              stiffness: 180,
+              damping: 20,
+              mass: 1,
+            });
+            setCurrentIndex(index);
+          },
+        } as ISegmentViewRefMethods),
+      [],
+    );
+
+    const memoizedTabPressCallback = React.useCallback((index: number) => {
+      onClick && onClick(index);
+    }, []);
+
+    const tabsMemo = React.useMemo(() => {
+      return tabs.map((tab, index) => {
+        const isCurrentIndex = currentI === index;
         return (
           <TouchableOpacity
             key={index}
@@ -126,10 +123,36 @@ const SegmentView: React.FC<ISegmentProps> = ({
             )}
           </TouchableOpacity>
         );
-      })}
-    </View>
-  );
-};
+      });
+    }, [tabs, currentI]);
+
+    return (
+      <View
+        ref={ref}
+        style={[
+          styles.segmentContainer,
+          {
+            width: width,
+            height: height,
+          },
+          outerContainerStyles,
+        ]}>
+        <Animated.View
+          style={[
+            styles.segment,
+            {
+              width: (width - marginHorizontal * 2) / tabs.length,
+              marginHorizontal: marginHorizontal,
+            },
+            segmentViewStyles,
+            segmentTransformation,
+          ]}
+        />
+        {tabsMemo}
+      </View>
+    );
+  },
+);
 
 export default SegmentView;
 
@@ -155,7 +178,9 @@ export const getStyles = (theme: Theme) => {
     },
     textWrapper: {
       flex: 1,
-      elevation: 9,
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
       zIndex: 1,
     },
     textStyles: {

@@ -1,10 +1,12 @@
 import {ScrollView, StyleSheet, View} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import HomeTopView from '@components/employee/HomeTopView';
 import {PaperProvider} from 'react-native-paper';
 import {verticalScale, windowWidth} from '@utils/metrics';
-import SegmentView from '@components/organisms/segmentView';
+import SegmentView, {
+  ISegmentViewRefMethods,
+} from '@components/organisms/segmentView';
 import Spacers from '@components/atoms/Spacers';
 import ClientOpenJobs from '@components/client/ClientOpenJobs';
 import ClientClosedJobs from '@components/client/ClientClosedJobs';
@@ -12,12 +14,11 @@ import FloatingButton from '@components/molecules/floatingButton';
 
 const ClientHome = () => {
   const styles = useThemeAwareObject(getStyles);
-  const [tabIndex, updateTabIndex] = useState(0);
-
+  const segmentRef = useRef<ISegmentViewRefMethods | null>(null);
   const scrollViewRef = useRef<ScrollView | null>(null);
 
   const handleTabsChange = (index: number) => {
-    updateTabIndex(index);
+    segmentRef.current?.getIndex(index);
 
     scrollViewRef.current?.scrollTo({
       x: index * windowWidth,
@@ -31,10 +32,11 @@ const ClientHome = () => {
         <HomeTopView withSearch={false} height={undefined} />
         <Spacers size={24} scalable type="vertical" />
         <SegmentView
+          ref={segmentRef}
           tabs={['Open', 'Close']}
           marginHorizontal={0}
           onClick={handleTabsChange}
-          currentIndex={tabIndex}
+          currentIndex={0}
         />
         <ScrollView
           pagingEnabled={true}

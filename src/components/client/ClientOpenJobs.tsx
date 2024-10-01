@@ -1,106 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {mockJobPostsLoading} from '@api/mockData';
 import JobPostCard from './JobPostCard';
 import JobPostCardLoading from './JobPostCardLoading';
 import CustomList from '@components/molecules/customList';
 import {verticalScale} from '@utils/metrics';
-import {
-  useLazyGetPostedJobQuery,
-  useStopAJobPostMutation,
-} from '@api/features/client/clientApi';
+import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {IJobPostTypes} from '@api/features/client/types';
-import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {
-  CHECK_IN,
-  IC_DOCUMENT,
-  NO_INTERNET,
-  PAUSE,
-  PERSON_SECONDARY,
-} from '@assets/exporter';
+import {NO_INTERNET} from '@assets/exporter';
 import {STRINGS} from 'src/locales/english';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   openJobsFromState,
   saveOpenJobs,
-  stopAJobPostReducer,
 } from '@api/features/client/clientSlice';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
-import {
-  withAsyncErrorHandlingGet,
-  withAsyncErrorHandlingPost,
-} from '@utils/constants';
-import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
-import {useNavigation} from '@react-navigation/native';
-import {clientTabBarRoutes} from 'src/navigator/types';
-import {useScreenInsets} from 'src/hooks/useScreenInsets';
-import {useToast} from 'react-native-toast-notifications';
-import {showToast} from '@components/organisms/customToast';
+import {withAsyncErrorHandlingGet} from '@utils/constants';
+import {useQuickLinksJobPostContext} from 'src/contexts/quickLinksJobPost';
 
 const ClientOpenJobs = () => {
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
   const openJobs = useSelector(openJobsFromState);
   const dispatch = useDispatch();
-  const navigation = useNavigation<any>();
-  const toast = useToast();
-  const {insetsBottom} = useScreenInsets();
   const user = useSelector(userBasicDetailsFromState);
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
-  const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
-  const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLastPage, setIsLastPage] = useState(true);
-  const [stopAJobPost] = useStopAJobPostMutation();
-  const [currentPage, setCurrentPage] = useState(0);
-  const [currentSelectedDraft, setCurrentSelectedDraft] =
-    useState<IJobPostTypes | null>(null);
 
-  const onPressJobDetails = () => {
-    quickActionSheetRef.current?.close();
-    setTimeout(() => {
-      jobDetailsSheetRef.current?.snapToIndex(1);
-    }, 300);
-  };
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const {onPressSheet} = useQuickLinksJobPostContext();
 
   useEffect(() => {
     getJobPostsHandler(true);
   }, []);
-
-  const onPressCard = (post: IJobPostTypes) => {
-    setCurrentSelectedDraft(post);
-    quickActionSheetRef.current?.snapToIndex(1);
-  };
-
-  const stopAJobHandler = () =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        quickActionSheetRef.current?.close();
-        if (currentSelectedDraft) {
-          const response = await stopAJobPost({
-            jobId: currentSelectedDraft.id,
-          }).unwrap();
-          if (response) {
-            if (currentSelectedDraft) {
-              dispatch(stopAJobPostReducer({jobId: currentSelectedDraft.id}));
-              showToast(toast, STRINGS.job_closed_success, 'success');
-              console.log(response);
-            }
-          }
-        }
-      },
-      toast,
-      dispatch,
-    );
-
-  const navigateToCheckIn = () => {
-    quickActionSheetRef.current?.close();
-    setTimeout(() => {
-      navigation.navigate('shortlistedCandidates');
-    }, 300);
-  };
 
   useEffect(() => {
     updateJobPosts(openJobs);
@@ -108,7 +42,10 @@ const ClientOpenJobs = () => {
 
   const renderItem = useCallback(
     ({item}: {item: IJobPostTypes}) => (
-      <JobPostCard onPress={() => onPressCard(item)} {...item} />
+      <JobPostCard
+        onPress={() => onPressSheet('show', 'open', item)}
+        {...item}
+      />
     ),
 
     [isLoading, jobPosts],
@@ -146,14 +83,6 @@ const ClientOpenJobs = () => {
     }
   };
 
-  const onPressViewApplicants = () => {
-    quickActionSheetRef.current?.close();
-    navigation.navigate('clientTabBar', {
-      screen: clientTabBarRoutes.contactList,
-      params: {jobId: currentSelectedDraft?.id},
-    });
-  };
-
   return (
     <>
       <CustomList
@@ -172,48 +101,8 @@ const ClientOpenJobs = () => {
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
       />
-
-      <SelectOptionBottomSheet
-        ref={quickActionSheetRef}
-        customStyles={styles.container}
-        headerTitle={STRINGS.quick_links}
-        modalHeight={verticalScale(400) + insetsBottom}
-        options={[
-          {
-            icon: CHECK_IN,
-            title: STRINGS.check_in,
-            onPress: navigateToCheckIn,
-          },
-          {
-            icon: PERSON_SECONDARY,
-            title: STRINGS.viewApplicants,
-            onPress: onPressViewApplicants,
-          },
-          {
-            icon: IC_DOCUMENT,
-            title: STRINGS.viewDetails,
-            onPress: onPressJobDetails,
-          },
-          {
-            icon: PAUSE,
-            title: STRINGS.stop,
-            onPress: stopAJobHandler(),
-          },
-        ]}
-      />
-      <JobDetailsBottomSheet
-        ref={jobDetailsSheetRef}
-        jobDetails={currentSelectedDraft}
-      />
     </>
   );
 };
 
 export default ClientOpenJobs;
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: verticalScale(24),
-    paddingVertical: verticalScale(24),
-  },
-});
