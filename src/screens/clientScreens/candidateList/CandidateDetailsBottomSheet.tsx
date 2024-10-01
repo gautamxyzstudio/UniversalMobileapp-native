@@ -43,6 +43,8 @@ const CandidateDetailsBottomSheet = React.forwardRef<
 
   const styles = useThemeAwareObject(createStyles);
 
+  console.log(jobStatus, 'josn ');
+
   return (
     <BaseBottomSheet
       modalStyles={styles.modal}

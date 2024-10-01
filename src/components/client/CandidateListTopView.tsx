@@ -1,30 +1,39 @@
 import {Image, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useRef} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale} from '@utils/metrics';
 import {Theme} from '@theme/Theme.type';
 import {Row} from '@components/atoms/Row';
 import {ICONS, SWITCH} from '@assets/exporter';
 import {fonts} from '@utils/common.styles';
-import SegmentView from '@components/organisms/segmentView';
+import SegmentView, {
+  ISegmentViewRefMethods,
+} from '@components/organisms/segmentView';
 import {STRINGS} from 'src/locales/english';
 
 type ICandidateListTopViewProps = {
-  currentIndex: number;
-  onClick: (index: number) => void;
+  onPressTab: (index: number) => void;
   onPressFilter: () => void;
   jobName: string;
+  index: number;
   jobId: number;
 };
 
 const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
-  currentIndex,
-  onClick,
   jobId,
+  index,
   jobName,
+  onPressTab,
   onPressFilter,
 }) => {
+  const ref = useRef<ISegmentViewRefMethods | null>(null);
   const styles = useThemeAwareObject(createStyles);
+
+  const onClick = (jIndex: number) => {
+    ref.current?.getIndex(jIndex);
+    onPressTab(jIndex);
+  };
+
   return (
     <View style={styles.mainView}>
       <Row spaceBetween alignCenter>
@@ -49,8 +58,9 @@ const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
           tabs={[STRINGS.applicants, STRINGS.shortlisted, STRINGS.deny]}
           segmentTextStyles={styles.segmentText}
           marginHorizontal={0}
+          ref={ref}
           onClick={onClick}
-          currentIndex={currentIndex}
+          currentIndex={index}
         />
       </View>
     </View>

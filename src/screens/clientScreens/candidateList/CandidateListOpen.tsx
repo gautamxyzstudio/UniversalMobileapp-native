@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';
 
 import CandidateCard from '@components/client/CandidateCard';
 import CustomList from '@components/molecules/customList';
-import CandidateDetailsBottomSheet from './CandidateDetailsBottomSheet';
 import {
   useLazyGetCandidatesListQuery,
   useUpdateJobApplicationStatusMutation,
@@ -22,10 +21,10 @@ import {
   updateOpenApplication,
 } from '@api/features/client/clientSlice';
 import {useDispatch, useSelector} from 'react-redux';
-import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import {mockJobPostsLoading} from '@api/mockData';
 import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {useToast} from 'react-native-toast-notifications';
+import {useUserDetailsViewCandidateListContext} from '@screens/clientScreens/candidateList/UserDetailsViewCandidateList';
 
 type ICandidateListOpenProps = {
   jobId: number | null;
@@ -34,8 +33,8 @@ type ICandidateListOpenProps = {
 const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
   const styles = useThemeAwareObject(getStyles);
   const [isLoading, setIsLoading] = useState(true);
-  const compRef = useRef<BottomSheetModalMethods | null>(null);
   const toast = useToast();
+  const {onPressSheet} = useUserDetailsViewCandidateListContext();
   const [refreshing, updateRefreshing] = useState(false);
   const openJobFromState = useSelector(openJobsFromState);
   const dispatch = useDispatch();
@@ -43,9 +42,6 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
     Map<number, ICandidateTypes>
   >(new Map());
   const [getOpenRequests] = useLazyGetCandidatesListQuery();
-  const [selectedCandidate, setSelectedCandidate] = useState<
-    ICandidateTypes | undefined
-  >();
   const [statusUpdater] = useUpdateJobApplicationStatusMutation();
 
   useEffect(() => {
@@ -56,11 +52,6 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
       }
     }
   }, [openJobFromState, jobId]);
-
-  const onPressCandidate = (item: ICandidateTypes) => {
-    setSelectedCandidate(item);
-    compRef.current?.snapToIndex(1);
-  };
 
   useEffect(() => {
     getApplications();
@@ -137,7 +128,7 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
         status={ICandidateStatusEnum.pending}
         onPressAccept={acceptCandidateApplication(item)}
         onPressDecline={declineCandidateApplication(item)}
-        onPressCard={onPressCandidate}
+        onPressCard={() => onPressSheet('show', 'applications', item)}
       />
     ),
     [openApplication],
@@ -161,11 +152,6 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
         refreshing={refreshing}
         ListFooterComponentStyle={styles.footer}
         isLastPage={true}
-      />
-      <CandidateDetailsBottomSheet
-        ref={compRef}
-        details={selectedCandidate}
-        jobStatus={ICandidateStatusEnum.pending}
       />
     </View>
   );

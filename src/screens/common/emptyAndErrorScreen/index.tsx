@@ -1,8 +1,7 @@
 import React from 'react';
 import {ICustomErrorResponse} from '@api/types';
-import {useTheme} from '@theme/Theme.context';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {Image, ImageSourcePropType, Text, View} from 'react-native';
+import {ImageSourcePropType, Text, View} from 'react-native';
 import {STRINGS} from 'src/locales/english';
 import {getStyles} from './styles';
 import {EMPTY, NO_INTERNET} from '@assets/exporter';
@@ -30,11 +29,11 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
   emptyListIllustration,
   emptyListSubTitle,
   errorMsg,
-  image,
+
   refreshHandler,
 }) => {
   const styles = useThemeAwareObject(getStyles);
-  const {theme} = useTheme();
+
   const error = errorHeader ?? 'OOPS !!';
   const errorMessage = errorMsg ?? STRINGS.someting_went_wrong;
   const internetError = STRINGS.your_internet_is_a_little_wonky_right_now;

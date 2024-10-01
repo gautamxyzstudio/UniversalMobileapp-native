@@ -112,6 +112,7 @@ const createStyles = (theme: Theme) =>
     },
     description: {
       marginLeft: verticalScale(8),
+      gap: verticalScale(8),
     },
     divider: {
       width: verticalScale(1),
