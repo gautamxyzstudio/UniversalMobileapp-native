@@ -174,7 +174,7 @@ export const getImageDetails = (
 export const convertArrayOfStringsToUlLi = (data: string[]) => {
   return `
     <ul>
-      ${data.map(item => `<li>${item}</li>`).join('')}
+      ${data ? data?.map(item => `<li>${item}</li>`).join('') : ''}
     </ul>
   `;
 };

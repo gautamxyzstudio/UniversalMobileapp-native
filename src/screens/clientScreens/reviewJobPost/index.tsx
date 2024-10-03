@@ -196,7 +196,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
             <JobDetailsRenderer
               heading={STRINGS.requiredCertificates}
               description={convertArrayOfStringsToUlLi(
-                jobDetails?.required_certificates,
+                jobDetails?.required_certificates ?? [],
               )}
             />
           )}

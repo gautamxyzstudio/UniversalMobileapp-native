@@ -14,7 +14,7 @@ type ICandidateProfilePictureViewProps = {
   name: string;
   url: string | null;
   size?: number;
-  textSize?: 'small' | 'medium';
+  textSize?: 'small' | 'medium' | 'large';
   status: ICandidateStatusEnum;
 };
 
@@ -47,7 +47,12 @@ const CandidateProfilePictureView: React.FC<
             size ? {width: size, height: size} : null,
             {...profilePictureAttributes},
           ]}>
-          <Text style={[textSize === 'small' ? styles.nameSmall : styles.name]}>
+          <Text
+            style={[
+              textSize === 'small' && styles.nameSmall,
+              textSize === 'medium' && styles.name,
+              textSize === 'large' && styles.nameLarge,
+            ]}>
             {capitalizeAndReturnFirstLetter(name)}
           </Text>
         </View>
@@ -76,6 +81,10 @@ const createStyles = (theme: Theme) =>
     nameSmall: {
       color: theme.color.textPrimary,
       ...fonts.small,
+    },
+    nameLarge: {
+      color: theme.color.textPrimary,
+      ...fonts.heading,
     },
   });
 

@@ -31,6 +31,7 @@ const EmployeeInfoView: React.FC<IEmployeeInfoViewProps> = ({
       <Row style={styles.innerContainer} alignCenter>
         <CandidateProfilePictureView
           name={name}
+          textSize="large"
           size={verticalScale(80)}
           url={profilePicture?.url ?? null}
           status={ICandidateStatusEnum.pending}

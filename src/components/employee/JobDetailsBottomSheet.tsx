@@ -170,14 +170,14 @@ const JobDetailsBottomSheet = React.forwardRef<
               />
             )}
             <Spacers type="vertical" size={16} scalable />
-            {jobDetails?.required_certificates && (
+            {/* {jobDetails?.required_certificates && (
               <JobDetailsRenderer
                 heading={STRINGS.requiredCertificates}
                 description={convertArrayOfStringsToUlLi(
-                  jobDetails?.required_certificates,
+                  jobDetails?.required_certificates ?? [],
                 )}
               />
-            )}
+            )} */}
             <Spacers type="vertical" size={16} scalable />
             <Text style={styles.heading}>{STRINGS.address}</Text>
             <Text style={styles.pStyles}>

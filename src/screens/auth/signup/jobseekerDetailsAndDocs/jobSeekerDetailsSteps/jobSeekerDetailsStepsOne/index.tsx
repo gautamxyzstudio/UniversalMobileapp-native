@@ -49,7 +49,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
       email: userDetails?.email ?? '',
       emailError: '',
       selfie: [],
-      phone: '',
+      phone: '9646106068',
       gender: '',
       genderError: '',
       workStatus: '',
@@ -77,7 +77,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           name: fields.name,
           email: userDetails?.email,
           selfie: state.selfie,
-          phone: fields.phone,
+          phone: '9646106068',
           dob: fields.dob.toISOString(),
           city: fields.city,
           address: fields.address,
@@ -180,6 +180,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
         />
         <Spacers type={'vertical'} size={16} />
         <PhoneNumberInput
+          value={state.phone}
           getSelectedPhoneNumber={number =>
             setState({...state, phone: number, phoneError: ''})
           }
