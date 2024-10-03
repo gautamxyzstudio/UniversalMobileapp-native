@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';
 
@@ -15,9 +15,9 @@ import {ICandidateTypes} from '@api/features/client/types';
 import {ICandidateStatusEnum, IJobPostStatus} from '@utils/enums';
 import {STRINGS} from 'src/locales/english';
 import {
+  candidateListFromState,
   confirmCandidate,
   declineCandidate,
-  openJobsFromState,
   updateOpenApplication,
 } from '@api/features/client/clientSlice';
 import {useDispatch, useSelector} from 'react-redux';
@@ -25,6 +25,7 @@ import {mockJobPostsLoading} from '@api/mockData';
 import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {useToast} from 'react-native-toast-notifications';
 import {useUserDetailsViewCandidateListContext} from '@screens/clientScreens/candidateList/UserDetailsViewCandidateList';
+import {IC_NO_APPLICATIONS} from '@assets/exporter';
 
 type ICandidateListOpenProps = {
   jobId: number | null;
@@ -34,27 +35,30 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
   const styles = useThemeAwareObject(getStyles);
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
+  const candidateJobs = useSelector(candidateListFromState);
   const {onPressSheet} = useUserDetailsViewCandidateListContext();
   const [refreshing, updateRefreshing] = useState(false);
-  const openJobFromState = useSelector(openJobsFromState);
   const dispatch = useDispatch();
   const [openApplication, setApplications] = useState<
     Map<number, ICandidateTypes>
   >(new Map());
-  const [getOpenRequests] = useLazyGetCandidatesListQuery();
+  const [getOpenRequests, {error}] = useLazyGetCandidatesListQuery();
   const [statusUpdater] = useUpdateJobApplicationStatusMutation();
 
   useEffect(() => {
     if (jobId) {
-      const job = openJobFromState.find(j => j.id === jobId);
-      if (job && job.applicants?.open) {
-        setApplications(job.applicants.open);
+      const job = candidateJobs.find(j => j.details.jobId === jobId);
+      if (job && job.open) {
+        console.log(job.open, 'open application are there');
+        setApplications(job.open);
       }
     }
-  }, [openJobFromState, jobId]);
+  }, [candidateJobs, jobId]);
 
   useEffect(() => {
-    getApplications();
+    if (jobId) {
+      getApplications();
+    }
   }, [jobId]);
 
   const acceptCandidateApplication = (item: ICandidateTypes) =>
@@ -143,11 +147,12 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
           isLoading ? mockJobPostsLoading : Array.from(openApplication.values())
         }
         renderItem={isLoading ? renderIsLoading : renderItem}
-        error={undefined}
+        error={error}
         betweenItemSpace={12}
         estimatedItemSize={verticalScale(72.66)}
         onRefresh={getApplications}
         emptyListMessage={STRINGS.noApplicantsYet}
+        emptyListIllustration={IC_NO_APPLICATIONS}
         emptyListSubTitle={STRINGS.be_the_first}
         refreshing={refreshing}
         ListFooterComponentStyle={styles.footer}
@@ -157,7 +162,7 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
   );
 };
 
-export default CandidateListOpen;
+export default memo(CandidateListOpen);
 
 const getStyles = ({}: Theme) => {
   return StyleSheet.create({

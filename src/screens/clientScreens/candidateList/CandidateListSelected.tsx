@@ -1,34 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {Alert, StyleSheet, View} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  declineShortlistedCandidate,
-  openJobsFromState,
-  removeFromShortlisted,
+  candidateListFromState,
   updateShortlistedApplication,
 } from '@api/features/client/clientSlice';
 import {ICandidateTypes} from '@api/features/client/types';
-import {
-  useLazyGetCandidatesListQuery,
-  useUpdateJobApplicationStatusMutation,
-} from '@api/features/client/clientApi';
-import CandidateDetailsBottomSheet from './CandidateDetailsBottomSheet';
-import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
-import {ICandidateStatusEnum, IJobPostStatus} from '@utils/enums';
+import {useLazyGetCandidatesListQuery} from '@api/features/client/clientApi';
+import {ICandidateStatusEnum} from '@utils/enums';
 import CustomList from '@components/molecules/customList';
 import {mockJobPostsLoading} from '@api/mockData';
 import CandidateCard from '@components/client/CandidateCard';
 import CandidateCardLoading from '@components/client/CandidateCardLoading';
 import {STRINGS} from 'src/locales/english';
-import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
-import {IC_BLOCK, IC_DENY, IC_REMOVE} from '@assets/exporter';
-import {useScreenInsets} from 'src/hooks/useScreenInsets';
-import {withAsyncErrorHandlingPost} from '@utils/constants';
-import {useToast} from 'react-native-toast-notifications';
+import {useCandidateListActionsBottomSheetContext} from './CandidateListActionsBottomSheetContext';
+import {useUserDetailsViewCandidateListContext} from './UserDetailsViewCandidateList';
+import {IC_NO_SHORTLISTED} from '@assets/exporter';
 
 type ICandidateListSelectedProps = {
   jobId: number | null;
@@ -39,35 +30,24 @@ const CandidateListSelected: React.FC<ICandidateListSelectedProps> = ({
 }) => {
   const styles = useThemeAwareObject(getStyles);
   const [refreshing, updateRefreshing] = useState(false);
-  const compRef = useRef<BottomSheetModalMethods | null>(null);
-  const optionSheetRef = useRef<BottomSheetModalMethods | null>(null);
-  const {insetsBottom} = useScreenInsets();
-  const toast = useToast();
-  const openJobFromState = useSelector(openJobsFromState);
+  const {onPressThreeDots} = useCandidateListActionsBottomSheetContext();
+  const {onPressSheet} = useUserDetailsViewCandidateListContext();
+  const candidateJobs = useSelector(candidateListFromState);
   const dispatch = useDispatch();
   const [selectedApplication, setSelectedApplications] = useState<
     Map<number, ICandidateTypes>
   >(new Map());
-  const [statusUpdater] = useUpdateJobApplicationStatusMutation();
-  const [getShortlistedCandidates, {isFetching}] =
+  const [getShortlistedCandidates, {isFetching, isError}] =
     useLazyGetCandidatesListQuery();
-  const [selectedCandidate, setSelectedCandidate] = useState<
-    ICandidateTypes | undefined
-  >();
-
-  const onPressCandidate = (item: ICandidateTypes) => {
-    setSelectedCandidate(item);
-    compRef.current?.snapToIndex(1);
-  };
 
   useEffect(() => {
     if (jobId) {
-      const job = openJobFromState.find(j => j.id === jobId);
-      if (job && job.applicants?.shortlisted) {
-        setSelectedApplications(job.applicants.shortlisted);
+      const job = candidateJobs.find(j => j.details.jobId === jobId);
+      if (job && job.shortlisted) {
+        setSelectedApplications(job.shortlisted);
       }
     }
-  }, [openJobFromState, jobId]);
+  }, [jobId, candidateJobs]);
 
   useEffect(() => {
     getApplications();
@@ -98,73 +78,19 @@ const CandidateListSelected: React.FC<ICandidateListSelectedProps> = ({
     }
   };
 
-  const onPressBottomSheet = (item: ICandidateTypes) => () => {
-    setSelectedCandidate(item);
-    optionSheetRef.current?.snapToIndex(1);
-  };
-
-  const renderItem = ({item}: {item: ICandidateTypes}) => (
-    <CandidateCard
-      item={item}
-      status={ICandidateStatusEnum.selected}
-      onPressThreeDots={onPressBottomSheet(item)}
-      onPressCard={onPressCandidate}
-    />
+  const renderItem = useCallback(
+    ({item}: {item: ICandidateTypes}) => (
+      <CandidateCard
+        item={item}
+        status={ICandidateStatusEnum.selected}
+        onPressThreeDots={() =>
+          onPressThreeDots('show', jobId ?? 0, 'shortlisted', item)
+        }
+        onPressCard={() => onPressSheet('show', 'shortlisted', item)}
+      />
+    ),
+    [selectedApplication],
   );
-
-  const removeFromShortlistHandler = () =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        if (selectedCandidate && jobId) {
-          optionSheetRef.current?.close();
-
-          const response = await statusUpdater({
-            applicationId: selectedCandidate.id,
-            status: IJobPostStatus.APPLIED,
-          }).unwrap();
-          if (response) {
-            dispatch(
-              removeFromShortlisted({
-                applicant: selectedCandidate,
-                jobId: jobId,
-              }),
-            );
-          }
-        }
-      },
-      toast,
-      dispatch,
-    );
-
-  const declineShortlistedCandidateHandler = () =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        if (selectedCandidate && jobId) {
-          optionSheetRef.current?.close();
-          const response = await statusUpdater({
-            applicationId: selectedCandidate.id,
-            status: IJobPostStatus.DECLINED,
-          }).unwrap();
-          if (response) {
-            dispatch(
-              declineShortlistedCandidate({
-                applicant: selectedCandidate,
-                jobId: jobId,
-              }),
-            );
-          }
-        }
-      },
-      toast,
-      dispatch,
-    );
-
-  const onPressBlock = () => {
-    optionSheetRef.current?.close();
-    setTimeout(() => {
-      Alert.alert('feature not implemented');
-    }, 300);
-  };
 
   const renderIsLoading = () => <CandidateCardLoading />;
 
@@ -177,47 +103,22 @@ const CandidateListSelected: React.FC<ICandidateListSelectedProps> = ({
             : Array.from(selectedApplication.values())
         }
         renderItem={isFetching ? renderIsLoading : renderItem}
-        error={undefined}
+        error={isError}
         betweenItemSpace={12}
         estimatedItemSize={verticalScale(72.66)}
         onRefresh={getApplications}
         emptyListMessage={STRINGS.no_shortlisted}
+        emptyListIllustration={IC_NO_SHORTLISTED}
         emptyListSubTitle={STRINGS.please_review}
         refreshing={refreshing}
         ListFooterComponentStyle={styles.footer}
         isLastPage={true}
       />
-      <CandidateDetailsBottomSheet
-        ref={compRef}
-        details={selectedCandidate}
-        jobStatus={ICandidateStatusEnum.selected}
-      />
-      <SelectOptionBottomSheet
-        modalHeight={verticalScale(280) + insetsBottom}
-        ref={optionSheetRef}
-        options={[
-          {
-            icon: IC_REMOVE,
-            title: STRINGS.remove_from_shortlist,
-            onPress: removeFromShortlistHandler(),
-          },
-          {
-            icon: IC_DENY,
-            title: STRINGS.deny,
-            onPress: declineShortlistedCandidateHandler(),
-          },
-          {
-            icon: IC_BLOCK,
-            title: STRINGS.block,
-            onPress: () => onPressBlock(),
-          },
-        ]}
-      />
     </View>
   );
 };
 
-export default CandidateListSelected;
+export default memo(CandidateListSelected);
 
 const getStyles = ({}: Theme) => {
   const styles = StyleSheet.create({

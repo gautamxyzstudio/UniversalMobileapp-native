@@ -13,6 +13,7 @@ import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale, windowWidth} from '@utils/metrics';
 import {ICustomModalProps, customModalRef} from './types';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const CustomModal = React.forwardRef<customModalRef, ICustomModalProps>(
   ({children, hideOverLay, hideOnClickOutSide}, ref) => {
@@ -42,7 +43,7 @@ const CustomModal = React.forwardRef<customModalRef, ICustomModalProps>(
       }).start();
       setTimeout(() => {
         setShowModal(false);
-      }, 300);
+      }, timeOutTimeSheets);
     };
 
     const handleModalState = (value: boolean) => {

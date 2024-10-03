@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import OnBoardingBackground from '@components/organisms/onboardingb';
@@ -13,18 +13,20 @@ import OpenJobsBottomSheet from '@components/client/OpenJobsBottomSheet';
 import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  openJobsFromState,
+  candidateListFromState,
   saveOpenJobs,
 } from '@api/features/client/clientSlice';
-import {IJobPostTypes} from '@api/features/client/types';
+import {ICandidateListTypes} from '@api/features/client/types';
 import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {useTheme} from '@theme/Theme.context';
 import {ActivityIndicator} from 'react-native-paper';
-import EmptyState from '@screens/common/emptyAndErrorScreen';
-import {EMPTY} from '@assets/exporter';
 import UserDetailsViewSheetCandidateListProvider from '@screens/clientScreens/candidateList/UserDetailsViewCandidateList';
+import CandidateListActionsBottomSheetContextProvider from './CandidateListActionsBottomSheetContext';
+import EmptyState from '@screens/common/emptyAndErrorScreen';
+import {IC_NO_CANDIDATES} from '@assets/exporter';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 type ICandidateListProps = {
   route: {
@@ -40,32 +42,23 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const styles = useThemeAwareObject(getStyles);
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
   const user = useSelector(userBasicDetailsFromState);
+  const candidateJobs = useSelector(candidateListFromState);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
   const scrollViewRef = useRef<ScrollView | null>(null);
   const {theme} = useTheme();
-  const openJobFromState = useSelector(openJobsFromState);
   const [currentPage, setCurrentPage] = useState(0);
   const [isLastPage, setIsLastPage] = useState(true);
   const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
   const [currentSelectedJob, setCurrentSelectedJob] =
-    useState<IJobPostTypes | null>(null);
-
-  const onPressTab = (index: number) => {
-    scrollViewRef.current?.scrollTo({
-      x: index * windowWidth,
-      animated: true,
-    });
-  };
+    useState<ICandidateListTypes | null>(null);
 
   const getJobPostsHandler = withAsyncErrorHandlingGet(
     async (isFirstPage: boolean = false) => {
+      setIsLoading(true);
       let page = isFirstPage ? 1 : currentPage + 1;
-      let perPageRecord = 10;
-      if (isFirstPage) {
-        setIsRefreshing(true);
-      }
+      let perPageRecord = 100;
       const response = await getJobPosts(user?.details?.detailsId).unwrap();
       if (response.data) {
         setIsRefreshing(false);
@@ -84,21 +77,34 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   );
 
   useEffect(() => {
-    setCurrentSelectedJob(openJobFromState[0]);
-  }, []);
-
-  useEffect(() => {
     if (selectedJobId) {
-      let jobIndex = openJobFromState.findIndex(j => j.id === selectedJobId);
+      let jobIndex = candidateJobs.findIndex(
+        j => j.details.jobId === selectedJobId,
+      );
       if (jobIndex !== -1) {
-        setCurrentSelectedJob(openJobFromState[jobIndex]);
+        setCurrentSelectedJob(candidateJobs[jobIndex]);
       }
     }
   }, [selectedJobId]);
 
-  const onChangeSelectedJobHandler = (job: IJobPostTypes) => {
-    setCurrentSelectedJob(job);
+  useEffect(() => {
+    if (candidateJobs) {
+      setCurrentSelectedJob(candidateJobs[0]);
+    }
+  }, []);
+
+  const onPressTab = (index: number) => {
+    scrollViewRef.current?.scrollTo({
+      x: index * windowWidth,
+      animated: true,
+    });
+  };
+
+  const onChangeSelectedJobHandler = (candidateJob: ICandidateListTypes) => {
     bottomSheetRef.current?.close();
+    setTimeout(() => {
+      setCurrentSelectedJob(candidateJob);
+    }, timeOutTimeSheets);
   };
 
   const onPressFilter = () => {
@@ -111,31 +117,45 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
     }
   };
 
+  const onRefreshHandler = () => {
+    setCurrentPage(1);
+    setIsRefreshing(true);
+    getJobPostsHandler(true);
+  };
+
   useEffect(() => {
     getJobPostsHandler(true);
   }, []);
 
   return (
     <UserDetailsViewSheetCandidateListProvider>
-      <OnBoardingBackground
-        childrenStyles={styles.mainView}
-        hideBack
-        title={STRINGS.candidateList}>
-        {isLoading ? (
-          <View style={styles.main}>
-            <ActivityIndicator size={'large'} color={theme.color.darkBlue} />
-          </View>
-        ) : (
-          <>
-            <CandidateListTopView
-              onPressFilter={onPressFilter}
-              onPressTab={onPressTab}
-              jobName={currentSelectedJob?.job_name ?? ''}
-              jobId={currentSelectedJob?.id ?? 0}
-              index={0}
-            />
-            <View style={styles.container}>
-              {openJobFromState.length ? (
+      <CandidateListActionsBottomSheetContextProvider>
+        <OnBoardingBackground
+          childrenStyles={styles.mainView}
+          hideBack
+          title={STRINGS.candidateList}>
+          {isLoading && (
+            <View style={styles.main}>
+              <ActivityIndicator size={'large'} color={theme.color.darkBlue} />
+            </View>
+          )}
+          {!isLoading && !error && candidateJobs.length !== 0 && (
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  progressBackgroundColor={theme.color.darkBlue}
+                  onRefresh={onRefreshHandler}
+                  refreshing={isRefreshing}
+                />
+              }>
+              <View style={styles.container}>
+                <CandidateListTopView
+                  onPressFilter={onPressFilter}
+                  onPressTab={onPressTab}
+                  jobName={currentSelectedJob?.details.jobName ?? ''}
+                  jobId={currentSelectedJob?.details.jobId ?? 0}
+                  index={0}
+                />
                 <ScrollView
                   snapToAlignment="center"
                   pagingEnabled
@@ -144,40 +164,49 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
                   ref={scrollViewRef}
                   horizontal>
                   <View style={styles.screen}>
-                    <CandidateListOpen jobId={currentSelectedJob?.id ?? null} />
+                    <CandidateListOpen
+                      jobId={currentSelectedJob?.details.jobId ?? null}
+                    />
                   </View>
                   <View style={styles.screen}>
                     <CandidateListSelected
-                      jobId={currentSelectedJob?.id ?? null}
+                      jobId={currentSelectedJob?.details.jobId ?? null}
                     />
                   </View>
                   <View style={styles.screen}>
                     <CandidateListDeclined
-                      jobId={currentSelectedJob?.id ?? null}
+                      jobId={currentSelectedJob?.details.jobId ?? null}
                     />
                   </View>
                 </ScrollView>
-              ) : (
-                <EmptyState
-                  emptyListIllustration={EMPTY}
-                  emptyListSubTitle={STRINGS.no_jobs_posted_yet}
-                  emptyListMessage={STRINGS.no_jobs_posted_yet}
-                  errorObj={error}
-                />
-              )}
+              </View>
+            </ScrollView>
+          )}
+          {!isLoading && (error || candidateJobs.length === 0) && (
+            <View style={styles.emptyView}>
+              <EmptyState
+                emptyListIllustration={IC_NO_CANDIDATES}
+                data={candidateJobs}
+                withRefetch
+                refreshHandler={() => getJobPostsHandler(true)}
+                emptyListSubTitle={STRINGS.no_jobs_created_description}
+                emptyListMessage={STRINGS.no_jobs_posted_yet}
+                errorObj={error}
+              />
             </View>
-          </>
-        )}
-        <OpenJobsBottomSheet
-          ref={bottomSheetRef}
-          jobs={openJobFromState}
-          currentSelectedJob={currentSelectedJob}
-          onPressCard={onChangeSelectedJobHandler}
-          onReachEnd={loadMore}
-          onRefresh={() => getJobPostsHandler(true)}
-          isRefreshing={isRefreshing}
-        />
-      </OnBoardingBackground>
+          )}
+
+          <OpenJobsBottomSheet
+            ref={bottomSheetRef}
+            jobs={candidateJobs}
+            currentSelectedJob={currentSelectedJob}
+            onPressCard={onChangeSelectedJobHandler}
+            onReachEnd={loadMore}
+            onRefresh={() => getJobPostsHandler(true)}
+            isRefreshing={isRefreshing}
+          />
+        </OnBoardingBackground>
+      </CandidateListActionsBottomSheetContextProvider>
     </UserDetailsViewSheetCandidateListProvider>
   );
 };
@@ -187,13 +216,13 @@ export default CandidateList;
 const getStyles = () => {
   const styles = StyleSheet.create({
     container: {
-      paddingVertical: verticalScale(16),
       flexGrow: 1,
     },
     mainView: {
       paddingTop: 0,
       paddingBottom: 0,
       paddingHorizontal: 0,
+      backgroundColor: '#F1F4FF',
     },
     screen: {
       width: windowWidth,
@@ -201,11 +230,19 @@ const getStyles = () => {
     },
     flex: {
       flexGrow: 1,
+      paddingVertical: verticalScale(16),
+      backgroundColor: '#fff',
     },
     main: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    scrollView: {
+      backgroundColor: 'red',
+    },
+    emptyView: {
+      flexGrow: 1,
     },
   });
   return styles;

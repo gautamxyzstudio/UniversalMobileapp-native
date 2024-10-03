@@ -5,17 +5,19 @@ import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
 import {verticalScale} from '@utils/metrics';
 import React, {createContext, useRef, useState} from 'react';
-import {Platform, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {STRINGS} from 'src/locales/english';
 import {clientTabBarRoutes} from 'src/navigator/types';
 import {useJobDetailsContext} from './displayJobDetailsContext';
 import {useStopAJobPostMutation} from '@api/features/client/clientApi';
-import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {useDispatch} from 'react-redux';
 import {stopAJobPostReducer} from '@api/features/client/clientSlice';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {ICustomErrorResponse} from '@api/types';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 type IQuickLinksJobPostContextTypes = {
   onPressSheet: (
@@ -61,56 +63,59 @@ const QuickLinksJobPostContextProvider = ({
     }
   };
 
-  const stopAJobHandler = (jobPost: IJobPostTypes) =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        quickActionSheetRef.current?.close();
-        if (jobPost) {
-          const response = await stopAJobPost({
-            jobId: jobPost.id,
-          }).unwrap();
-          if (response) {
-            if (jobPost) {
-              dispatch(stopAJobPostReducer({jobId: jobPost.id}));
-              showToast(toast, STRINGS.job_closed_success, 'success');
-              console.log(response);
-            }
+  const stopAJobHandler = async (jobPost: IJobPostTypes) => {
+    try {
+      dispatch(setLoading(true));
+      if (jobPost) {
+        const response = await stopAJobPost({
+          jobId: jobPost.id,
+        }).unwrap();
+        if (response) {
+          if (jobPost) {
+            dispatch(stopAJobPostReducer({jobId: jobPost.id}));
+            showToast(toast, STRINGS.job_closed_success, 'success');
+            console.log(response, 'response');
           }
         }
-      },
-      toast,
-      dispatch,
-    );
+      }
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError?.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   const onPressSheetAction = (type: number) => {
     quickActionSheetRef.current?.close();
-    setTimeout(
-      () => {
-        switch (type) {
-          case 0:
-            navigation.navigate('shortlistedCandidates');
-            break;
-          case 1:
-            navigation.navigate('clientTabBar', {
-              screen: clientTabBarRoutes.contactList,
-              params: {jobId: selectedJobPost?.id},
-            });
-            break;
-          case 2:
-            onPressSheet('show', selectedJobPost);
-            break;
-          case 3:
-            if (selectedJobPost) {
-              stopAJobHandler(selectedJobPost);
-            }
-            break;
-          default:
-            navigation.navigate('shortlistedCandidates');
-            break;
-        }
-      },
-      Platform.OS === 'android' ? 300 : 100,
-    );
+    setTimeout(() => {
+      switch (type) {
+        case 0:
+          navigation.navigate('shortlistedCandidates');
+          break;
+        case 1:
+          navigation.navigate('clientTabBar', {
+            screen: clientTabBarRoutes.contactList,
+            params: {jobId: selectedJobPost?.id},
+          });
+          break;
+        case 2:
+          onPressSheet('show', selectedJobPost);
+          break;
+        case 3:
+          if (selectedJobPost) {
+            stopAJobHandler(selectedJobPost);
+          }
+          break;
+        default:
+          navigation.navigate('shortlistedCandidates');
+          break;
+      }
+    }, timeOutTimeSheets);
   };
 
   const contextValue: IQuickLinksJobPostContextTypes = {
@@ -147,7 +152,7 @@ const QuickLinksJobPostContextProvider = ({
                 {
                   icon: PAUSE,
                   title: STRINGS.stop,
-                  onPress: () => () => onPressSheetAction(3),
+                  onPress: () => onPressSheetAction(3),
                 },
               ]
             : [

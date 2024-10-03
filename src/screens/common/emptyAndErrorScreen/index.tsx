@@ -16,6 +16,7 @@ type IEmptyStateProps<T> = {
   errorHeader?: string;
   image?: ImageSourcePropType;
   errorMsg?: string;
+  withRefetch?: boolean;
   emptyListMessage?: string;
   emptyListIllustration?: React.FC<SvgProps>;
   emptyListSubTitle?: string;
@@ -29,7 +30,7 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
   emptyListIllustration,
   emptyListSubTitle,
   errorMsg,
-
+  withRefetch,
   refreshHandler,
 }) => {
   const styles = useThemeAwareObject(getStyles);
@@ -49,6 +50,13 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
           />
           <Text style={styles.errorHeader}>{emptyListMessage}</Text>
           <Text style={styles.errorDescription}>{emptyListSubTitle}</Text>
+          {withRefetch && (
+            <CustomButton
+              title={STRINGS.refetch}
+              onButtonPress={refreshHandler}
+              disabled={false}
+            />
+          )}
         </>
       )}
       {errorObj && errorObj.statusCode === 'FETCH_ERROR' && (
@@ -56,6 +64,13 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
           <NO_INTERNET />
           <Text style={styles.errorHeader}>{internetError}</Text>
           <Text style={styles.errorDescription}>{internetErrorMsg}</Text>
+          {withRefetch && (
+            <CustomButton
+              title={STRINGS.refetch}
+              onButtonPress={refreshHandler}
+              disabled={false}
+            />
+          )}
         </>
       )}
       {errorObj && errorObj?.statusCode !== 'FETCH_ERROR' && (
@@ -65,7 +80,7 @@ const EmptyState: React.FC<IEmptyStateProps<any>> = ({
             height={verticalScale(163)}
           />
           <Text style={styles.errorHeader}>{error}</Text>
-          <Text style={styles.errorSubHeader}>{errorMessage}</Text>
+          <Text style={styles.errorDescription}>{errorMessage}</Text>
           <CustomButton
             title={STRINGS.retry}
             onButtonPress={refreshHandler}

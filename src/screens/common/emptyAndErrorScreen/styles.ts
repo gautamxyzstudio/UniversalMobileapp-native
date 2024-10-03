@@ -21,7 +21,9 @@ export const getStyles = (theme: Theme) => {
     },
     errorDescription: {
       ...fonts.medium,
+
       marginTop: verticalScale(8),
+      marginBottom: verticalScale(20),
       textAlign: 'center',
       color: theme.color.textPrimary,
     },

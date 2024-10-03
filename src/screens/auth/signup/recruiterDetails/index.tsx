@@ -34,6 +34,7 @@ import {ICustomErrorResponse} from '@api/types';
 import {useToast} from 'react-native-toast-notifications';
 import {useAddClientDetailsMutation} from '@api/features/user/userApi';
 import PhoneNumberInput from '@components/molecules/InputTypes/PhoneNumberInput';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const RecruiterDetails = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -148,7 +149,7 @@ const RecruiterDetails = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, 400);
+    }, timeOutTimeSheets);
   };
 
   return (

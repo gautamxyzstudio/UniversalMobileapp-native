@@ -1,5 +1,6 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import {
+  ICandidateListTypes,
   ICandidateTypes,
   IClientSliceInitialState,
   IJobPostTypes,
@@ -12,6 +13,7 @@ const initialState: IClientSliceInitialState = {
     closed: [],
     drafts: [],
   },
+  candidateList: [],
 };
 
 const clientSlice = createSlice({
@@ -22,11 +24,23 @@ const clientSlice = createSlice({
       state,
       action: PayloadAction<{jobs: IJobPostTypes[]; pageNo: number}>,
     ) => {
-      if (action.payload.pageNo === 1) {
-        state.jobs.open = [...action.payload.jobs];
-      } else {
-        state.jobs.open = [...state.jobs.open, ...action.payload.jobs];
-      }
+      state.candidateList = [];
+      state.jobs.open = [...action.payload.jobs];
+      action.payload.jobs.forEach(job => {
+        const candidateItem: ICandidateListTypes = {
+          details: {
+            jobId: job?.id ?? 0,
+            jobName: job?.job_name ?? '',
+            jobPoster: null,
+            eventDate: job.eventDate ?? new Date(),
+            location: job.location ?? '',
+          },
+          open: new Map<number, ICandidateTypes>(), // Initially empty
+          shortlisted: new Map<number, ICandidateTypes>(), // Initially empty
+          denied: new Map<number, ICandidateTypes>(), // Initially empty
+        };
+        state.candidateList.push(candidateItem);
+      });
     },
     saveClosedJobs: (
       state,
@@ -81,24 +95,23 @@ const clientSlice = createSlice({
         pageNumber: number;
       }>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
       if (jobIndex !== -1) {
         let openJobsMap = new Map<number, ICandidateTypes>();
         action.payload.candidates.forEach(candidate => {
           openJobsMap.set(candidate.id, candidate);
         });
-        openJobs[jobIndex] = {
-          ...openJobs[jobIndex],
-          applicants: {
-            open: openJobsMap,
-            shortlisted: openJobs[jobIndex].applicants?.shortlisted ?? null,
-            denied: openJobs[jobIndex].applicants?.denied ?? null,
-          },
+
+        candidateList[jobIndex] = {
+          ...candidateList[jobIndex],
+          open: openJobsMap,
+          shortlisted: candidateList[jobIndex]?.shortlisted ?? null,
+          denied: candidateList[jobIndex]?.denied ?? null,
         };
-        state.jobs.open = openJobs;
+        state.candidateList = candidateList;
       }
     },
     updateShortlistedApplication: (
@@ -109,24 +122,23 @@ const clientSlice = createSlice({
         pageNumber: number;
       }>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
       if (jobIndex !== -1) {
         let shortlistedCandidatesMap = new Map<number, ICandidateTypes>();
         action.payload.candidates.forEach(candidate => {
           shortlistedCandidatesMap.set(candidate.id, candidate);
         });
-        openJobs[jobIndex] = {
-          ...openJobs[jobIndex],
-          applicants: {
-            open: openJobs[jobIndex].applicants?.open ?? null,
-            shortlisted: shortlistedCandidatesMap,
-            denied: openJobs[jobIndex].applicants?.denied ?? null,
-          },
+
+        candidateList[jobIndex] = {
+          ...candidateList[jobIndex],
+          open: candidateList[jobIndex]?.open ?? null,
+          shortlisted: shortlistedCandidatesMap ?? null,
+          denied: candidateList[jobIndex]?.denied ?? null,
         };
-        state.jobs.open = openJobs;
+        state.candidateList = candidateList;
       }
     },
     updateDeclinedApplications: (
@@ -137,38 +149,36 @@ const clientSlice = createSlice({
         pageNumber: number;
       }>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
       if (jobIndex !== -1) {
         let declinedCandidatesMap = new Map<number, ICandidateTypes>();
         action.payload.candidates.forEach(candidate => {
           declinedCandidatesMap.set(candidate.id, candidate);
         });
-        openJobs[jobIndex] = {
-          ...openJobs[jobIndex],
-          applicants: {
-            open: openJobs[jobIndex].applicants?.open ?? null,
-            shortlisted: openJobs[jobIndex].applicants?.shortlisted ?? null,
-            denied: declinedCandidatesMap,
-          },
+        candidateList[jobIndex] = {
+          ...candidateList[jobIndex],
+          open: candidateList[jobIndex]?.open ?? null,
+          shortlisted: candidateList[jobIndex]?.shortlisted ?? null,
+          denied: declinedCandidatesMap ?? null,
         };
-        state.jobs.open = openJobs;
+        state.candidateList = candidateList;
       }
     },
     confirmCandidate: (
       state,
       action: PayloadAction<{applicant: ICandidateTypes; jobId: number}>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
       if (jobIndex !== -1) {
-        let openApplicantsMap = new Map(openJobs[jobIndex].applicants?.open);
+        let openApplicantsMap = new Map(candidateList[jobIndex].open);
         let shortlistedCandidatesMap = new Map(
-          openJobs[jobIndex].applicants?.shortlisted,
+          candidateList[jobIndex].shortlisted,
         );
         if (openApplicantsMap.has(action.payload.applicant.id)) {
           openApplicantsMap.delete(action.payload.applicant.id);
@@ -176,72 +186,74 @@ const clientSlice = createSlice({
             action.payload.applicant.id,
             action.payload.applicant,
           );
-          openJobs[jobIndex].applicants = {
+
+          candidateList[jobIndex] = {
+            ...candidateList[jobIndex],
             open: openApplicantsMap,
             shortlisted: shortlistedCandidatesMap,
-            denied: openJobs[jobIndex].applicants?.denied ?? null,
+            denied: candidateList[jobIndex]?.denied ?? null,
           };
+          state.candidateList = candidateList;
+        } else {
+          console.log('job Index was minus one');
         }
-        state.jobs.open = openJobs;
-      } else {
-        console.log('job Index was minus one');
       }
     },
     declineCandidate: (
       state,
       action: PayloadAction<{applicant: ICandidateTypes; jobId: number}>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
       if (jobIndex !== -1) {
-        let openApplicantsMap = new Map(openJobs[jobIndex].applicants?.open);
-        let declinedCandidatesMap = new Map(
-          openJobs[jobIndex].applicants?.denied,
-        );
+        let openApplicantsMap = new Map(candidateList[jobIndex].open);
+        let declinedCandidatesMap = new Map(candidateList[jobIndex].denied);
         if (openApplicantsMap.has(action.payload.applicant.id)) {
           openApplicantsMap.delete(action.payload.applicant.id);
           declinedCandidatesMap.set(
             action.payload.applicant.id,
             action.payload.applicant,
           );
-          openJobs[jobIndex].applicants = {
+          candidateList[jobIndex] = {
+            ...candidateList[jobIndex],
             open: openApplicantsMap,
-            shortlisted: openJobs[jobIndex].applicants?.shortlisted ?? null,
+            shortlisted: candidateList[jobIndex]?.shortlisted ?? null,
             denied: declinedCandidatesMap,
           };
+          state.candidateList = candidateList;
+        } else {
+          console.log('job Index was minus one');
         }
-        state.jobs.open = openJobs;
-      } else {
-        console.log('job Index was minus one');
       }
     },
     removeFromShortlisted: (
       state,
       action: PayloadAction<{applicant: ICandidateTypes; jobId: number}>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
       if (jobIndex !== -1) {
-        let openApplicantsMap = new Map(openJobs[jobIndex].applicants?.open);
-        let confirmedApplicantsMap = new Map(
-          openJobs[jobIndex].applicants?.shortlisted,
+        let openApplicantsMap = new Map(candidateList[jobIndex].open);
+        let shortlistedApplicantsMap = new Map(
+          candidateList[jobIndex].shortlisted,
         );
-        if (confirmedApplicantsMap.has(action.payload.applicant.id)) {
-          confirmedApplicantsMap.delete(action.payload.applicant.id);
+        if (shortlistedApplicantsMap.has(action.payload.applicant.id)) {
+          shortlistedApplicantsMap.delete(action.payload.applicant.id);
           openApplicantsMap.set(
             action.payload.applicant.id,
             action.payload.applicant,
           );
-          openJobs[jobIndex].applicants = {
+          candidateList[jobIndex] = {
+            ...candidateList[jobIndex],
             open: openApplicantsMap,
-            shortlisted: confirmedApplicantsMap,
-            denied: openJobs[jobIndex].applicants?.denied ?? null,
+            shortlisted: shortlistedApplicantsMap,
+            denied: candidateList[jobIndex]?.denied ?? null,
           };
-          state.jobs.open = openJobs;
+          state.candidateList = candidateList;
         }
       }
     },
@@ -249,32 +261,40 @@ const clientSlice = createSlice({
       state,
       action: PayloadAction<{applicant: ICandidateTypes; jobId: number}>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      // Work with candidateList
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
+
       if (jobIndex !== -1) {
-        let declinedApplicantsMap = new Map(
-          openJobs[jobIndex].applicants?.denied,
+        let deniedApplicantsMap = new Map(candidateList[jobIndex].denied);
+        let shortlistedApplicantsMap = new Map(
+          candidateList[jobIndex].shortlisted,
         );
-        let confirmedApplicantsMap = new Map(
-          openJobs[jobIndex].applicants?.shortlisted,
-        );
-        if (confirmedApplicantsMap.has(action.payload.applicant.id)) {
-          confirmedApplicantsMap.delete(action.payload.applicant.id);
-          declinedApplicantsMap.set(
+
+        // If the applicant is in the shortlisted map, move them to the denied map
+        if (shortlistedApplicantsMap.has(action.payload.applicant.id)) {
+          shortlistedApplicantsMap.delete(action.payload.applicant.id);
+          deniedApplicantsMap.set(
             action.payload.applicant.id,
             action.payload.applicant,
           );
-          openJobs[jobIndex].applicants = {
-            open: openJobs[jobIndex].applicants?.open ?? null,
-            shortlisted: confirmedApplicantsMap,
-            denied: declinedApplicantsMap,
+
+          // Update the candidate list for this job
+          candidateList[jobIndex] = {
+            ...candidateList[jobIndex],
+            denied: deniedApplicantsMap,
+            shortlisted: shortlistedApplicantsMap,
+            open: candidateList[jobIndex]?.open ?? null, // Keep open as is
           };
-          state.jobs.open = openJobs;
+
+          // Update the state with the modified candidateList
+          state.candidateList = candidateList;
         }
       }
     },
+
     stopAJobPostReducer: (state, action: PayloadAction<{jobId: number}>) => {
       let openJobs = [...state.jobs.open];
       const jobIndex = openJobs.findIndex(
@@ -289,27 +309,34 @@ const clientSlice = createSlice({
       state,
       action: PayloadAction<{applicant: ICandidateTypes; jobId: number}>,
     ) => {
-      let openJobs = [...state.jobs.open];
-      const jobIndex = openJobs.findIndex(
-        job => job.id === action.payload.jobId,
+      // Work with candidateList
+      let candidateList = [...state.candidateList];
+      const jobIndex = candidateList.findIndex(
+        job => job.details.jobId === action.payload.jobId,
       );
+
       if (jobIndex !== -1) {
-        let declinedApplicantsMap = new Map(
-          openJobs[jobIndex].applicants?.denied,
-        );
-        let openApplicantsMap = new Map(openJobs[jobIndex].applicants?.open);
+        let declinedApplicantsMap = new Map(candidateList[jobIndex].denied);
+        let openApplicantsMap = new Map(candidateList[jobIndex].open);
+
+        // If the applicant is in the denied map, restore them to the open map
         if (declinedApplicantsMap.has(action.payload.applicant.id)) {
           declinedApplicantsMap.delete(action.payload.applicant.id);
           openApplicantsMap.set(
             action.payload.applicant.id,
             action.payload.applicant,
           );
-          openJobs[jobIndex].applicants = {
+
+          // Update the candidate list for this job
+          candidateList[jobIndex] = {
+            ...candidateList[jobIndex],
             open: openApplicantsMap,
-            shortlisted: openJobs[jobIndex].applicants?.shortlisted ?? null,
+            shortlisted: candidateList[jobIndex]?.shortlisted ?? null, // Keep shortlisted as is
             denied: declinedApplicantsMap,
           };
-          state.jobs.open = openJobs;
+
+          // Update the state with the modified candidateList
+          state.candidateList = candidateList;
         }
       }
     },
@@ -341,3 +368,5 @@ export const openJobsFromState = (state: RootState) => state.client.jobs.open;
 export const closedJobsFromState = (state: RootState) =>
   state.client.jobs.closed;
 export const jobDraftFromState = (state: RootState) => state.client.jobs.drafts;
+export const candidateListFromState = (state: RootState) =>
+  state.client.candidateList;

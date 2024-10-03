@@ -78,7 +78,6 @@ const SegmentView = React.forwardRef<ISegmentViewRefMethods, ISegmentProps>(
       () =>
         ({
           getIndex: (index: number) => {
-            console.log(index);
             animationValue.value = withSpring(index * translateValue, {
               stiffness: 180,
               damping: 20,

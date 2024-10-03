@@ -4,8 +4,6 @@ import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import EmployeeProfileTab from '@components/employee/EmployeeProfileTab';
 import {
-  DOCUMENTS_SECONDARY,
-  HISTORY,
   IC_COMPANY_DETAIL,
   IC_DOWNLOAD_SHEET,
   IC_LOG_ACTIVITY,
@@ -28,6 +26,7 @@ import {
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {IEmployeeDetails} from '@api/features/user/types';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const EmployeeProfile = () => {
   const styles = useThemeAwareObject(createStyles);
@@ -55,7 +54,7 @@ const EmployeeProfile = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, 400);
+    }, timeOutTimeSheets);
   };
   return (
     <OnBoardingBackground

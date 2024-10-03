@@ -113,6 +113,7 @@ export default EmployeeJobs;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 0,
+    paddingBottom: 0,
   },
 
   customList: {

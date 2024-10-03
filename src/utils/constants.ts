@@ -161,7 +161,11 @@ export const getImageDetails = (
   const item = image;
   if (typeof item === 'object' && item) {
     return {
-      ...item,
+      url: item.url || '',
+      mime: item.mime || '',
+      id: item.id,
+      name: item.name || '',
+      size: item.size || 0,
     };
   }
   return undefined;

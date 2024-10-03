@@ -23,6 +23,7 @@ import {customModalRef} from '@components/molecules/customModal/types';
 import store from '@api/store';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const Approval = () => {
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
@@ -37,21 +38,21 @@ const Approval = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
       bottomSheetRefContactUs.current?.snapToIndex(1);
-    }, 100);
+    }, timeOutTimeSheets);
   };
 
   const onPressFaqs = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
       bottomSheetRefFaqs.current?.snapToIndex(1);
-    }, 100);
+    }, timeOutTimeSheets);
   };
 
   const onPressLogoutButton = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
       popupRef.current?.handleModalState(true);
-    }, 100);
+    }, timeOutTimeSheets);
   };
 
   const onPressLogout = () => {
@@ -62,7 +63,7 @@ const Approval = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, 400);
+    }, timeOutTimeSheets);
   };
   return (
     <OnBoardingBackground

@@ -8,15 +8,15 @@ import {useNavigation} from '@react-navigation/native';
 import {STRINGS} from 'src/locales/english';
 import {verticalScale, windowHeight} from '@utils/metrics';
 import OpenJobsListCard from './OpenJobsListCard';
-import {IJobPostTypes} from '@api/features/client/types';
+import {ICandidateListTypes} from '@api/features/client/types';
 import Spacers from '@components/atoms/Spacers';
 import {useKeyboardHeight} from 'src/hooks/useKeyboardHeight';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 
 type IOpenJobsBottomSheetPropsTypes = {
-  jobs: IJobPostTypes[];
-  currentSelectedJob: IJobPostTypes | null;
-  onPressCard: (job: IJobPostTypes) => void;
+  jobs: ICandidateListTypes[];
+  currentSelectedJob: ICandidateListTypes | null;
+  onPressCard: (job: ICandidateListTypes) => void;
   onReachEnd: () => void;
   onRefresh: () => void;
   isRefreshing: boolean;
@@ -39,8 +39,8 @@ const OpenJobsBottomSheet = React.forwardRef<
   ) => {
     const [search, setSearch] = useState('');
     const [currentJobs, setCurrentJobs] = useState(jobs);
-    const [selectedJob, setSelectedJob] = useState<IJobPostTypes | null>();
-    const [isLastPage, setIsLastPage] = useState(true);
+    const [selectedJob, setSelectedJob] =
+      useState<ICandidateListTypes | null>();
     const keyboardHeight = useKeyboardHeight();
     const modalHeight = windowHeight / 1.5;
     const snapPoints = useMemo(
@@ -73,9 +73,9 @@ const OpenJobsBottomSheet = React.forwardRef<
     };
 
     const renderItem = useCallback(
-      ({item}: {item: IJobPostTypes}) => (
+      ({item}: {item: ICandidateListTypes}) => (
         <OpenJobsListCard
-          isSelected={selectedJob?.id === item.id}
+          isSelected={selectedJob?.details.jobId === item.details.jobId}
           onPressCard={() => setSelectedJob(item)}
           job={item}
         />
@@ -117,7 +117,7 @@ const OpenJobsBottomSheet = React.forwardRef<
           disabled={
             selectedJob !== undefined &&
             currentSelectedJob !== undefined &&
-            selectedJob?.id === currentSelectedJob?.id
+            selectedJob?.details.jobId === currentSelectedJob?.details.jobId
           }
           title={STRINGS.done}
           onButtonPress={onPressSelect}

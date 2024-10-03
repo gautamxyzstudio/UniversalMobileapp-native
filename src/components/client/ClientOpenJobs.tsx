@@ -7,7 +7,7 @@ import CustomList from '@components/molecules/customList';
 import {verticalScale} from '@utils/metrics';
 import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {IJobPostTypes} from '@api/features/client/types';
-import {NO_INTERNET} from '@assets/exporter';
+import {EMPTY} from '@assets/exporter';
 import {STRINGS} from 'src/locales/english';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -53,13 +53,17 @@ const ClientOpenJobs = () => {
 
   const renderItemLoading = () => <JobPostCardLoading />;
 
+  const onRefreshHandler = () => {
+    setCurrentPage(1);
+    setIsRefreshing(true);
+    getJobPostsHandler(true);
+  };
+
   const getJobPostsHandler = withAsyncErrorHandlingGet(
     async (isFirstPage: boolean = false) => {
       let page = isFirstPage ? 1 : currentPage + 1;
-      let perPageRecord = 10;
-      if (isFirstPage) {
-        setIsRefreshing(true);
-      }
+      let perPageRecord = 100;
+
       const response = await getJobPosts(user?.details?.detailsId).unwrap();
       if (response.data) {
         setIsRefreshing(false);
@@ -72,6 +76,7 @@ const ClientOpenJobs = () => {
       }
     },
     () => {
+      updateJobPosts([]);
       setIsRefreshing(false);
       setIsLoading(false);
     },
@@ -93,8 +98,8 @@ const ClientOpenJobs = () => {
         getItemType={item => item.id}
         isRefreshing={isRefreshing}
         emptyListMessage={STRINGS.no_jobs_posted_yet}
-        emptyListIllustration={NO_INTERNET}
-        onRefresh={() => getJobPostsHandler(true)}
+        emptyListIllustration={EMPTY}
+        onRefresh={onRefreshHandler}
         emptyListSubTitle={STRINGS.create_job_to_find}
         ListFooterComponentStyle={{height: verticalScale(150)}}
         isLastPage={isLastPage}

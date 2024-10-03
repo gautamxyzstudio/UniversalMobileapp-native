@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Theme, useThemeAwareObject} from '@theme/index';
 import {verticalScale} from '@utils/metrics';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  openJobsFromState,
+  candidateListFromState,
   updateDeclinedApplications,
 } from '@api/features/client/clientSlice';
 import {ICandidateTypes} from '@api/features/client/types';
@@ -18,6 +18,8 @@ import CandidateCard from '@components/client/CandidateCard';
 import CandidateCardLoading from '@components/client/CandidateCardLoading';
 import {STRINGS} from 'src/locales/english';
 import {useUserDetailsViewCandidateListContext} from './UserDetailsViewCandidateList';
+import {useCandidateListActionsBottomSheetContext} from './CandidateListActionsBottomSheetContext';
+import {IC_NO_DENIED} from '@assets/exporter';
 
 type ICandidateListDeclinedProps = {
   jobId: number | null;
@@ -28,22 +30,24 @@ const CandidateListDeclined: React.FC<ICandidateListDeclinedProps> = ({
 }) => {
   const styles = useThemeAwareObject(getStyles);
   const [refreshing, updateRefreshing] = useState(false);
-  const openJobFromState = useSelector(openJobsFromState);
+  const {onPressThreeDots} = useCandidateListActionsBottomSheetContext();
   const dispatch = useDispatch();
+  const candidateJobs = useSelector(candidateListFromState);
   const [declinedApplication, setDeclinedApplications] = useState<
     Map<number, ICandidateTypes>
   >(new Map());
   const [getShortlistedCandidates, {isFetching}] =
     useLazyGetCandidatesListQuery();
   const {onPressSheet} = useUserDetailsViewCandidateListContext();
+
   useEffect(() => {
     if (jobId) {
-      const job = openJobFromState.find(j => j.id === jobId);
-      if (job && job.applicants?.denied) {
-        setDeclinedApplications(job.applicants.denied);
+      const job = candidateJobs.find(j => j.details.jobId === jobId);
+      if (job && job.denied) {
+        setDeclinedApplications(job.denied);
       }
     }
-  }, [openJobFromState, jobId]);
+  }, [candidateJobs, jobId]);
 
   useEffect(() => {
     getApplications();
@@ -79,6 +83,9 @@ const CandidateListDeclined: React.FC<ICandidateListDeclinedProps> = ({
       <CandidateCard
         item={item}
         status={ICandidateStatusEnum.declined}
+        onPressThreeDots={() =>
+          onPressThreeDots('show', jobId ?? 0, 'deny', item)
+        }
         onPressCard={() => onPressSheet('show', 'deny', item)}
       />
     ),
@@ -100,7 +107,9 @@ const CandidateListDeclined: React.FC<ICandidateListDeclinedProps> = ({
         betweenItemSpace={12}
         estimatedItemSize={verticalScale(72.66)}
         onRefresh={getApplications}
+        emptyListIllustration={IC_NO_DENIED}
         emptyListMessage={STRINGS.no_candidates_declined}
+        emptyListSubTitle={STRINGS.no_candidates_declined_dec}
         refreshing={refreshing}
         ListFooterComponentStyle={styles.footer}
         isLastPage={true}
@@ -109,7 +118,7 @@ const CandidateListDeclined: React.FC<ICandidateListDeclinedProps> = ({
   );
 };
 
-export default CandidateListDeclined;
+export default memo(CandidateListDeclined);
 
 const getStyles = ({}: Theme) => {
   const styles = StyleSheet.create({

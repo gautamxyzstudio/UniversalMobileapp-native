@@ -39,6 +39,7 @@ import {
   IUserDetailsRequestParams,
 } from '@api/features/user/types';
 import {useToast} from 'react-native-toast-notifications';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const JobSeekerDetailsAndDocs = () => {
   const stepOneRef = useRef<jobSeekerRef>(null);
@@ -49,7 +50,6 @@ const JobSeekerDetailsAndDocs = () => {
   const [employeeDocuments, setEmployeeDocuments] =
     useState<IUserDetailsRequestParams>({} as IUserDetailsRequestParams);
   const [submitUserDetails] = useSubmitUserDetailsMutation();
-  const [submitOtherDocs] = useSubmitUserDetailsMutation();
   const navigation = useNavigation<NavigationProps>();
   const [isSuccessPopupVisible] = useState(false);
   const styles = useThemeAwareObject(getStyles);
@@ -190,7 +190,7 @@ const JobSeekerDetailsAndDocs = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, 400);
+    }, timeOutTimeSheets);
   };
   return (
     <LinearGradient

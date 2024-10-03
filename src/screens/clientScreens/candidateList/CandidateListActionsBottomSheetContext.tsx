@@ -1,21 +1,28 @@
 import {useUpdateJobApplicationStatusMutation} from '@api/features/client/clientApi';
-import {restoreDeclinedCandidate} from '@api/features/client/clientSlice';
+import {
+  declineShortlistedCandidate,
+  removeFromShortlisted,
+  restoreDeclinedCandidate,
+} from '@api/features/client/clientSlice';
 import {ICandidateTypes} from '@api/features/client/types';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {ICustomErrorResponse} from '@api/types';
 import {IC_BLOCK, IC_DENY, IC_REMOVE, IC_RESTORE} from '@assets/exporter';
+import {showToast} from '@components/organisms/customToast';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
-import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {IJobPostStatus} from '@utils/enums';
 import {verticalScale} from '@utils/metrics';
 import React, {createContext, useRef, useState} from 'react';
 import {Alert} from 'react-native';
 import {useToast} from 'react-native-toast-notifications';
 import {useDispatch} from 'react-redux';
+import {timeOutTimeSheets} from 'src/constants/constants';
 import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {STRINGS} from 'src/locales/english';
 
 type ICandidateListActionsBottomSheetContextTypes = {
-  onPressSheet: (
+  onPressThreeDots: (
     option: 'show' | 'hide',
     jobId: number,
     type: 'shortlisted' | 'deny',
@@ -32,7 +39,6 @@ const CandidateListActionsBottomSheetContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const compRef = useRef<BottomSheetModalMethods | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<ICandidateTypes>();
   const toast = useToast();
   const [statusUpdater] = useUpdateJobApplicationStatusMutation();
@@ -49,59 +55,152 @@ const CandidateListActionsBottomSheetContextProvider = ({
     type: 'shortlisted' | 'deny',
     candidateDetails: ICandidateTypes,
   ) => {
+    console.log(candidateDetails, option, jobId, type);
     if (candidateDetails) {
       setSelectedCandidate(candidateDetails);
       setViewType(type);
       updateCurrentJobId(jobId);
     }
     if (option === 'show') {
-      compRef.current?.snapToIndex(1);
+      optionSheetRef.current?.snapToIndex(1);
     } else {
-      compRef.current?.snapToIndex(0);
+      optionSheetRef.current?.snapToIndex(0);
     }
   };
 
   const contextValue: ICandidateListActionsBottomSheetContextTypes = {
-    onPressSheet: sheetPressHandler,
+    onPressThreeDots: sheetPressHandler,
     candidateDetails: null,
   };
 
-  const restoreCandidateHandler = () =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        if (selectedCandidate && currentJobId) {
-          optionSheetRef.current?.close();
-          const response = await statusUpdater({
-            applicationId: selectedCandidate.id,
-            status: IJobPostStatus.APPLIED,
-          }).unwrap();
-          if (response) {
-            dispatch(
-              restoreDeclinedCandidate({
-                applicant: selectedCandidate,
-                jobId: currentJobId,
-              }),
-            );
-          }
+  const onPressSheetAction = (type: number) => {
+    optionSheetRef.current?.close();
+    setTimeout(() => {
+      switch (type) {
+        case 0:
+          restoreCandidateHandler();
+          break;
+        case 1:
+          onPressBlock();
+          break;
+        case 2:
+          removeFromShortlistHandler();
+          break;
+        case 3:
+          declineShortlistedCandidateHandler();
+          break;
+        case 4:
+          onPressBlock();
+          break;
+        default:
+          Alert.alert('Invalid option selected');
+          break;
+      }
+    }, timeOutTimeSheets);
+  };
+
+  const restoreCandidateHandler = async () => {
+    try {
+      dispatch(setLoading(true));
+      if (selectedCandidate && currentJobId) {
+        const response = await statusUpdater({
+          applicationId: selectedCandidate.id,
+          status: IJobPostStatus.APPLIED,
+        }).unwrap();
+        if (response) {
+          dispatch(
+            restoreDeclinedCandidate({
+              applicant: selectedCandidate,
+              jobId: currentJobId,
+            }),
+          );
         }
-      },
-      toast,
-      dispatch,
-    );
+      }
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError?.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   const onPressBlock = () => {
     optionSheetRef.current?.close();
     setTimeout(() => {
       Alert.alert('feature not implemented');
-    }, 300);
+    }, timeOutTimeSheets);
   };
 
+  const removeFromShortlistHandler = async () => {
+    try {
+      dispatch(setLoading(true));
+      if (selectedCandidate && currentJobId) {
+        optionSheetRef.current?.close();
+        const response = await statusUpdater({
+          applicationId: selectedCandidate.id,
+          status: IJobPostStatus.APPLIED,
+        }).unwrap();
+        if (response) {
+          dispatch(
+            removeFromShortlisted({
+              applicant: selectedCandidate,
+              jobId: currentJobId,
+            }),
+          );
+        }
+      }
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError?.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+  const declineShortlistedCandidateHandler = async () => {
+    try {
+      dispatch(setLoading(true));
+      if (selectedCandidate && currentJobId) {
+        optionSheetRef.current?.close();
+        const response = await statusUpdater({
+          applicationId: selectedCandidate.id,
+          status: IJobPostStatus.DECLINED,
+        }).unwrap();
+        if (response) {
+          dispatch(
+            declineShortlistedCandidate({
+              applicant: selectedCandidate,
+              jobId: currentJobId,
+            }),
+          );
+        }
+      }
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError?.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
   return (
     <CandidateListActionsBottomSheetContext.Provider value={contextValue}>
       {children}
       <SelectOptionBottomSheet
         modalHeight={
-          verticalScale(viewType === 'deny' ? 208 : 280) + insetsBottom
+          viewType === 'deny'
+            ? verticalScale(192) + insetsBottom
+            : verticalScale(264) + insetsBottom
         }
         ref={optionSheetRef}
         options={
@@ -110,29 +209,29 @@ const CandidateListActionsBottomSheetContextProvider = ({
                 {
                   icon: IC_RESTORE,
                   title: STRINGS.remove_from_shortlist,
-                  onPress: restoreCandidateHandler(),
+                  onPress: () => onPressSheetAction(0),
                 },
                 {
                   icon: IC_BLOCK,
                   title: STRINGS.block,
-                  onPress: () => onPressBlock(),
+                  onPress: () => onPressSheetAction(1),
                 },
               ]
             : [
                 {
                   icon: IC_REMOVE,
                   title: STRINGS.remove_from_shortlist,
-                  onPress: () => console.log('hello wrold'),
+                  onPress: () => onPressSheetAction(2),
                 },
                 {
                   icon: IC_DENY,
                   title: STRINGS.deny,
-                  onPress: () => console.log('hello wrold'),
+                  onPress: () => onPressSheetAction(3),
                 },
                 {
                   icon: IC_BLOCK,
                   title: STRINGS.block,
-                  onPress: () => onPressBlock(),
+                  onPress: () => onPressSheetAction(4),
                 },
               ]
         }

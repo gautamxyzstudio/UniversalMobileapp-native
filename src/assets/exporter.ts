@@ -109,6 +109,11 @@ import IC_CONTACT_LIST from './icons/svg/candidateList.svg';
 import IC_COMPANY_DETAIL from './icons/svg/company.svg';
 import IC_LOG_ACTIVITY from './icons/svg/log.svg';
 import IC_DOWNLOAD_SHEET from './icons/svg/downloadSheet.svg';
+import IC_NO_CLOSED from './icons/svg/emptyClosedJobs.svg';
+import IC_NO_CANDIDATES from './icons/svg/nocandidates.svg';
+import IC_NO_APPLICATIONS from './icons/svg/noApplications.svg';
+import IC_NO_SHORTLISTED from './icons/svg/noShortlisted.svg';
+import IC_NO_DENIED from './icons/svg/noDenied.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -172,6 +177,11 @@ export {
   BIN_SECONDARY,
   PAUSE,
   MEAT_BALL_WHiTE,
+  IC_NO_APPLICATIONS,
+  IC_NO_CANDIDATES,
+  IC_NO_CLOSED,
+  IC_NO_DENIED,
+  IC_NO_SHORTLISTED,
   LANGUAGE_ICON,
   IC_BLOCK,
   IC_REMOVE,

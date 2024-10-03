@@ -26,6 +26,7 @@ export interface ICustomList<T> extends FlashListProps<T> {
   error: any | null;
   betweenItemSpace?: number; // space between items
   isRefreshing?: boolean;
+  withRefetch?: boolean;
   emptyListIllustration?: React.FC<SvgProps>;
   emptyListSubTitle?: string;
   withRefreshing?: boolean;
@@ -58,6 +59,7 @@ const CustomList = <T,>({
   isLastPage,
   isRefreshing,
   onRefresh,
+  withRefetch,
   data = [],
   error,
   ...flatlistProps
@@ -93,6 +95,7 @@ const CustomList = <T,>({
         <EmptyState
           data={data}
           errorObj={error}
+          withRefetch={withRefetch}
           emptyListSubTitle={emptyListSubTitle}
           emptyListIllustration={emptyListIllustration}
           emptyListMessage={emptyListMessage}

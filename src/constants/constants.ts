@@ -1,4 +1,5 @@
 import {IJobPostStatus} from '@utils/enums';
+import {Platform} from 'react-native';
 import {STRINGS} from 'src/locales/english';
 
 export const touchSlope = {
@@ -41,3 +42,5 @@ export const jobFilters: IJobFilters[] = [
     status: IJobPostStatus.DECLINED,
   },
 ];
+
+export const timeOutTimeSheets = Platform.OS === 'android' ? 300 : 150;

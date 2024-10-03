@@ -131,16 +131,6 @@ const CandidateDetailsBottomSheet = React.forwardRef<
           onButtonPress={undefined}
         />
       )}
-      {/* {details?.status === ICandidateStatusEnum.selected && (
-        <View style={styles.mainView}>
-          <CustomText
-            value={''}
-            size={
-
-            }
-          />
-        </View>
-      )} */}
     </BaseBottomSheet>
   );
 });

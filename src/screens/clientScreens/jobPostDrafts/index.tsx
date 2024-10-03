@@ -33,6 +33,7 @@ import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {IJobPostStatus} from '@utils/enums';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const JobPostDrafts = () => {
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
@@ -123,14 +124,14 @@ const JobPostDrafts = () => {
       } finally {
         dispatch(setLoading(false));
       }
-    }, 300);
+    }, timeOutTimeSheets);
   };
 
   const onPressJobDetails = () => {
     quickActionSheetRef.current?.close();
     setTimeout(() => {
       jobDetailsSheetRef.current?.snapToIndex(1);
-    }, 300);
+    }, timeOutTimeSheets);
   };
 
   const onPressDeleteDraft = () => {
@@ -160,7 +161,7 @@ const JobPostDrafts = () => {
       navigation.navigate('jobPosting', {
         draftId: currentSelectedDraft?.id ?? 0,
       });
-    }, 300);
+    }, timeOutTimeSheets);
   };
 
   const renderItem = useCallback(

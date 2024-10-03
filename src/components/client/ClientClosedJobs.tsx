@@ -16,12 +16,13 @@ import JobPostCard from './JobPostCard';
 import JobPostCardLoading from './JobPostCardLoading';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {mockJobPostsLoading} from '@api/mockData';
-import {CHECK_IN, IC_DOCUMENT} from '@assets/exporter';
+import {CHECK_IN, IC_DOCUMENT, IC_NO_CLOSED} from '@assets/exporter';
 import CustomList from '@components/molecules/customList';
 import {verticalScale} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
 import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
+import {timeOutTimeSheets} from 'src/constants/constants';
 
 const ClientClosedJobs = () => {
   const [getClosedJobs, {error}] = useLazyGetClosedJobsQuery();
@@ -44,7 +45,7 @@ const ClientClosedJobs = () => {
     quickActionSheetRef.current?.close();
     setTimeout(() => {
       jobDetailsSheetRef.current?.snapToIndex(1);
-    }, 300);
+    }, timeOutTimeSheets);
   };
 
   useEffect(() => {
@@ -60,7 +61,7 @@ const ClientClosedJobs = () => {
     quickActionSheetRef.current?.close();
     setTimeout(() => {
       navigation.navigate('shortlistedCandidates');
-    }, 300);
+    }, timeOutTimeSheets);
   };
 
   const renderItem = useCallback(
@@ -77,13 +78,16 @@ const ClientClosedJobs = () => {
 
   const renderItemLoading = () => <JobPostCardLoading />;
 
+  const onRefreshHandler = () => {
+    setCurrentPage(1);
+    setIsRefreshing(true);
+    geClosedJobsHandler(true);
+  };
+
   const geClosedJobsHandler = withAsyncErrorHandlingGet(
     async (isFirstPage: boolean = false) => {
       let page = isFirstPage ? 1 : currentPage + 1;
       let perPageRecord = 10;
-      if (isFirstPage) {
-        setIsRefreshing(true);
-      }
       const response = await getClosedJobs(user?.details?.detailsId).unwrap();
       if (response.data) {
         setIsRefreshing(false);
@@ -97,6 +101,7 @@ const ClientClosedJobs = () => {
     },
     () => {
       setIsRefreshing(false);
+      updateJobPosts([]);
       setIsLoading(false);
     },
   );
@@ -117,7 +122,8 @@ const ClientClosedJobs = () => {
         getItemType={item => item.id}
         isRefreshing={isRefreshing}
         emptyListMessage={STRINGS.no_completed_jobs_posted_yet}
-        onRefresh={() => geClosedJobsHandler(true)}
+        onRefresh={onRefreshHandler}
+        emptyListIllustration={IC_NO_CLOSED}
         emptyListSubTitle={STRINGS.create_job_to_find}
         ListFooterComponentStyle={{height: verticalScale(150)}}
         isLastPage={isLastPage}

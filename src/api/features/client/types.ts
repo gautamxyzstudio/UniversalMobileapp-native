@@ -8,9 +8,17 @@ export type IClientSliceInitialState = {
     closed: IJobPostTypes[];
     drafts: IJobPostTypes[];
   };
+  candidateList: ICandidateListTypes[];
 };
 
 export type ICandidateListTypes = {
+  details: {
+    jobId: number;
+    jobName: string;
+    jobPoster: string | null;
+    eventDate: Date;
+    location: string;
+  };
   open: Map<number, ICandidateTypes> | null;
   shortlisted: Map<number, ICandidateTypes> | null;
   denied: Map<number, ICandidateTypes> | null;

@@ -25,6 +25,7 @@ export const STRINGS = {
   emailOrUsername: 'Email / Username',
   company_name: 'Company name',
   password: 'Password',
+  refetch: 'Refetch',
   confirmPassword: 'Confirm Password',
   contactNumber: 'Contact number',
   location: 'Location',
@@ -206,7 +207,7 @@ export const STRINGS = {
   number_of_employees_needed: 'Number of employees needed',
   year_of_ex: 'Years of Experience',
   years_of_experience: 'Years of Experience (optional)',
-  starting_wage: 'Starting Wage',
+  starting_wage: 'Wage/hr',
   payment_Schedule: 'Payment Schedule',
   gender_optional: 'Gender (optional)',
   add_required_certificates: 'Add certificates',
@@ -256,8 +257,9 @@ export const STRINGS = {
   emptySubTitleDrafts:
     'Create new job drafts to keep track of your potential postings',
   no_jobs_posted_yet: 'No Jobs Posted Yet',
+  no_jobs_created_description: 'Create your job and find the perfect candidate',
   no_completed_jobs_posted_yet: 'No Completed Jobs Yet',
-  create_job_to_find: 'Create your job and find the perfect candidate',
+  create_job_to_find: 'Once jobs are completed, you’ll find them here.',
   edit_draft: 'Update Draft',
   job_applied_successfully: 'Job applied successfully',
   confirmed: 'Confirmed',
@@ -283,7 +285,9 @@ export const STRINGS = {
   no_shortlisted: 'No Shortlisted Candidates',
   please_review:
     'Please review the available applications to find potential matches for the role.',
-  no_candidates_declined: 'No Applicants',
+  no_candidates_declined: 'No Denied Candidates',
+  no_candidates_declined_dec:
+    'When you deny a candidate, you’ll find them here.',
   remove_from_shortlist: 'Remove from shortlist',
   job_closed_success: 'Job closed successfully',
   block: 'Block',
