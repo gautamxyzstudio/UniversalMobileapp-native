@@ -25,7 +25,6 @@ const EmployeeInfoView: React.FC<IEmployeeInfoViewProps> = ({
 }) => {
   const styles = useThemeAwareObject(getStyles);
 
-  console.log(profilePicture, 'pp');
   return (
     <Row style={styles.mainView} spaceBetween>
       <Row style={styles.innerContainer} alignCenter>

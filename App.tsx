@@ -29,6 +29,8 @@ const App = () => {
   // Unsubscribe
   unsubscribe();
 
+  console.log(process.env.BASE_URL);
+
   const paperTheme = {
     ...DefaultTheme,
     colors: {

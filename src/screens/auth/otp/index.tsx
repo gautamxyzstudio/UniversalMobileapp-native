@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -6,7 +5,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import {Theme} from '@theme/Theme.type';
@@ -38,8 +37,6 @@ type IOptVerificationPros = {
 const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
   const user = route.params?.user;
 
-  console.log(user, 'USER BASIC');
-
   const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const [verifyOtpRequest] = useVerifyOtpEmailMutation();
   const styles = useThemeAwareObject(createStyles);
@@ -54,12 +51,6 @@ const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
     }
     setOpt(e);
   };
-
-  useEffect(() => {
-    if (user?.email) {
-      sendOtp();
-    }
-  }, []);
 
   const sendOtp = async () => {
     if (user?.email) {

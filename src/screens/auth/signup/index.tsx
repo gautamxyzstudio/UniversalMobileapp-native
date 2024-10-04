@@ -11,7 +11,10 @@ import {NavigationProps} from 'src/navigator/types';
 import PasswordTextInput from '@components/molecules/InputTypes/passwordInput';
 import {signupSchema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
-import {useRegisterMutation} from '@api/features/user/userApi';
+import {
+  useRegisterMutation,
+  useSendEmailOtpMutation,
+} from '@api/features/user/userApi';
 import {useDispatch} from 'react-redux';
 
 import {ICustomErrorResponse} from '@api/types';
@@ -19,10 +22,12 @@ import {setLoading} from '@api/features/loading/loadingSlice';
 import {ISignUp, ISignUpParams} from './types';
 import {generateUniqueUserName} from '@utils/constants';
 import {useToast} from 'react-native-toast-notifications';
+import {IUser} from '@api/features/user/types';
 
 const SignUp: React.FC<ISignUpParams> = ({route}) => {
   const userType = route.params.user_type;
   const navigation = useNavigation<NavigationProps>();
+  const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const toast = useToast();
   const reduxDispatch = useDispatch();
 
@@ -40,6 +45,31 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
     },
   );
 
+  const sendOtp = async (response: IUser<'emp' | 'client'>) => {
+    if (response?.email) {
+      try {
+        reduxDispatch(setLoading(true));
+        const result = await sendOptVerificationRequest({
+          email: response?.email,
+        }).unwrap();
+        if (result?.message) {
+          toast.hideAll();
+          toast.show('OTP sent successfully', {
+            type: 'success',
+          });
+          navigation.navigate('otpVerification', {
+            user: response,
+          });
+        }
+      } catch (error) {
+        toast.hideAll();
+        toast.show('unable to send otp', {
+          type: 'error',
+        });
+      }
+    }
+  };
+
   const onPressSignup = async () => {
     try {
       const fields = await signupSchema.validate(state, {
@@ -56,9 +86,7 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
             role: userType === 'emp' ? 'EmployeeUser' : 'ClientUser',
           }).unwrap();
           if (response) {
-            navigation.navigate('otpVerification', {
-              user: response,
-            });
+            sendOtp(response);
           }
         } catch (err) {
           const error = err as ICustomErrorResponse;

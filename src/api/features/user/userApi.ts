@@ -92,12 +92,24 @@ const authApi = baseApi.injectEndpoints({
         method: apiMethodType.post,
         body,
       }),
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => ({
+        statusCode: response.status,
+        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
+      }),
     }),
     verifyOtpEmail: builder.mutation<IVerifyOtpResponse, IVerifyOtp>({
       query: body => ({
         url: apiEndPoints.verifyEmail,
         method: apiMethodType.post,
         body,
+      }),
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => ({
+        statusCode: response.status,
+        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
       }),
     }),
     checkEmailVerificationStatus: builder.query<

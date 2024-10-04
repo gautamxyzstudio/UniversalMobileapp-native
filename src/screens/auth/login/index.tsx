@@ -28,6 +28,7 @@ import {
   useLazyCheckEmailVerificationStatusQuery,
   useLazyGetUserQuery,
   useLoginMutation,
+  useSendEmailOtpMutation,
 } from '@api/features/user/userApi';
 import {ICustomErrorResponse} from '@api/types';
 import {setLoading} from '@api/features/loading/loadingSlice';
@@ -46,6 +47,7 @@ const Login = () => {
   const toast = useToast();
   const [checkEmailStatus] = useLazyCheckEmailVerificationStatusQuery();
   const [getUserDetails] = useLazyGetUserQuery();
+  const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const reduxDispatch = useDispatch();
   const [state, dispatch] = useReducer(
     (prev: ICollectionFormProperties, next: ICollectionFormProperties) => {
@@ -91,9 +93,33 @@ const Login = () => {
     }
   };
 
+  const sendOtp = async (response: IUser<'emp' | 'client'>) => {
+    if (response?.email) {
+      try {
+        reduxDispatch(setLoading(true));
+        const result = await sendOptVerificationRequest({
+          email: response?.email,
+        }).unwrap();
+        if (result?.message) {
+          toast.hideAll();
+          toast.show('OTP sent successfully', {
+            type: 'success',
+          });
+          navigation.navigate('otpVerification', {
+            user: response,
+          });
+        }
+      } catch (error) {
+        toast.hideAll();
+        toast.show('unable to send otp', {
+          type: 'error',
+        });
+      }
+    }
+  };
+
   const updateUserDetails = async (response: IUser<'client' | 'emp'>) => {
     try {
-      console.log(response, 'apo response');
       const userDetails = await getUserDetails({
         userId: response.id,
       }).unwrap();
@@ -146,13 +172,11 @@ const Login = () => {
       const emailStatusResponse = await checkEmailStatus({
         email: response.email ?? '',
       }).unwrap();
-      if (!emailStatusResponse.verified) {
+      if (emailStatusResponse) {
         reduxDispatch(saveUserDetails(response));
         updateUserDetails(response);
       } else {
-        navigation.navigate('otpVerification', {
-          user: response,
-        });
+        sendOtp(response);
       }
     } catch (error) {
       throw error;
