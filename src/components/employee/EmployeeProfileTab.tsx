@@ -1,11 +1,4 @@
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  Platform,
-} from 'react-native';
+import {StyleProp, StyleSheet, Text, TextStyle, Platform} from 'react-native';
 import React from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
@@ -34,7 +27,7 @@ const EmployeeProfileTab: React.FC<IEmployeeProfileTabProps> = ({
 }) => {
   const styles = useThemeAwareObject(getStyles);
   return (
-    <View style={styles.shadow}>
+    <>
       <AnimatedPressable onPress={onPressTab} styles={styles.container}>
         <Row spaceBetween>
           <Row alignCenter>
@@ -48,7 +41,7 @@ const EmployeeProfileTab: React.FC<IEmployeeProfileTabProps> = ({
           {withArrow && <RIGHT_ARROW_DROPDOWN />}
         </Row>
       </AnimatedPressable>
-    </View>
+    </>
   );
 };
 
@@ -63,15 +56,6 @@ const getStyles = ({color}: Theme) => {
       backgroundColor: color.primary,
       width: WINDOW_WIDTH - verticalScale(48),
       height: verticalScale(56),
-    },
-    title: {
-      ...fonts.medium,
-      color: color.textPrimary,
-    },
-    icon: {
-      marginRight: verticalScale(12),
-    },
-    shadow: {
       ...Platform.select({
         ios: {
           shadowColor: color.shadow,
@@ -85,8 +69,16 @@ const getStyles = ({color}: Theme) => {
         android: {
           elevation: 4,
           shadowColor: color.shadow,
+          shadowRadius: 4,
         },
       }),
+    },
+    title: {
+      ...fonts.medium,
+      color: color.textPrimary,
+    },
+    icon: {
+      marginRight: verticalScale(12),
     },
   });
   return styles;

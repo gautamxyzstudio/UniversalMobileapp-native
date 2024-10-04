@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {Alert, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
@@ -21,10 +21,13 @@ import {
 } from '@api/features/employee/employeeSlice';
 import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
 import {jobFilters} from 'src/constants/constants';
+import {IJobPostStatus} from '@utils/enums';
 
 const EmployeeJobs = () => {
-  const [selectedFilterId, setSelectedFilterId] = useState(1);
-  const [fetchJobs, {isLoading, error}] = useLazyFetchAppliedJobsQuery();
+  const [selectedFilter, setSelectedFilter] = useState<IJobPostStatus | null>(
+    null,
+  );
+  const [fetchJobs, {isFetching, error}] = useLazyFetchAppliedJobsQuery();
   const [jobs, updateJobs] = useState<IJobPostTypes[]>([]);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -34,7 +37,7 @@ const EmployeeJobs = () => {
 
   useEffect(() => {
     fetchAppliedJobsHandler();
-  }, []);
+  }, [selectedFilter]);
 
   useEffect(() => {
     updateJobs(appliedJobs);
@@ -59,9 +62,10 @@ const EmployeeJobs = () => {
 
   const fetchAppliedJobsHandler = withAsyncErrorHandlingGet(
     async () => {
-      const appliedJobResponse = await fetchJobs(
-        user?.details?.detailsId ?? 0,
-      ).unwrap();
+      const appliedJobResponse = await fetchJobs({
+        id: user?.details?.detailsId ?? 0,
+        type: selectedFilter,
+      }).unwrap();
       if (appliedJobResponse) {
         dispatch(updateAppliedJobs(appliedJobResponse));
       }
@@ -83,15 +87,15 @@ const EmployeeJobs = () => {
       hideBack
       title={STRINGS.jobs}>
       <Filters
-        isLoading={isLoading}
+        isLoading={false}
         filters={jobFilters}
-        onFilterPress={filter => setSelectedFilterId(filter.id)}
-        selectedFilterId={selectedFilterId}
+        onFilterPress={filter => setSelectedFilter(filter.status)}
+        selectedFilter={selectedFilter}
       />
       <View style={styles.customList}>
         <CustomList
-          data={isLoading ? mockJobPostsLoading : jobs}
-          renderItem={isLoading ? renderItemLoading : renderItemListing}
+          data={isFetching ? mockJobPostsLoading : jobs}
+          renderItem={isFetching ? renderItemLoading : renderItemListing}
           getItemType={(item: any) => `${item?.id}`}
           betweenItemSpace={12}
           emptyListMessage={STRINGS.no_jobs_applied}

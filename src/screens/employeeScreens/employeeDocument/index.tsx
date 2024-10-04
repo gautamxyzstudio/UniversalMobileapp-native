@@ -2,6 +2,7 @@
 import {
   RefreshControl,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
@@ -55,6 +56,7 @@ import SelectImagePopup from '@components/molecules/selectimagepopup';
 import useUploadAssets from 'src/hooks/useUploadAsset';
 import {IFile} from '@components/organisms/uploadPopup/types';
 import {getImageUrl} from '@utils/constants';
+import {useTheme} from '@theme/Theme.context';
 
 const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -75,6 +77,7 @@ const EmployeeDocuments = () => {
   const [uploadPrevDocuments] = useUpdateEmployeeDetailsMutation();
   const navigation = useNavigation<NavigationProps>();
   const toast = useToast();
+  const {theme} = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const newDocRef = useRef<BottomSheetModal | null>(null);
   const [refreshing, updateRefreshing] = useState(false);
@@ -261,6 +264,7 @@ const EmployeeDocuments = () => {
         onPressRightIcon={() => navigation.navigate('updatedDocumentStatus')}
         headerTitle={STRINGS.documents}
       />
+      <StatusBar backgroundColor={theme.color.backgroundWhite} />
       <View style={styles.mainView}>
         <ScrollView
           refreshControl={

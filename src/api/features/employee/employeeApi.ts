@@ -79,9 +79,12 @@ const employeeApi = baseApi.injectEndpoints({
         body,
       }),
     }),
-    fetchAppliedJobs: builder.query<IJobTypes[], number>({
-      query: (id: number) => ({
-        url: apiEndPoints.getAppliedJobs(id),
+    fetchAppliedJobs: builder.query<
+      IJobTypes[],
+      {id: number; type: IJobPostStatus | null}
+    >({
+      query: ({id, type}) => ({
+        url: apiEndPoints.getAppliedJobs(id, type),
         method: apiMethodType.get,
       }),
       transformResponse: (response: IGetAppliedJobsResponse): IJobTypes[] => {

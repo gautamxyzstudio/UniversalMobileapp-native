@@ -140,15 +140,18 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
             </View>
           )}
           {!isLoading && !error && candidateJobs.length !== 0 && (
-            <ScrollView
-              refreshControl={
-                <RefreshControl
-                  progressBackgroundColor={theme.color.darkBlue}
-                  onRefresh={onRefreshHandler}
-                  refreshing={isRefreshing}
-                />
-              }>
-              <View style={styles.container}>
+            <View style={styles.container}>
+              <ScrollView
+                style={styles.flexMain}
+                scrollEnabled={false}
+                contentContainerStyle={styles.scrollMain}
+                refreshControl={
+                  <RefreshControl
+                    progressBackgroundColor={theme.color.darkBlue}
+                    onRefresh={onRefreshHandler}
+                    refreshing={isRefreshing}
+                  />
+                }>
                 <CandidateListTopView
                   onPressFilter={onPressFilter}
                   onPressTab={onPressTab}
@@ -156,31 +159,34 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
                   jobId={currentSelectedJob?.details.jobId ?? 0}
                   index={0}
                 />
-                <ScrollView
-                  snapToAlignment="center"
-                  pagingEnabled
-                  scrollEnabled={false}
-                  contentContainerStyle={styles.flex}
-                  ref={scrollViewRef}
-                  horizontal>
-                  <View style={styles.screen}>
-                    <CandidateListOpen
-                      jobId={currentSelectedJob?.details.jobId ?? null}
-                    />
-                  </View>
-                  <View style={styles.screen}>
-                    <CandidateListSelected
-                      jobId={currentSelectedJob?.details.jobId ?? null}
-                    />
-                  </View>
-                  <View style={styles.screen}>
-                    <CandidateListDeclined
-                      jobId={currentSelectedJob?.details.jobId ?? null}
-                    />
-                  </View>
-                </ScrollView>
-              </View>
-            </ScrollView>
+                <View style={styles.container}>
+                  <ScrollView
+                    snapToAlignment="center"
+                    pagingEnabled
+                    style={styles.container}
+                    scrollEnabled={false}
+                    contentContainerStyle={styles.flex}
+                    ref={scrollViewRef}
+                    horizontal>
+                    <View style={styles.screen}>
+                      <CandidateListOpen
+                        jobId={currentSelectedJob?.details.jobId ?? null}
+                      />
+                    </View>
+                    <View style={styles.screen}>
+                      <CandidateListSelected
+                        jobId={currentSelectedJob?.details.jobId ?? null}
+                      />
+                    </View>
+                    <View style={styles.screen}>
+                      <CandidateListDeclined
+                        jobId={currentSelectedJob?.details.jobId ?? null}
+                      />
+                    </View>
+                  </ScrollView>
+                </View>
+              </ScrollView>
+            </View>
           )}
           {!isLoading && (error || candidateJobs.length === 0) && (
             <View style={styles.emptyView}>
@@ -216,9 +222,14 @@ export default CandidateList;
 const getStyles = () => {
   const styles = StyleSheet.create({
     container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    scrollMain: {
       flexGrow: 1,
     },
     mainView: {
+      flex: 1,
       paddingTop: 0,
       paddingBottom: 0,
       paddingHorizontal: 0,
@@ -226,21 +237,22 @@ const getStyles = () => {
     },
     screen: {
       width: windowWidth,
-      flex: 1,
+      height: '100%',
+    },
+    flexMain: {
+      height: '100%',
     },
     flex: {
       flexGrow: 1,
+
       paddingVertical: verticalScale(16),
-      backgroundColor: '#fff',
     },
     main: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     },
-    scrollView: {
-      backgroundColor: 'red',
-    },
+
     emptyView: {
       flexGrow: 1,
     },

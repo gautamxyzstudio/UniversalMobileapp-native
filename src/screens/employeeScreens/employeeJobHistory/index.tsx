@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native';
+import {StatusBar, StyleSheet, View} from 'react-native';
 import React from 'react';
 import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
@@ -13,6 +13,7 @@ import {CalendarDate} from 'react-native-paper-dates/lib/typescript/Date/Calenda
 import {userMockJobs} from '@api/mockData';
 import CustomList from '@components/molecules/customList';
 import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
+import {useTheme} from '@theme/Theme.context';
 const EmployeeJobHistory = () => {
   const [range, setRange] = React.useState<{
     startDate: Date | undefined;
@@ -22,7 +23,7 @@ const EmployeeJobHistory = () => {
     endDate: undefined,
   });
   const [open, setOpen] = React.useState(false);
-
+  const {theme} = useTheme();
   const onDismiss = React.useCallback(() => {
     setOpen(false);
   }, [setOpen]);
@@ -48,6 +49,7 @@ const EmployeeJobHistory = () => {
   return (
     <SafeAreaView hideBottomSpace>
       <View style={styles.headerContainer}>
+        <StatusBar backgroundColor={theme.color.backgroundWhite} />
         <HeaderWithBack
           isDark
           renderRightIcon

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  Platform,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -13,8 +14,8 @@ import CustomTextInput from '@components/atoms/customtextInput';
 import {useTheme} from '@theme/Theme.context';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {fonts} from '@utils/common.styles';
-import {verticalScale} from '@utils/metrics';
+import {fontFamily, fonts} from '@utils/common.styles';
+import {moderateScale, verticalScale} from '@utils/metrics';
 import {ARROW_LEFT, IC_CROSS, SEARCH} from '@assets/exporter';
 import {
   NavigationProp,
@@ -22,6 +23,7 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import {StyleProps} from 'react-native-reanimated';
+import {Row} from '@components/atoms/Row';
 
 type ISearchInputProps = {
   value: string;
@@ -57,18 +59,8 @@ const SearchInput: React.FC<ISearchInputProps> = ({
   const styles = useThemeAwareObject(createStyles);
 
   return (
-    <CustomTextInput
-      title={''}
-      ref={inputRef}
-      innerContainerStyles={(styles.innerContainerStyles, innerContainerStyle)}
-      outerContainerStyles={[styles.outerContainerStyles, containerStyles]}
-      placeholder={placeHolder}
-      textInputStyles={styles.textInput}
-      value={value}
-      onChangeText={onChangeText}
-      placeholderTextColor={theme.color.disabled}
-      hideTitle
-      left={
+    <View style={styles.inputMain}>
+      <Row alignCenter>
         <View style={styles.leftIcon}>
           {leftIcon && (
             <View>
@@ -84,8 +76,13 @@ const SearchInput: React.FC<ISearchInputProps> = ({
             </View>
           )}
         </View>
-      }
-      right={
+        <TextInput
+          value={value}
+          style={styles.textInput}
+          placeholder={placeHolder}
+          onChangeText={onChangeText}
+          placeholderTextColor={theme.color.disabled}
+        />
         <View>
           {value && (
             <Pressable onPress={onPressCross} style={styles.rightIcon}>
@@ -93,9 +90,8 @@ const SearchInput: React.FC<ISearchInputProps> = ({
             </Pressable>
           )}
         </View>
-      }
-      errorMessage={''}
-    />
+      </Row>
+    </View>
   );
 };
 
@@ -104,18 +100,16 @@ export default SearchInput;
 const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     textInput: {
-      ...fonts.regular,
-      paddingHorizontal: verticalScale(8),
+      flex: 1,
+      fontFamily: fontFamily.regular,
+      color: theme.color.textPrimary,
+      fontSize: moderateScale(14),
+      padding: verticalScale(8),
     },
-    innerContainerStyles: {
-      justifyContent: 'center',
-      alignItems: 'center',
+    inputMain: {
       height: verticalScale(40),
-      borderRadius: 40,
-      backgroundColor: '#fff',
-    },
-    outerContainerStyles: {
-      height: verticalScale(40),
+      borderWidth: 1,
+      borderColor: theme.color.strokeLight,
     },
     leftIcon: {
       justifyContent: 'center',

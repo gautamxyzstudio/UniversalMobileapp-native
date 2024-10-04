@@ -4,14 +4,17 @@ import {
   declineCandidate,
 } from '@api/features/client/clientSlice';
 import {ICandidateTypes} from '@api/features/client/types';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {ICustomErrorResponse} from '@api/types';
+import {showToast} from '@components/organisms/customToast';
 import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import CandidateDetailsBottomSheet from '@screens/clientScreens/candidateList/CandidateDetailsBottomSheet';
-import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {ICandidateStatusEnum, IJobPostStatus} from '@utils/enums';
 import React, {createContext, useRef, useState} from 'react';
 import {useToast} from 'react-native-toast-notifications';
 import {useDispatch} from 'react-redux';
 import {timeOutTimeSheets} from 'src/constants/constants';
+import {STRINGS} from 'src/locales/english';
 
 type IUserDetailsViewCandidatesContextTypes = {
   onPressSheet: (
@@ -63,61 +66,77 @@ const UserDetailsViewSheetCandidateListProvider = ({
     candidateDetails: null,
   };
 
-  const acceptCandidateApplication = () =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        compRef.current?.snapToIndex(0);
-        setTimeout(async () => {
-          if (selectedCandidate) {
-            const response = await statusUpdater({
-              applicationId: selectedCandidate.id,
-              status: IJobPostStatus.CONFIRMED,
-            }).unwrap();
-            if (response) {
-              if (currentJobId) {
-                dispatch(
-                  confirmCandidate({
-                    applicant: selectedCandidate,
-                    jobId: currentJobId,
-                  }),
-                );
-                console.log(response, 'confirm');
-              }
+  const acceptCandidateApplication = () => {
+    compRef.current?.snapToIndex(0);
+    setTimeout(async () => {
+      if (selectedCandidate) {
+        try {
+          dispatch(setLoading(true));
+          const response = await statusUpdater({
+            applicationId: selectedCandidate.id,
+            status: IJobPostStatus.CONFIRMED,
+          }).unwrap();
+          if (response) {
+            if (currentJobId) {
+              dispatch(
+                confirmCandidate({
+                  applicant: selectedCandidate,
+                  jobId: currentJobId,
+                }),
+              );
+              console.log(response, 'confirm');
             }
           }
-        }, timeOutTimeSheets);
-      },
-      toast,
-      dispatch,
-    );
+        } catch (error) {
+          let custError = error as ICustomErrorResponse;
+          showToast(
+            toast,
+            custError?.message ?? STRINGS.someting_went_wrong,
+            'error',
+          );
+          console.log(error);
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    }, timeOutTimeSheets);
+  };
 
-  const declineCandidateApplication = () =>
-    withAsyncErrorHandlingPost(
-      async () => {
-        compRef.current?.snapToIndex(0);
-        setTimeout(async () => {
-          if (selectedCandidate) {
-            const response = await statusUpdater({
-              applicationId: selectedCandidate.id,
-              status: IJobPostStatus.DECLINED,
-            }).unwrap();
-            if (response) {
-              if (currentJobId) {
-                dispatch(
-                  declineCandidate({
-                    applicant: selectedCandidate,
-                    jobId: currentJobId,
-                  }),
-                );
-                console.log(response);
-              }
+  const declineCandidateApplication = async () => {
+    compRef.current?.snapToIndex(0);
+    setTimeout(async () => {
+      if (selectedCandidate) {
+        try {
+          dispatch(setLoading(true));
+          const response = await statusUpdater({
+            applicationId: selectedCandidate.id,
+            status: IJobPostStatus.DECLINED,
+          }).unwrap();
+          if (response) {
+            if (currentJobId) {
+              dispatch(
+                declineCandidate({
+                  applicant: selectedCandidate,
+                  jobId: currentJobId,
+                }),
+              );
+              console.log(response);
             }
           }
-        }, timeOutTimeSheets);
-      },
-      toast,
-      dispatch,
-    );
+        } catch (error) {
+          let custError = error as ICustomErrorResponse;
+          showToast(
+            toast,
+            custError?.message ?? STRINGS.someting_went_wrong,
+            'error',
+          );
+          console.log(error);
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    }, timeOutTimeSheets);
+  };
 
   return (
     <userDetailsViewCandidateListContext.Provider value={contextValue}>

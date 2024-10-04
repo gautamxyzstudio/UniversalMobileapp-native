@@ -6,19 +6,20 @@ import {Theme} from '@theme/Theme.type';
 import {fonts} from '@utils/common.styles';
 import {useTheme} from '@theme/Theme.context';
 import {IJobFilters} from 'src/constants/constants';
+import {IJobPostStatus} from '@utils/enums';
 
 type IFiltersPropsTypes = {
   filters: IJobFilters[];
   isLoading: boolean;
   onFilterPress: (filter: IJobFilters) => void;
-  selectedFilterId: number;
+  selectedFilter: IJobPostStatus | null;
 };
 
 const Filters: React.FC<IFiltersPropsTypes> = ({
   filters,
   onFilterPress,
   isLoading,
-  selectedFilterId,
+  selectedFilter,
 }) => {
   const styles = useThemeAwareObject(getStyles);
   const {theme} = useTheme();
@@ -38,7 +39,7 @@ const Filters: React.FC<IFiltersPropsTypes> = ({
                 onPress={() => onFilterPress(filter)}
                 style={[
                   styles.filter,
-                  selectedFilterId === filter.id && {
+                  selectedFilter === filter.status && {
                     backgroundColor: theme.color.darkBlue,
                   },
                 ]}
@@ -46,7 +47,7 @@ const Filters: React.FC<IFiltersPropsTypes> = ({
                 <Text
                   style={[
                     styles.filterText,
-                    selectedFilterId === filter.id && {
+                    selectedFilter === filter.status && {
                       color: theme.color.primary,
                     },
                   ]}>

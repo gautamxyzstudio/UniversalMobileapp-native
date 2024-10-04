@@ -1,3 +1,5 @@
+import {IJobPostStatus} from '@utils/enums';
+
 export const apiEndPoints = {
   login: `${process.env.BASE_URL}/api/auth/local?populate=*`,
   register: `${process.env.BASE_URL}/api/auth/local/register`,
@@ -28,8 +30,10 @@ export const apiEndPoints = {
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
   applyForJob: `${process.env.BASE_URL}/api/job-applications`,
-  getAppliedJobs: (id: number) =>
-    `${process.env.BASE_URL}/api/job-applications/employee/${id}`,
+  getAppliedJobs: (id: number, type: IJobPostStatus | null) =>
+    type
+      ? `${process.env.BASE_URL}/api/job-applications/employee/${id}?status=${type}`
+      : `${process.env.BASE_URL}/api/job-applications/employee/${id}`,
   getCandidatesList: (
     jobId: number,
     type: 'open' | 'shortlisted' | 'denylist',

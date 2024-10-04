@@ -114,6 +114,7 @@ import IC_NO_CANDIDATES from './icons/svg/nocandidates.svg';
 import IC_NO_APPLICATIONS from './icons/svg/noApplications.svg';
 import IC_NO_SHORTLISTED from './icons/svg/noShortlisted.svg';
 import IC_NO_DENIED from './icons/svg/noDenied.svg';
+import IC_SEARCH_EMPTY from './icons/svg/searchEmpty.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -158,6 +159,7 @@ export {
   DRAFT,
   DOCUMENTS_SECONDARY,
   NOTIFICATION_READ,
+  IC_SEARCH_EMPTY,
   IC_MAIL,
   IC_PHONE,
   CROSS,
