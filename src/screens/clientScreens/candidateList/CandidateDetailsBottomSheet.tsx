@@ -26,12 +26,14 @@ import {IDocumentStatus, IEmployeeDocsApiKeys} from '@api/features/user/types';
 interface ICandidateDetailsBottomSheet {
   details: ICandidateTypes | undefined;
   jobStatus: ICandidateStatusEnum;
+  onPressApprove: () => void;
+  onPressDecline: () => void;
 }
 
 const CandidateDetailsBottomSheet = React.forwardRef<
   BottomSheetModalMethods,
   ICandidateDetailsBottomSheet
->(({details, jobStatus}, ref) => {
+>(({details, jobStatus, onPressApprove, onPressDecline}, ref) => {
   const height = windowHeight * 0.75;
   const snapPoints = [0.1, height];
   const navigation = useNavigation<NavigationProps>();
@@ -128,7 +130,8 @@ const CandidateDetailsBottomSheet = React.forwardRef<
           secondaryButtonTitleStyles={styles.secondaryButtonTitle}
           secondaryButtonTitles="Deny"
           title={STRINGS.approve}
-          onButtonPress={undefined}
+          onButtonPress={onPressApprove}
+          onPressSecondaryButton={onPressDecline}
         />
       )}
     </BaseBottomSheet>

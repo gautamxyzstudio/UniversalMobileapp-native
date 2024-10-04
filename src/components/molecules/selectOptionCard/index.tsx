@@ -9,18 +9,31 @@ import {SvgProps} from 'react-native-svg';
 type ISelectOptionCardProps = {
   title: string;
   icon: React.FC<SvgProps>;
+  isDisabled?: boolean;
   onPress: () => void;
 };
 
 const SelectOptionCard: React.FC<ISelectOptionCardProps> = ({
   title,
   icon,
+  isDisabled,
   onPress,
 }) => {
   const styles = useThemeAwareObject(getStyles);
   const Icon = icon;
+
+  const onButtonPress = () => {
+    if (isDisabled) {
+      return null;
+    } else {
+      return onPress();
+    }
+  };
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={isDisabled ? 0.5 : 0}
+      style={[isDisabled && styles.disabled]}
+      onPress={onButtonPress}>
       <View style={styles.innerView}>
         <View style={styles.imgBg}>
           <Icon width={verticalScale(24)} height={verticalScale(24)} />
@@ -53,5 +66,8 @@ export const getStyles = (theme: Theme) =>
     uploadText: {
       ...fonts.medium,
       color: theme.color.textPrimary,
+    },
+    disabled: {
+      opacity: 0.5,
     },
   });

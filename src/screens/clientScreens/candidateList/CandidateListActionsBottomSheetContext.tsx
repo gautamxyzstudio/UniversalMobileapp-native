@@ -208,7 +208,7 @@ const CandidateListActionsBottomSheetContextProvider = ({
             ? [
                 {
                   icon: IC_RESTORE,
-                  title: STRINGS.remove_from_shortlist,
+                  title: STRINGS.restore,
                   onPress: () => onPressSheetAction(0),
                 },
                 {

@@ -20,7 +20,7 @@ type ICandidateProfilePictureViewProps = {
 
 const CandidateProfilePictureView: React.FC<
   ICandidateProfilePictureViewProps
-> = ({name, url, status, size, textSize}) => {
+> = ({name, url, status, size, textSize = 'medium'}) => {
   const styles = useThemeAwareObject(createStyles);
   const {theme} = useTheme();
   const profilePictureAttributes = getProfileStylesFromSelectionStatus(

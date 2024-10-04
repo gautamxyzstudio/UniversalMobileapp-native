@@ -130,7 +130,11 @@ const QuickLinksJobPostContextProvider = ({
         ref={quickActionSheetRef}
         customStyles={styles.container}
         headerTitle={STRINGS.quick_links}
-        modalHeight={verticalScale(400) + insetsBottom}
+        modalHeight={
+          jobTypes === 'open'
+            ? verticalScale(400) + insetsBottom
+            : verticalScale(256) + insetsBottom
+        }
         options={
           jobTypes === 'open'
             ? [
@@ -151,6 +155,7 @@ const QuickLinksJobPostContextProvider = ({
                 },
                 {
                   icon: PAUSE,
+                  isDisabled: selectedJobPost?.notAccepting === true,
                   title: STRINGS.stop,
                   onPress: () => onPressSheetAction(3),
                 },

@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useLazyGetClosedJobsQuery} from '@api/features/client/clientApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -8,65 +7,41 @@ import {
   saveClosedJobs,
 } from '@api/features/client/clientSlice';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
-import {useNavigation} from '@react-navigation/native';
-import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {IJobPostTypes} from '@api/features/client/types';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import JobPostCard from './JobPostCard';
 import JobPostCardLoading from './JobPostCardLoading';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {mockJobPostsLoading} from '@api/mockData';
-import {CHECK_IN, IC_DOCUMENT, IC_NO_CLOSED} from '@assets/exporter';
+import {IC_NO_CLOSED} from '@assets/exporter';
 import CustomList from '@components/molecules/customList';
 import {verticalScale} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
-import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
-import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
-import {timeOutTimeSheets} from 'src/constants/constants';
+import {useQuickLinksJobPostContext} from 'src/contexts/quickLinksJobPost';
 
 const ClientClosedJobs = () => {
   const [getClosedJobs, {error}] = useLazyGetClosedJobsQuery();
   const closedJobs = useSelector(closedJobsFromState);
   const dispatch = useDispatch();
-  const navigation = useNavigation<any>();
-  const {insetsBottom} = useScreenInsets();
+
   const user = useSelector(userBasicDetailsFromState);
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
-  const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
-  const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
+  const {onPressSheet} = useQuickLinksJobPostContext();
+
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLastPage, setIsLastPage] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSelectedDraft, setCurrentSelectedDraft] =
-    useState<IJobPostTypes | null>(null);
-
-  const onPressJobDetails = () => {
-    quickActionSheetRef.current?.close();
-    setTimeout(() => {
-      jobDetailsSheetRef.current?.snapToIndex(1);
-    }, timeOutTimeSheets);
-  };
 
   useEffect(() => {
     geClosedJobsHandler(true);
   }, []);
 
-  const onPressCard = (post: IJobPostTypes) => {
-    setCurrentSelectedDraft(post);
-    quickActionSheetRef.current?.snapToIndex(1);
-  };
-
-  const navigateToCheckIn = () => {
-    quickActionSheetRef.current?.close();
-    setTimeout(() => {
-      navigation.navigate('shortlistedCandidates');
-    }, timeOutTimeSheets);
-  };
-
   const renderItem = useCallback(
     ({item}: {item: IJobPostTypes}) => (
-      <JobPostCard onPress={() => onPressCard(item)} {...item} />
+      <JobPostCard
+        onPress={() => onPressSheet('show', 'closed', item)}
+        {...item}
+      />
     ),
 
     [isLoading, closedJobs],
@@ -130,37 +105,8 @@ const ClientClosedJobs = () => {
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
       />
-      <SelectOptionBottomSheet
-        ref={quickActionSheetRef}
-        customStyles={styles.container}
-        headerTitle={STRINGS.quick_links}
-        modalHeight={verticalScale(256) + insetsBottom}
-        options={[
-          {
-            icon: CHECK_IN,
-            title: STRINGS.check_in,
-            onPress: navigateToCheckIn,
-          },
-          {
-            icon: IC_DOCUMENT,
-            title: STRINGS.viewDetails,
-            onPress: onPressJobDetails,
-          },
-        ]}
-      />
-      <JobDetailsBottomSheet
-        ref={jobDetailsSheetRef}
-        jobDetails={currentSelectedDraft}
-      />
     </>
   );
 };
 
 export default ClientClosedJobs;
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: verticalScale(24),
-    paddingVertical: verticalScale(24),
-  },
-});

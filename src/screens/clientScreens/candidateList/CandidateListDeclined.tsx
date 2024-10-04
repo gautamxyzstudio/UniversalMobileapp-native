@@ -86,7 +86,9 @@ const CandidateListDeclined: React.FC<ICandidateListDeclinedProps> = ({
         onPressThreeDots={() =>
           onPressThreeDots('show', jobId ?? 0, 'deny', item)
         }
-        onPressCard={() => onPressSheet('show', 'deny', item)}
+        onPressCard={() =>
+          onPressSheet('show', 'applications', item, jobId ?? 0)
+        }
       />
     ),
     [declinedApplication],

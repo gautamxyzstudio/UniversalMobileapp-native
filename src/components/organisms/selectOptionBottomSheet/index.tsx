@@ -10,6 +10,7 @@ type IOption = {
   icon: React.FC<SvgProps>;
   title: string;
   onPress: () => void;
+  isDisabled?: boolean;
 };
 
 type ISelectOptionBottomSheetProps = {
@@ -37,9 +38,10 @@ const SelectOptionBottomSheet = React.forwardRef<
       snapPoints={snapPoints}
       onClose={onClose}>
       <View style={[styles.container, customStyles]}>
-        {options.map(({icon, title, onPress}, index) => (
+        {options.map(({icon, title, onPress, isDisabled}, index) => (
           <SelectOptionCard
             key={index}
+            isDisabled={isDisabled}
             title={title}
             icon={icon}
             onPress={onPress}

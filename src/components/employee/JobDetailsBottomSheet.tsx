@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {BaseBottomSheet} from '@components/molecules/bottomsheet';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {verticalScale, windowHeight, windowWidth} from '@utils/metrics';
@@ -33,13 +34,13 @@ import {IJobPostStatus, IUserTypeEnum} from '@utils/enums';
 import {
   extractTimeFromDate,
   extractDayAndMonthFromDate,
-  convertArrayOfStringsToUlLi,
   getJobAddress,
   isClientDetails,
 } from '@utils/constants';
 import JobDetailsKey from './JobDetailsKeys';
 import {useTheme} from '@theme/Theme.context';
 import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';
+import {ActivityIndicator} from 'react-native-paper';
 
 type IJobDetailsBottomSheetProps = {
   jobDetails: IJobPostTypes | null;
@@ -52,7 +53,9 @@ const JobDetailsBottomSheet = React.forwardRef<
   IJobDetailsBottomSheetProps
 >(({jobDetails, isDraft, onPressApply}, ref) => {
   const styles = useThemeAwareObject(createStyles);
+  const [isLoading, setIsLoading] = useState(true);
   const {theme} = useTheme();
+  const [details, setDetails] = useState<IJobPostTypes | null>(null);
   const companyDetails = useSelector(
     userAdvanceDetailsFromState,
   ) as IClientDetails;
@@ -60,170 +63,213 @@ const JobDetailsBottomSheet = React.forwardRef<
   const user = useSelector(userBasicDetailsFromState);
   const snapPoints = useMemo(() => [0.01, modalHeight], [modalHeight]);
   const onClose = () => {
+    setIsLoading(true);
+    setDetails(null);
     // @ts-ignore
     ref.current?.snapToIndex(0);
   };
 
+  useEffect(() => {
+    if (jobDetails) {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setDetails(jobDetails);
+        setIsLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [jobDetails]);
+
   const clientJobStatusAttributes = getStatusStyleAttributesFromStatus(
     user?.user_type ?? 'emp',
-    jobDetails?.status ?? IJobPostStatus.OPEN,
+    details?.status ?? IJobPostStatus.OPEN,
     theme,
   );
 
-  console.log(jobDetails, 'detailsStatus');
-
-  const companyName =
-    user?.user_type === 'emp'
-      ? jobDetails?.client_details?.companyname
+  const companyName = useMemo(() => {
+    return user?.user_type === 'emp'
+      ? details?.client_details?.companyname
       : companyDetails?.companyName;
+  }, [user?.user_type, details?.client_details, companyDetails?.companyName]);
 
-  const shiftTime = `${extractTimeFromDate(
-    jobDetails?.startShift ?? new Date(),
-  )} - ${extractTimeFromDate(jobDetails?.endShift ?? new Date())}`;
+  const shiftTime = useMemo(() => {
+    return `${extractTimeFromDate(
+      details?.startShift ?? new Date(),
+    )} - ${extractTimeFromDate(details?.endShift ?? new Date())}`;
+  }, [details?.startShift, details?.endShift]);
 
-  const jobsDate = `${extractDayAndMonthFromDate(
-    jobDetails?.eventDate ?? new Date(),
-  )}`;
+  const jobsDate = useMemo(() => {
+    return extractDayAndMonthFromDate(details?.eventDate ?? new Date());
+  }, [details?.eventDate]);
 
   const statusAttributes = getStatusStylesFromStatus(
     jobDetails?.status ?? IJobPostStatus.OPEN,
     theme,
   );
 
+  const renderBottomContent = useMemo(() => {
+    if (
+      user?.user_type === 'client' &&
+      user.details &&
+      isClientDetails(user.details) &&
+      !isDraft
+    ) {
+      return (
+        <View style={styles.mainView}>
+          <Text
+            style={[
+              styles.statusText,
+              {color: clientJobStatusAttributes?.color},
+            ]}>
+            {clientJobStatusAttributes?.title}
+          </Text>
+        </View>
+      );
+    }
+
+    if (
+      user?.user_type === 'emp' &&
+      user.details &&
+      !isClientDetails(user.details)
+    ) {
+      if (details?.status === IJobPostStatus.OPEN) {
+        return (
+          <BottomButtonView
+            disabled={false}
+            title={STRINGS.applyNow}
+            onButtonPress={onPressApply}
+          />
+        );
+      } else {
+        return (
+          <Text style={[styles.statusText, {color: statusAttributes?.color}]}>
+            {statusAttributes?.title}
+          </Text>
+        );
+      }
+    }
+  }, [
+    user,
+    isDraft,
+    clientJobStatusAttributes,
+    details,
+    onPressApply,
+    statusAttributes,
+  ]);
+
   return (
     <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onClose}>
       <View style={styles.container}>
-        <BottomSheetScrollView
-          showsVerticalScrollIndicator={false}
-          stickyHeaderIndices={[4]}
-          contentContainerStyle={styles.scrollView}>
-          {/* <CustomImageComponent
-            defaultSource={ICONS.imagePlaceholder}
-            image={jobDetails.banner}
-            resizeMode="cover"
-            customStyle={styles.profilePicture}
-          /> */}
-          <Image
-            style={styles.profilePicture}
-            resizeMode="cover"
-            source={ICONS.imagePlaceholder}
-          />
-          <Text style={styles.title}>{jobDetails?.job_name}</Text>
-          <Text style={styles.jobName}>{companyName}</Text>
-          <Row style={styles.location} alignCenter>
-            <LOCATION_TERNARY
-              width={verticalScale(20)}
-              height={verticalScale(20)}
-            />
-            <Text style={styles.locationText}>{jobDetails?.location}</Text>
-          </Row>
-          <View style={styles.headerView}>
-            <Row wrap spaceBetween style={styles.stickyHeader}>
-              {jobDetails?.job_type && (
-                <JobDetailsTopTag
-                  icon={BRIEF_CASE}
-                  title={jobDetails?.job_type}
-                />
-              )}
-              {jobDetails?.salary && (
-                <JobDetailsTopTag
-                  icon={DOLLAR_SMALL}
-                  title={`${jobDetails?.salary}/$ hr`}
-                />
-              )}
-            </Row>
-            <Row wrap spaceBetween style={styles.stickyHeaderBottom}>
-              <JobDetailsTopTag
-                iconSize={verticalScale(20)}
-                icon={CALENDER_THIRD}
-                isMultiple
-                titleSec={shiftTime}
-                title={jobsDate}
-              />
-            </Row>
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.color.darkBlue} />
           </View>
-          <Spacers type="vertical" size={24} scalable />
-          {jobDetails?.requiredEmployee && (
-            <JobDetailsKey
-              heading={STRINGS.requiredCertificates}
-              value={jobDetails.requiredEmployee.toString()}
-            />
-          )}
-          <Spacers type="vertical" size={16} scalable />
-          {jobDetails?.gender && (
-            <JobDetailsKey heading={STRINGS.gender} value={jobDetails.gender} />
-          )}
-          <Spacers type="vertical" size={16} scalable />
-          <View style={styles.descriptionView}>
-            {jobDetails?.description && (
-              <JobDetailsRenderer
-                heading={STRINGS.jobDescription}
-                description={jobDetails?.description}
+        ) : (
+          <>
+            <BottomSheetScrollView
+              showsVerticalScrollIndicator={false}
+              stickyHeaderIndices={[4]}
+              contentContainerStyle={styles.scrollView}>
+              {/* <CustomImageComponent
+      defaultSource={ICONS.imagePlaceholder}
+      image={details.banner}
+      resizeMode="cover"
+      customStyle={styles.profilePicture}
+    /> */}
+              <Image
+                style={styles.profilePicture}
+                resizeMode="cover"
+                source={ICONS.imagePlaceholder}
               />
-            )}
-
-            <Spacers type="vertical" size={16} scalable />
-            {jobDetails?.jobDuties && (
-              <JobDetailsRenderer
-                heading={STRINGS.jobDuties}
-                description={jobDetails?.jobDuties}
-              />
-            )}
-            <Spacers type="vertical" size={16} scalable />
-            {/* {jobDetails?.required_certificates && (
-              <JobDetailsRenderer
-                heading={STRINGS.requiredCertificates}
-                description={convertArrayOfStringsToUlLi(
-                  jobDetails?.required_certificates ?? [],
+              <Text style={styles.title}>{details?.job_name}</Text>
+              <Text style={styles.jobName}>{companyName}</Text>
+              <Row style={styles.location} alignCenter>
+                <LOCATION_TERNARY
+                  width={verticalScale(20)}
+                  height={verticalScale(20)}
+                />
+                <Text style={styles.locationText}>{details?.location}</Text>
+              </Row>
+              <View style={styles.headerView}>
+                <Row wrap spaceBetween style={styles.stickyHeader}>
+                  {details?.job_type && (
+                    <JobDetailsTopTag
+                      icon={BRIEF_CASE}
+                      title={details?.job_type}
+                    />
+                  )}
+                  {details?.salary && (
+                    <JobDetailsTopTag
+                      icon={DOLLAR_SMALL}
+                      title={`${details?.salary}/$ hr`}
+                    />
+                  )}
+                </Row>
+                <Row wrap spaceBetween style={styles.stickyHeaderBottom}>
+                  <JobDetailsTopTag
+                    iconSize={verticalScale(20)}
+                    icon={CALENDER_THIRD}
+                    isMultiple
+                    titleSec={shiftTime}
+                    title={jobsDate ?? ''}
+                  />
+                </Row>
+              </View>
+              <Spacers type="vertical" size={24} scalable />
+              {details?.requiredEmployee && (
+                <JobDetailsKey
+                  heading={STRINGS.requiredCertificates}
+                  value={details.requiredEmployee.toString()}
+                />
+              )}
+              <Spacers type="vertical" size={16} scalable />
+              {details?.gender && (
+                <JobDetailsKey
+                  heading={STRINGS.gender}
+                  value={details.gender}
+                />
+              )}
+              <Spacers type="vertical" size={16} scalable />
+              <View style={styles.descriptionView}>
+                {details?.description && (
+                  <JobDetailsRenderer
+                    heading={STRINGS.jobDescription}
+                    description={details?.description}
+                  />
                 )}
-              />
-            )} */}
-            <Spacers type="vertical" size={16} scalable />
-            <Text style={styles.heading}>{STRINGS.address}</Text>
-            <Text style={styles.pStyles}>
-              {getJobAddress({
-                address: jobDetails?.address ?? '',
-                city: jobDetails?.city ?? '',
-                postalCode: jobDetails?.postalCode ?? '',
-                location: jobDetails?.location ?? '',
-              })}
-            </Text>
-          </View>
-          <Spacers type="vertical" />
-        </BottomSheetScrollView>
-        {user?.user_type === 'client' &&
-          user.details &&
-          isClientDetails(user.details) &&
-          !isDraft && (
-            <View style={styles.mainView}>
-              <Text
-                style={[
-                  styles.statusText,
-                  {color: clientJobStatusAttributes?.color},
-                ]}>
-                {clientJobStatusAttributes?.title}
-              </Text>
-            </View>
+
+                <Spacers type="vertical" size={16} scalable />
+                {details?.jobDuties && (
+                  <JobDetailsRenderer
+                    heading={STRINGS.jobDuties}
+                    description={details?.jobDuties}
+                  />
+                )}
+                <Spacers type="vertical" size={16} scalable />
+                {/* {jobDetails?.required_certificates && (
+        <JobDetailsRenderer
+          heading={STRINGS.requiredCertificates}
+          description={convertArrayOfStringsToUlLi(
+            jobDetails?.required_certificates ?? [],
           )}
-        {user?.user_type === 'emp' &&
-          user.details &&
-          !isClientDetails(user.details) && (
-            <>
-              {jobDetails?.status === IJobPostStatus.OPEN && (
-                <BottomButtonView
-                  disabled={false}
-                  title={STRINGS.applyNow}
-                  onButtonPress={onPressApply}
-                />
-              )}
-              {jobDetails?.status !== IJobPostStatus.OPEN && (
-                <Text
-                  style={[styles.statusText, {color: statusAttributes?.color}]}>
-                  {statusAttributes?.title}
+        />
+      )} */}
+                <Spacers type="vertical" size={16} scalable />
+                <Text style={styles.heading}>{STRINGS.address}</Text>
+                <Text style={styles.pStyles}>
+                  {getJobAddress({
+                    address: details?.address ?? '',
+                    city: details?.city ?? '',
+                    postalCode: details?.postalCode ?? '',
+                    location: details?.location ?? '',
+                  })}
                 </Text>
-              )}
-            </>
-          )}
+              </View>
+              <Spacers type="vertical" />
+            </BottomSheetScrollView>
+            {renderBottomContent}
+          </>
+        )}
       </View>
     </BaseBottomSheet>
   );
@@ -238,7 +284,7 @@ const createStyles = ({color}: Theme) => {
       alignItems: 'flex-start',
     },
     container: {
-      flex: 1,
+      flexGrow: 1,
       alignItems: 'center',
     },
     profilePicture: {
@@ -251,6 +297,11 @@ const createStyles = ({color}: Theme) => {
       ...fonts.mediumBold,
       letterSpacing: 0.16,
       color: color.textPrimary,
+    },
+    loadingContainer: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     title: {
       color: color.textPrimary,

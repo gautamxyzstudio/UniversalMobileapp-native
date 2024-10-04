@@ -117,10 +117,11 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
           );
           updateRefreshing(false);
         }
-      } catch (error) {
+      } catch (err) {
+        console.error(err);
+      } finally {
         setIsLoading(false);
         updateRefreshing(false);
-        console.error(error);
       }
     }
   };
@@ -132,7 +133,9 @@ const CandidateListOpen: React.FC<ICandidateListOpenProps> = ({jobId}) => {
         status={ICandidateStatusEnum.pending}
         onPressAccept={acceptCandidateApplication(item)}
         onPressDecline={declineCandidateApplication(item)}
-        onPressCard={() => onPressSheet('show', 'applications', item)}
+        onPressCard={() =>
+          onPressSheet('show', 'applications', item, jobId ?? 0)
+        }
       />
     ),
     [openApplication],

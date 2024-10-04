@@ -295,4 +295,6 @@ export const STRINGS = {
   companyDetail: 'Company Detail',
   logActivity: 'Log activity',
   downloadCheckinSheets: 'Download checkin sheets',
+  no_jobs_found: 'No Jobs Found',
+  restore: 'Restore',
 };

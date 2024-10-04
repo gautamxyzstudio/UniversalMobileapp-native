@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {BaseBottomSheet} from '@components/molecules/bottomsheet';
 import {BottomSheetFlatList, BottomSheetModal} from '@gorhom/bottom-sheet';
@@ -12,6 +12,7 @@ import {ICandidateListTypes} from '@api/features/client/types';
 import Spacers from '@components/atoms/Spacers';
 import {useKeyboardHeight} from 'src/hooks/useKeyboardHeight';
 import BottomButtonView from '@components/organisms/bottomButtonView';
+import _ from 'lodash';
 
 type IOpenJobsBottomSheetPropsTypes = {
   jobs: ICandidateListTypes[];
@@ -47,6 +48,29 @@ const OpenJobsBottomSheet = React.forwardRef<
       () => [0.01, modalHeight, modalHeight + keyboardHeight / 2],
       [modalHeight, keyboardHeight],
     );
+
+    const handleSearch = useCallback(
+      _.debounce(query => {
+        if (!query) {
+          setCurrentJobs(jobs);
+        } else {
+          const filteredJobs = jobs.filter(
+            job =>
+              job.details.jobName.toLowerCase().includes(query.toLowerCase()) ||
+              job.details.jobId
+                .toString()
+                .toLowerCase()
+                .includes(query.toLowerCase()),
+          );
+          setCurrentJobs(filteredJobs);
+        }
+      }, 100),
+      [jobs],
+    );
+
+    useEffect(() => {
+      handleSearch(search);
+    }, [search, handleSearch]);
 
     useEffect(() => {
       setSelectedJob(currentSelectedJob);
@@ -106,6 +130,11 @@ const OpenJobsBottomSheet = React.forwardRef<
           ItemSeparatorComponent={itemSeparatorComponent}
           ListFooterComponent={<View />}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View>
+              <Text>{STRINGS.no_jobs_found}</Text>
+            </View>
+          }
           ListFooterComponentStyle={styles.footer}
           onRefresh={onRefresh}
           onEndReached={onReachEnd}
