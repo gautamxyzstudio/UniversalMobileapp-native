@@ -7,7 +7,6 @@ import {fonts} from '@utils/common.styles';
 import {useTheme} from '@theme/Theme.context';
 import {getJobStatus} from '@screens/employeeScreens/employeeJobs/types';
 import {CLOCK, LOCATION_TERNARY} from '@assets/exporter';
-
 import {getJobStartAndEndTime} from '@utils/utils.common';
 import {verticalScale} from '@utils/metrics';
 import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';

@@ -13,14 +13,42 @@ import {verticalScale} from '@utils/metrics';
 import {fonts} from '@utils/common.styles';
 import {useTheme} from '@theme/Theme.context';
 import {Theme} from '@theme/Theme.type';
-type IHorizontalCalendarPropTypes = {};
+import {useSelector} from 'react-redux';
+import {jobsFromState} from '@api/features/employee/employeeSlice';
+import {IJobPostTypes} from '@api/features/client/types';
+type IHorizontalCalendarPropTypes = {
+  onSelectDate: (date: Moment) => void;
+  stateJobs: IJobPostTypes[];
+};
 
-const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({}) => {
-  const [dates, setDates] = useState<Moment[]>([]);
+const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({
+  onSelectDate,
+  stateJobs,
+}) => {
+  const [dates, setDates] = useState<{date: Moment}[]>([]);
   const currentDate = moment();
   const {theme} = useTheme();
   const [date, setSelectedDate] = useState(currentDate);
   const styles = getStyles(theme);
+
+  useEffect(() => {
+    let selectedDates: {
+      date: Moment;
+    }[] = [];
+    selectedDates = stateJobs.map(job => {
+      return {
+        date: moment(job.eventDate),
+        dots: [
+          {
+            color: 'red',
+          },
+        ],
+      };
+    });
+    setDates(selectedDates);
+  }, [stateJobs]);
+
+  console.log(dates);
 
   return (
     <View>
@@ -28,6 +56,8 @@ const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({}) => {
         style={{height: verticalScale(120)}}
         scrollable={true}
         selectedDate={date}
+        dayComponentHeight={verticalScale(56)}
+        onDateSelected={onSelectDate}
         daySelectionAnimation={{
           borderWidth: 1,
           type: 'border',
@@ -36,7 +66,7 @@ const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({}) => {
         }}
         dateNameStyle={styles.dateNameStyle}
         dateNumberStyle={styles.dateNumber}
-        markedDates={[date]}
+        markedDates={dates}
         markedDatesStyle={styles.markedDate}
         dayContainerStyle={styles.dayContainer}
         calendarHeaderStyle={styles.header}
@@ -58,9 +88,7 @@ export default HorizontalCalendar;
 
 const getStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      gap: 16,
-    },
+    container: {},
     arrow: {
       marginHorizontal: verticalScale(10),
     },
@@ -74,7 +102,7 @@ const getStyles = (theme: Theme) =>
       alignItems: 'center',
       overflow: 'hidden',
       width: verticalScale(37),
-      height: verticalScale(46),
+      height: verticalScale(56),
     },
     header: {
       color: theme.color.textPrimary,
@@ -82,15 +110,15 @@ const getStyles = (theme: Theme) =>
     },
     highlightDate: {
       width: verticalScale(37),
-      height: verticalScale(46),
+      height: verticalScale(56),
       overflow: 'visible',
-      paddingTop: 10,
       justifyContent: 'center',
       alignItems: 'center',
     },
     markedDate: {
       width: verticalScale(6),
       height: verticalScale(6),
+      marginTop: verticalScale(4),
       backgroundColor: theme.color.accent,
       borderRadius: verticalScale(3),
     },

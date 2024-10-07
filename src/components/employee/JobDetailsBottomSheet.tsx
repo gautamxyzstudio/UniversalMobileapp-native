@@ -111,7 +111,7 @@ const JobDetailsBottomSheet = React.forwardRef<
     if (
       user?.user_type === 'client' &&
       user.details &&
-      isClientDetails(user.details) &&
+      isClientDetails(user?.details) &&
       !isDraft
     ) {
       return (

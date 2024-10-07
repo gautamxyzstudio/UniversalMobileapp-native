@@ -115,6 +115,7 @@ import IC_NO_APPLICATIONS from './icons/svg/noApplications.svg';
 import IC_NO_SHORTLISTED from './icons/svg/noShortlisted.svg';
 import IC_NO_DENIED from './icons/svg/noDenied.svg';
 import IC_SEARCH_EMPTY from './icons/svg/searchEmpty.svg';
+import IC_EMPTY_SCHEDULE from './icons/svg/noSchedules.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -205,6 +206,7 @@ export {
   RATE,
   CALENDAR,
   SETTINGS,
+  IC_EMPTY_SCHEDULE,
   TICK,
   LOGOUT_SECONDARY,
   BIN,

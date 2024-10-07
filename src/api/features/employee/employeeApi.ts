@@ -108,12 +108,47 @@ const employeeApi = baseApi.injectEndpoints({
         };
       },
     }),
+    fetchScheduledJobs: builder.query<
+      IJobTypes[],
+      {id: number; type: IJobPostStatus | null}
+    >({
+      query: ({id, type}) => ({
+        url: apiEndPoints.getAppliedJobs(id, type),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (response: IGetAppliedJobsResponse): IJobTypes[] => {
+        let jobs: IJobTypes[] = [];
+        response.forEach(details => {
+          if (
+            details.status === IJobPostStatus.CONFIRMED ||
+            details.status === IJobPostStatus.COMPLETED
+          ) {
+            jobs.push({
+              id: details.id,
+              ...details.jobs[0],
+              status: details.status,
+              client_details: details.jobs[0].client_details[0],
+            });
+          }
+        });
+        return jobs;
+      },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
   }),
 });
 
 export const {
   useLazyFetchJobsQuery,
   useApplyForJobMutation,
+  useLazyFetchScheduledJobsQuery,
   useLazyFetchAppliedJobsQuery,
 } = employeeApi;
 

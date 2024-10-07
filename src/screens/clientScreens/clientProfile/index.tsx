@@ -26,7 +26,6 @@ import {
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {IEmployeeDetails} from '@api/features/user/types';
-import {timeOutTimeSheets} from 'src/constants/constants';
 
 const EmployeeProfile = () => {
   const styles = useThemeAwareObject(createStyles);
@@ -36,14 +35,12 @@ const EmployeeProfile = () => {
     userAdvanceDetailsFromState,
   ) as IEmployeeDetails;
 
-  console.log(JSON.stringify(userAdvDetails), 'ASD');
-
   const popupRef = useRef<customModalRef>(null);
 
   const onPressLogoutTab = useCallback(() => {
     setTimeout(() => {
       popupRef?.current?.handleModalState(true);
-    }, 250);
+    }, 350);
   }, []);
 
   const onPressLogout = () => {
@@ -54,7 +51,7 @@ const EmployeeProfile = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, timeOutTimeSheets);
+    }, 350);
   };
   return (
     <OnBoardingBackground
