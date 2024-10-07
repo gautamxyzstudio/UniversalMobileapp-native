@@ -1,11 +1,4 @@
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {actions, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
 import React, {useEffect, useRef, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
@@ -47,6 +40,7 @@ const TextEditorView: React.FC<ITextEditorView> = ({route}) => {
     onGoBack(htmlContent);
     navigation.goBack();
   };
+
   return (
     <SafeAreaView paddingHorizontal>
       <Row alignCenter spaceBetween>
@@ -62,12 +56,14 @@ const TextEditorView: React.FC<ITextEditorView> = ({route}) => {
           ref={RichText}
           initialContentHTML={htmlContent}
           style={styles.rich}
+          useContainer
+          pasteAsPlainText={true}
           styleWithCSS={false}
           placeholder={'Start Writing Here'}
           onChange={text => setHtmlContent(text.trim())}
         />
       </KeyboardAwareScrollView>
-      <View style={{position: 'absolute', bottom: height}}>
+      <View style={(styles.toolbar, {bottom: height})}>
         <RichToolbar
           actions={[actions.insertBulletsList, actions.keyboard]}
           editor={RichText}
@@ -98,5 +94,8 @@ const createStyles = (theme: Theme) =>
     add: {
       color: theme.color.darkBlue,
       ...fonts.headingSmall,
+    },
+    toolbar: {
+      position: 'absolute',
     },
   });

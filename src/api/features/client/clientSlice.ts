@@ -65,6 +65,19 @@ const clientSlice = createSlice({
     },
     addNewJob: (state, action: PayloadAction<IJobPostTypes>) => {
       state.jobs.open.unshift(action.payload);
+      const candidateItem: ICandidateListTypes = {
+        details: {
+          jobId: action.payload?.id ?? 0,
+          jobName: action.payload?.job_name ?? '',
+          jobPoster: null,
+          eventDate: action.payload.eventDate ?? new Date(),
+          location: action.payload.location ?? '',
+        },
+        open: new Map<number, ICandidateTypes>(),
+        shortlisted: new Map<number, ICandidateTypes>(),
+        denied: new Map<number, ICandidateTypes>(),
+      };
+      state.candidateList.push(candidateItem);
     },
     postADraft: (state, action: PayloadAction<IJobPostTypes>) => {
       const draftIndex = state.jobs.drafts.findIndex(
@@ -73,6 +86,19 @@ const clientSlice = createSlice({
       if (draftIndex !== -1) {
         state.jobs.drafts.splice(draftIndex, 1);
         state.jobs.open.unshift(action.payload);
+        const candidateItem: ICandidateListTypes = {
+          details: {
+            jobId: action.payload?.id ?? 0,
+            jobName: action.payload?.job_name ?? '',
+            jobPoster: null,
+            eventDate: action.payload.eventDate ?? new Date(),
+            location: action.payload.location ?? '',
+          },
+          open: new Map<number, ICandidateTypes>(),
+          shortlisted: new Map<number, ICandidateTypes>(),
+          denied: new Map<number, ICandidateTypes>(),
+        };
+        state.candidateList.push(candidateItem);
       }
     },
     updateDraftReducer: (state, action: PayloadAction<IJobPostTypes>) => {
