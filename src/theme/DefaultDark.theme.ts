@@ -14,7 +14,7 @@ const DEFAULT_DARK_COLOR_THEME: ColorTheme = {
   lightGrey: '#F2F2F2',
   backgroundWhite: '#FAFAFA',
   disabled: '#868686',
-  accentLighter: '#FFF6EF',
+  accentLighter: '#F5F7FF',
   red: '#C11919',
   green: '#469C73',
   greenLight: '#E7FFF4',

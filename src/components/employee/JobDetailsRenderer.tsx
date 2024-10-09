@@ -6,6 +6,7 @@ import {verticalScale} from '@utils/metrics';
 import {fonts} from '@utils/common.styles';
 import RenderHtml from 'react-native-render-html';
 import {STRINGS} from 'src/locales/english';
+import Spacers from '@components/atoms/Spacers';
 
 type IJobDetailsRendererPropTypes = {
   heading?: string;
@@ -28,6 +29,7 @@ const JobDetailsRenderer: React.FC<IJobDetailsRendererPropTypes> = ({
   return (
     <>
       {heading && <Text style={styles.heading}>{heading}</Text>}
+      <Spacers type="vertical" size={8} scalable />
       <View style={styles.descriptionContainer}>
         <RenderHtml
           tagsStyles={{

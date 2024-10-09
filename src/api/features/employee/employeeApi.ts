@@ -5,7 +5,6 @@ import {
   IApplyForJobRequest,
   ICustomizedJobsResponse,
   IGetAppliedJobsResponse,
-  IGetJobsResponse,
   IJobTypes,
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
@@ -19,9 +18,7 @@ const employeeApi = baseApi.injectEndpoints({
         url: apiEndPoints.getJobsEmployee(pageNumber),
         method: apiMethodType.get,
       }),
-      transformResponse: (
-        response: IGetJobsResponse,
-      ): ICustomizedJobsResponse => {
+      transformResponse: (response: any): ICustomizedJobsResponse => {
         let customizedJobs: IJobTypes[] = [];
         response.data.forEach(job => {
           if (
@@ -34,8 +31,9 @@ const employeeApi = baseApi.injectEndpoints({
               publishedAt: job.attributes.publishedAt,
               location: job.attributes.location,
               id: job.id,
-              job_type: job.attributes.job_type,
               job_applications: job.job_applications,
+              requiredEmployee: job.attributes.requiredEmployee,
+              job_type: job.attributes.job_type,
               jobDuties: job.attributes.jobDuties,
               description: job.attributes.description,
               eventDate: job.attributes.eventDate,

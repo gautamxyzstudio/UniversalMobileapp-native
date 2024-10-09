@@ -16,6 +16,7 @@ const JobDetailsKey: React.FC<IJobDetailsKeyPropTypes> = ({heading, value}) => {
   return (
     <Row style={styles.row} spaceBetween alignCenter>
       <Text style={styles.heading}>{heading}</Text>
+
       <Text style={styles.title}>{value}</Text>
     </Row>
   );

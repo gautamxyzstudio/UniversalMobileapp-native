@@ -15,7 +15,7 @@ const DEFAULT_LIGHT_COLOR_THEME: ColorTheme = {
   lightGrey: '#F2F2F2',
   strokeLight: '#EDEDED',
   orange_light: '#FFF2E8',
-  accentLighter: '#FFF6EF',
+  accentLighter: '#F5F7FF',
   green: '#469C73',
   purple: '#FFF6F0',
   blue: '#1985C1',

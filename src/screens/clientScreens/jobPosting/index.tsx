@@ -194,8 +194,8 @@ const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
   return (
     <LinearGradient
       style={[styles.container, {paddingTop: insetsTop}]}
-      locations={[0, 0.2, 1]}
-      colors={['#182452', 'rgba(24, 36, 82, 0.80)', '#5F70AF']}>
+      locations={[0.05, 0.25, 1]}
+      colors={['#F9751A', '#FFBB8C', '#FFF']}>
       <View style={styles.headerContainer}>
         <HeaderWithBack
           renderRightIcon={true}

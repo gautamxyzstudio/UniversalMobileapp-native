@@ -34,6 +34,7 @@ import {IJobPostTypes} from '@api/features/client/types';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
 import {ICustomErrorResponse} from '@api/types';
+import {IC_EMPTY_JOBS_LIST} from '@assets/exporter';
 
 const EmployeeHome = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -167,6 +168,7 @@ const EmployeeHome = () => {
           ListFooterComponentStyle={styles.footer}
           error={error}
           emptyListMessage={STRINGS.no_jobs_available}
+          emptyListIllustration={IC_EMPTY_JOBS_LIST}
           emptyListSubTitle={STRINGS.no_jobs_available_description}
           onEndReached={loadMore}
           onRefresh={onRefreshHandler}

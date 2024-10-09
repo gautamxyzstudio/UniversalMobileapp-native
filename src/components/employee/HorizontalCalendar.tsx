@@ -50,12 +50,10 @@ const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({
     }
   }, [stateJobs]);
 
-  console.log(dates);
-
   return (
     <View>
       <CalendarStrip
-        style={{height: verticalScale(120)}}
+        style={{height: verticalScale(140)}}
         scrollable={true}
         selectedDate={date}
         dayComponentHeight={verticalScale(56)}
@@ -120,7 +118,7 @@ const getStyles = (theme: Theme) =>
     markedDate: {
       width: verticalScale(6),
       height: verticalScale(6),
-      marginTop: verticalScale(4),
+      marginTop: verticalScale(8),
       backgroundColor: theme.color.accent,
       borderRadius: verticalScale(3),
     },

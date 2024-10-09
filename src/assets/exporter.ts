@@ -116,6 +116,8 @@ import IC_NO_SHORTLISTED from './icons/svg/noShortlisted.svg';
 import IC_NO_DENIED from './icons/svg/noDenied.svg';
 import IC_SEARCH_EMPTY from './icons/svg/searchEmpty.svg';
 import IC_EMPTY_SCHEDULE from './icons/svg/noSchedules.svg';
+import IC_EMPTY_JOBS_LIST from './icons/svg/noJobs.svg';
+import IC_EMPTY_APPLIED from './icons/svg/noApplied.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -154,6 +156,8 @@ export {
   EVENT,
   PENCIL,
   POST,
+  IC_EMPTY_APPLIED,
+  IC_EMPTY_JOBS_LIST,
   PERSON_SECONDARY,
   JOB_ID,
   IC_COMPANY_DETAIL,

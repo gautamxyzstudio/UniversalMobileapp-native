@@ -1,5 +1,4 @@
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
-import {IJobPostTypes} from '../client/types';
 
 export type IEmployeeSliceInitialState = {
   jobs: IJobTypes[];

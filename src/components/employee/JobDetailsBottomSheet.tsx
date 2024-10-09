@@ -13,7 +13,7 @@ import {
   CALENDER_THIRD,
   DOLLAR_SMALL,
   ICONS,
-  LOCATION_TERNARY,
+  LOCATION_SECONDARY,
 } from '@assets/exporter';
 import {Row} from '@components/atoms/Row';
 import {STRINGS} from 'src/locales/english';
@@ -36,6 +36,7 @@ import {
   extractDayAndMonthFromDate,
   getJobAddress,
   isClientDetails,
+  convertArrayOfStringsToUlLi,
 } from '@utils/constants';
 import JobDetailsKey from './JobDetailsKeys';
 import {useTheme} from '@theme/Theme.context';
@@ -157,6 +158,8 @@ const JobDetailsBottomSheet = React.forwardRef<
     statusAttributes,
   ]);
 
+  console.log(details);
+
   return (
     <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onClose}>
       <View style={styles.container}>
@@ -184,7 +187,7 @@ const JobDetailsBottomSheet = React.forwardRef<
               <Text style={styles.title}>{details?.job_name}</Text>
               <Text style={styles.jobName}>{companyName}</Text>
               <Row style={styles.location} alignCenter>
-                <LOCATION_TERNARY
+                <LOCATION_SECONDARY
                   width={verticalScale(20)}
                   height={verticalScale(20)}
                 />
@@ -215,7 +218,7 @@ const JobDetailsBottomSheet = React.forwardRef<
                   />
                 </Row>
               </View>
-              <Spacers type="vertical" size={24} scalable />
+              <Spacers type="vertical" size={12} scalable />
               {details?.requiredEmployee && (
                 <JobDetailsKey
                   heading={STRINGS.requiredCertificates}
@@ -246,16 +249,17 @@ const JobDetailsBottomSheet = React.forwardRef<
                   />
                 )}
                 <Spacers type="vertical" size={16} scalable />
-                {/* {jobDetails?.required_certificates && (
-        <JobDetailsRenderer
-          heading={STRINGS.requiredCertificates}
-          description={convertArrayOfStringsToUlLi(
-            jobDetails?.required_certificates ?? [],
-          )}
-        />
-      )} */}
+                {jobDetails?.required_certificates && (
+                  <JobDetailsRenderer
+                    heading={STRINGS.requiredCertificates}
+                    description={convertArrayOfStringsToUlLi(
+                      jobDetails?.required_certificates ?? [],
+                    )}
+                  />
+                )}
                 <Spacers type="vertical" size={16} scalable />
                 <Text style={styles.heading}>{STRINGS.address}</Text>
+                <Spacers type="vertical" size={8} scalable />
                 <Text style={styles.pStyles}>
                   {getJobAddress({
                     address: details?.address ?? '',
@@ -347,10 +351,9 @@ const createStyles = ({color}: Theme) => {
     },
 
     headerView: {
-      height: verticalScale(112),
       paddingVertical: verticalScale(12),
-      marginBottom: verticalScale(12),
       backgroundColor: color.primary,
+      flex: 1,
     },
     mainView: {
       width: windowWidth,

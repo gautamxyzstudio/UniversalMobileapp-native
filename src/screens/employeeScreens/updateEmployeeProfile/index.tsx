@@ -152,6 +152,7 @@ const UpdateEmployeeProfile = () => {
         dispatch({...state, [`${field}Error`]: `${field} is required`});
       }
     });
+    console.log(isValid);
     if (isValid) {
       try {
         reduxDispatch(setLoading(true));
@@ -162,8 +163,8 @@ const UpdateEmployeeProfile = () => {
           },
         }).unwrap();
         if (updatedDetails) {
-          console.log(updatedDetails, 'updated fields');
-          // reduxDispatch(updateUserDocuments(changedFields));
+          console.log(updatedDetails, 'update');
+          // reduxDispatch(updateEmployeeDetails(changedFields));
         }
       } catch (error) {
         toast.hideAll();

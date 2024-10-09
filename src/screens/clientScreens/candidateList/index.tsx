@@ -233,7 +233,7 @@ const getStyles = () => {
       paddingTop: 0,
       paddingBottom: 0,
       paddingHorizontal: 0,
-      backgroundColor: '#F1F4FF',
+      backgroundColor: '#fff',
     },
     screen: {
       width: windowWidth,

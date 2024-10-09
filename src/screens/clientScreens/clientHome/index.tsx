@@ -33,7 +33,7 @@ const ClientHome = () => {
         <Spacers size={24} scalable type="vertical" />
         <SegmentView
           ref={segmentRef}
-          tabs={['Open', 'Close']}
+          tabs={['Open', 'Closed']}
           marginHorizontal={0}
           onClick={handleTabsChange}
           currentIndex={0}

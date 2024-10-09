@@ -267,7 +267,7 @@ export const STRINGS = {
   completed: 'Completed',
   declined: 'Declined',
   applied: 'Applied',
-  no_jobs_applied: 'No Jobs Applied',
+  no_jobs_applied: 'No Jobs Found',
   no_jobs_applied_description:
     ' You have not applied for any jobs yet. Start exploring and apply to jobs that match your skills and interests.',
   no_jobs_available_description:

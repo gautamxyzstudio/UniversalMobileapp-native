@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
   container: {
     height: verticalScale(48),
     gap: verticalScale(12),
-    backgroundColor: '#182452',
+    backgroundColor: '#FF7312',
     borderRadius: 40,
     paddingHorizontal: verticalScale(12),
     // paddingVertical: verticalScale(8),

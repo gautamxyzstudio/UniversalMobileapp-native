@@ -22,6 +22,7 @@ import {
 import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
 import {jobFilters} from 'src/constants/constants';
 import {IJobPostStatus} from '@utils/enums';
+import {IC_EMPTY_APPLIED} from '@assets/exporter';
 
 const EmployeeJobs = () => {
   const [selectedFilter, setSelectedFilter] = useState<IJobPostStatus | null>(
@@ -49,7 +50,7 @@ const EmployeeJobs = () => {
 
   const renderItemListing = useCallback(
     ({item}: {item: IJobPostTypes}) => {
-      return <JobPostCard onPress={onPressViewDetails} {...item} />;
+      return <JobPostCard onPress={() => onPressViewDetails(item)} {...item} />;
     },
     [jobs],
   );
@@ -99,7 +100,7 @@ const EmployeeJobs = () => {
           getItemType={(item: any) => `${item?.id}`}
           betweenItemSpace={12}
           emptyListMessage={STRINGS.no_jobs_applied}
-          emptyListSubTitle={STRINGS.no_jobs_applied_description}
+          emptyListIllustration={IC_EMPTY_APPLIED}
           estimatedItemSize={verticalScale(177)}
           error={error}
           refreshAfterError={onRefreshHandler}
