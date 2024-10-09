@@ -52,8 +52,6 @@ const JobSeekerDetailsStepsThree = forwardRef<{}, jobSeekerThirdRef>(
       },
     );
 
-    console.log(state, 'sonone');
-
     const otherDocRef = useRef<BottomSheetModal | null>(null);
     const [predefinedCertificates, setPredefinedCertificates] = useState<
       PredefinedCertificates[]

@@ -218,7 +218,6 @@ export type IUserDetailsRequestParams = {
   securityDocumentAdv?: number | null;
   securityDocumentAdvStatus?: IDocumentStatus;
   govtidStaus?: IDocumentStatus;
-  other_documents: number[];
   directDepositVoidChequeStatus?: IDocumentStatus;
   sinDocumentStatus?: IDocumentStatus;
   job_applications?: number[];
@@ -320,12 +319,38 @@ export type IPatchUserDetailsRequest = {
 };
 
 export type IEmployeeUploadOtherDocumentsRequest = {
-  data: [
-    {
+  data: {
+    name: string;
+    Document: number;
+    employee_detail: number;
+    Docstatus: IDocumentStatus;
+  }[];
+};
+export type IAddEmployeeDetailsResponse = {
+  data: {
+    id: number;
+    attributes: {
       name: string;
-      Document: number;
-      employee_detail: number;
-      Docstatus: IDocumentStatus;
-    },
-  ];
+      dob: Date;
+      gender: string;
+      email: string;
+      phone: string;
+      city: string;
+      address: string;
+      sinNo: string;
+      workStatus: string;
+      createdAt: Date;
+      updatedAt: Date;
+      publishedAt: Date;
+      bankAcNo: string;
+      institutionNumber: string;
+      trasitNumber: string;
+    };
+  };
+};
+
+export type IAddEmployeeDetailsCustomizedResponse = {
+  name: string;
+  email: string;
+  detailsId: number;
 };

@@ -1,5 +1,7 @@
 import {baseApi} from '../../baseApi';
 import {
+  IAddEmployeeDetailsCustomizedResponse,
+  IAddEmployeeDetailsResponse,
   ICheckEmailVerificationStatus,
   IClientDetails,
   IDoc,
@@ -121,12 +123,23 @@ const authApi = baseApi.injectEndpoints({
         method: apiMethodType.get,
       }),
     }),
-    submitUserDetails: builder.mutation<any, IUserDetailsRequest>({
+    submitUserDetails: builder.mutation<
+      IAddEmployeeDetailsCustomizedResponse,
+      IUserDetailsRequest
+    >({
       query: body => ({
         url: apiEndPoints.employeeDetails,
         method: apiMethodType.post,
         body,
       }),
+      transformResponse: (response: IAddEmployeeDetailsResponse) => {
+        const employeeDetails = response.data.attributes;
+        return {
+          name: employeeDetails.name,
+          email: employeeDetails.email,
+          detailsId: response.data.id,
+        };
+      },
     }),
     getUser: builder.query<IEmployeeDetails | IClientDetails | null, any>({
       query: () => ({

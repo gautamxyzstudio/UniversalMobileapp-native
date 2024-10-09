@@ -15,6 +15,7 @@ import {fonts} from '@utils/common.styles';
 import {
   ARROW_SECONDARY,
   CALENDAR_SECONDARY,
+  DOLLAR,
   ICONS,
   JOB_ID,
   LOCATION_SMALL,
@@ -26,7 +27,7 @@ import {useTheme} from '@theme/Theme.context';
 
 import {
   dateFormatter,
-  fromNowOn,
+  formatDateFromNow,
   salaryFormatter,
   timeFormatter,
 } from '@utils/utils.common';
@@ -34,12 +35,16 @@ import {IJobPostTypes} from '@api/features/client/types';
 import {IJobPostStatus} from '@utils/enums';
 import {useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
-import {extractDayAndMonthFromDate, isClientDetails} from '@utils/constants';
+import {
+  extractDayAndMonthFromDate,
+  getJobAddress,
+  isClientDetails,
+} from '@utils/constants';
 import JobTypeChip from '@components/employee/JobStatusChip';
 import JobStatusChip from './JobStatusChip';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
-  onPress?: (details: IJobPostTypes) => void;
+  onPress?: () => void;
   isDraft?: boolean;
 }
 
@@ -55,6 +60,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
   const {
     job_name,
     publishedAt,
+    location,
     job_type,
     client_details,
     eventDate,
@@ -62,14 +68,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     status,
     startShift,
     endShift,
-    location,
+    city,
+
     salary,
   } = cardProps;
 
   return (
-    <Pressable
-      onPress={() => onPress && onPress({...cardProps})}
-      style={styles.container}>
+    <Pressable onPress={onPress} style={styles.container}>
       {/* <CustomImageComponent
             defaultSource={ICONS.imagePlaceholder}
             image={banner}
@@ -142,7 +147,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
           </>
         ) : (
           <Row alignCenter>
-            <JOB_ID width={verticalScale(20)} height={verticalScale(20)} />
+            <DOLLAR width={verticalScale(20)} height={verticalScale(20)} />
             <Text style={styles.locationText}>{salaryFormatter(salary)}</Text>
           </Row>
         )}
@@ -168,7 +173,15 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
             width={verticalScale(20)}
             height={verticalScale(20)}
           />
-          <Text style={styles.locationText}>{location}</Text>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={styles.locationText}>
+            {getJobAddress({
+              location: location,
+              city: city,
+            })}
+          </Text>
         </Row>
       </View>
       {!isDraft && (
@@ -176,7 +189,9 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
           <View style={styles.divider} />
           <Row spaceBetween alignCenter>
             {publishedAt && (
-              <Text style={styles.postedDate}>{fromNowOn(publishedAt)}</Text>
+              <Text style={styles.postedDate}>
+                {formatDateFromNow(publishedAt)}
+              </Text>
             )}
             {user?.user_type === 'client' &&
             user.details &&
@@ -231,7 +246,7 @@ const createStyles = ({color}: Theme) => {
       gap: verticalScale(8),
     },
     viewCont: {
-      gap: verticalScale(8),
+      gap: verticalScale(4),
     },
     viewText: {
       ...fonts.small,

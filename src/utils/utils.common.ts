@@ -52,6 +52,10 @@ export const fromNowOn = (date: Date) => {
   return parsedDate.format('D MMMM'); // This will return "8 May" or similar
 };
 
+export const formatDateFromNow = (date: string | Date) => {
+  return moment(date).fromNow();
+};
+
 export const monthYearGetter = (date?: string) => {
   if (date) {
     return moment(date).format('MMMM YYYY');

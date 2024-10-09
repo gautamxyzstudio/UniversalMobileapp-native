@@ -97,7 +97,7 @@ const App = () => {
           animated
           translucent
           backgroundColor={
-            Platform.OS === 'android' ? '#182452' : 'transparent'
+            Platform.OS === 'android' ? theme.color.darkBlue : 'transparent'
           }
         />
       </SafeAreaProvider>

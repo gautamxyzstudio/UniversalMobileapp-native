@@ -185,12 +185,12 @@ export const getJobAddress = ({
   city,
   postalCode,
 }: {
-  address: string;
-  location: string;
-  city: string;
-  postalCode: string;
+  address?: string;
+  location?: string;
+  city?: string;
+  postalCode?: string;
 }) => {
-  return `${address},${location},${city},${postalCode}`;
+  return [address, location, city, postalCode].filter(Boolean).join(', ');
 };
 
 // Type guard function to check if user details are of type IClientDetails

@@ -47,7 +47,7 @@ const createStyles = ({color}: Theme) => {
     },
     search: {
       ...fonts.medium,
-      color: color.textPrimary,
+      color: color.disabled,
       marginLeft: verticalScale(12),
     },
     filters: {

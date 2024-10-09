@@ -29,7 +29,10 @@ import {ANIMATIONS, LOGOUT_SECONDARY, LOGOUT_WHITE} from '@assets/exporter';
 import {useDispatch, useSelector} from 'react-redux';
 import store, {AppDispatch} from '@api/store';
 
-import {useSubmitUserDetailsMutation} from '@api/features/user/userApi';
+import {
+  useSubmitOtherDocumentsMutation,
+  useSubmitUserDetailsMutation,
+} from '@api/features/user/userApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {customModalRef} from '@components/molecules/customModal/types';
 import ActionPopup from '@components/molecules/ActionPopup';
@@ -39,7 +42,7 @@ import {
   IUserDetailsRequestParams,
 } from '@api/features/user/types';
 import {useToast} from 'react-native-toast-notifications';
-import {timeOutTimeSheets} from 'src/constants/constants';
+import {IOtherDocRequest} from './types';
 
 const JobSeekerDetailsAndDocs = () => {
   const stepOneRef = useRef<jobSeekerRef>(null);
@@ -50,6 +53,7 @@ const JobSeekerDetailsAndDocs = () => {
   const [employeeDocuments, setEmployeeDocuments] =
     useState<IUserDetailsRequestParams>({} as IUserDetailsRequestParams);
   const [submitUserDetails] = useSubmitUserDetailsMutation();
+  const [uploadOtherDocuments] = useSubmitOtherDocumentsMutation();
   const navigation = useNavigation<NavigationProps>();
   const [isSuccessPopupVisible] = useState(false);
   const styles = useThemeAwareObject(getStyles);
@@ -89,9 +93,7 @@ const JobSeekerDetailsAndDocs = () => {
       const stepTwoResult = await stepTwoRef!.current!.validate();
       if (stepTwoResult.isValid) {
         setEmployeeDocuments(prev => ({...prev, ...stepTwoResult.fields}));
-
         setCurrentIndex(currentIndex + 1);
-
         FlatListRef.current?.scrollToIndex({
           animated: true,
           index: currentIndex + 1,
@@ -124,11 +126,6 @@ const JobSeekerDetailsAndDocs = () => {
     thirdStep: userDocuments,
     otherDocument: IOtherDocSpecifications[],
   ) => {
-    let other: number[] = [];
-    if (otherDocument.length > 0) {
-      other = otherDocument.map(doc => doc.docId);
-    }
-
     const fields: IUserDetailsRequestParams = {
       name: employeeDocuments?.name,
       city: employeeDocuments?.city,
@@ -157,17 +154,55 @@ const JobSeekerDetailsAndDocs = () => {
       directDepositVoidChequeStatus: IDocumentStatus.PENDING,
       sinDocumentStatus: IDocumentStatus.PENDING,
       job_applications: [],
-      other_documents: other,
     };
 
     try {
       dispatch(setLoading(true));
-      const submitUserDetailsResponse = await Promise.all([
-        submitUserDetails({
-          data: fields,
-        }).unwrap(),
-      ]);
+      const submitUserDetailsResponse = await submitUserDetails({
+        data: fields,
+      }).unwrap();
       if (submitUserDetailsResponse) {
+        console.log(submitUserDetailsResponse, 'customResponse');
+        if (otherDocument.length > 0) {
+          uploadOtherDocHandler(
+            otherDocument,
+            submitUserDetailsResponse.detailsId,
+          );
+        } else {
+          dispatch(setLoading(false));
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'employeeTabBar'}],
+          });
+        }
+      }
+    } catch (error) {
+      dispatch(setLoading(false));
+      toast.show('Failed to upload Details', {
+        type: 'error',
+      });
+      console.log(error);
+    }
+  };
+
+  const uploadOtherDocHandler = async (
+    otherDocument: IOtherDocSpecifications[],
+    detailsId: number,
+  ) => {
+    let otherDocs: IOtherDocRequest[] = [];
+    otherDocs = otherDocument.map(doc => {
+      return {
+        name: doc.name,
+        Document: doc.docId,
+        employee_detail: detailsId,
+        Docstatus: IDocumentStatus.PENDING,
+      };
+    });
+    try {
+      const otherDocsResponse = await uploadOtherDocuments({
+        data: otherDocs,
+      }).unwrap();
+      if (otherDocsResponse) {
         dispatch(setLoading(false));
         navigation.reset({
           index: 0,
@@ -176,10 +211,10 @@ const JobSeekerDetailsAndDocs = () => {
       }
     } catch (error) {
       dispatch(setLoading(false));
-      toast.show('something went wrong', {
+      console.log(error);
+      toast.show('Failed to upload documents', {
         type: 'error',
       });
-      console.log(error);
     }
   };
 
@@ -195,7 +230,7 @@ const JobSeekerDetailsAndDocs = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, timeOutTimeSheets);
+    }, 350);
   };
   return (
     <LinearGradient

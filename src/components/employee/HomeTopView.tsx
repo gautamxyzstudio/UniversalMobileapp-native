@@ -94,10 +94,10 @@ export default HomeTopView;
 const createStyles = ({color}: Theme) => {
   const styles = StyleSheet.create({
     heading: {
-      color: color.primary,
+      color: color.textPrimary,
     },
     subHeading: {
-      color: color.disabled,
+      color: color.textPrimary,
       marginTop: verticalScale(4),
       ...fonts.medium,
     },

@@ -128,7 +128,7 @@ const EmployeeHome = () => {
   const renderItemListing = useCallback(
     ({item}: {item: IJobTypes}) => (
       <View style={styles.list}>
-        <JobPostCard onPress={onPressViewDetails} {...item} />
+        <JobPostCard onPress={() => onPressViewDetails(item)} {...item} />
       </View>
     ),
     [isLoading, jobs],

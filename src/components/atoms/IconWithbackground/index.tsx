@@ -30,7 +30,7 @@ const IconWithBackground: React.FC<IIconWithBackgroundPropTypes> = ({
       style={[
         styles.filters,
 
-        {backgroundColor: backgroundColor ?? theme.color.backgroundWhite},
+        {backgroundColor: backgroundColor ?? theme.color.lightGrey},
         customStyles,
       ]}>
       <TouchableOpacity onPress={onPress}>
