@@ -1,4 +1,5 @@
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import {IJobPostTypes} from '../client/types';
 
 export type IEmployeeSliceInitialState = {
   jobs: IJobTypes[];
@@ -52,49 +53,38 @@ export type ICustomizedJobsResponse = {
   };
 };
 
-export type IGetJobsResponse = {
+export type IGetClientScheduleResponse = {
   data: {
     id: number;
-    attributes: {
-      job_name: string;
-      required_certificates: string[];
-      city: string;
-      state: string;
-      address: string;
-      postalCode: string;
-      postID: number | null;
-      gender: string;
-      salary: string;
-      Event: string | null;
-      createdAt: Date;
-      updatedAt: Date;
-      publishedAt: Date;
-      notAccepting: boolean;
-      jobDuties: string;
-      job_type: IJobTypesEnum;
-      location: string;
-      description: string;
-      delete: boolean;
-      status: IJobPostStatus;
-      eventDate: Date;
-      endShift: Date;
-      startShift: Date;
-    };
+    job_name: string;
+    required_certificates: [];
+    city: string;
+    state: null;
+    address: string;
+    postalCode: string;
+    postID: null;
+    gender: string;
+    salary: string;
+    Event: null;
+    createdAt: Date;
+    updatedAt: Date;
+    job_type: IJobTypesEnum;
+    publishedAt: Date;
+    location: string;
+    description: string;
+    eventDate: Date;
+    requiredEmployee?: number;
+    startShift: Date;
+    status: IJobPostStatus;
+    endShift: Date;
+    notAccepting: true;
     client_details: {
       id: number;
       Name: string;
       companyname: string;
-      contactno: string;
       Industry: string;
       Email: string;
       location: string;
-    }[];
-    job_applications: {
-      id: number;
-      status: IJobPostStatus;
-      employee_details: {
-        id: number;
-      }[];
     }[];
   }[];
   meta: {

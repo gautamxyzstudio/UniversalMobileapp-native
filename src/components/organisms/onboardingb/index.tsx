@@ -41,7 +41,7 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
           paddingTop: insetsTop,
         },
       ]}
-      colors={['#182452', 'rgba(24, 36, 82, 0.80)', '#5F70AF']}>
+      colors={['#F9751A', '#FFBB8C', '#FFF']}>
       <View style={[styles.header]}>
         <View style={styles.flexBox}>
           {!hideBack && (

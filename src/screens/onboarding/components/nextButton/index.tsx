@@ -72,7 +72,7 @@ const NextButton: React.FC<INextButtonProps> = ({index, onPress}) => {
             strokeWidth={strokeWidth}
           />
           <Circle
-            stroke={theme.color.green}
+            stroke={theme.color.accent}
             ref={progressRef}
             cx={center}
             cy={center}

@@ -122,9 +122,12 @@ const JobSeekerDetailsAndDocs = () => {
 
   const submitUserDetailsHandler = async (
     thirdStep: userDocuments,
-    otherDocument: IOtherDocSpecifications,
+    otherDocument: IOtherDocSpecifications[],
   ) => {
-    console.log(otherDocument);
+    let other: number[] = [];
+    if (otherDocument.length > 0) {
+      other = otherDocument.map(doc => doc.docId);
+    }
 
     const fields: IUserDetailsRequestParams = {
       name: employeeDocuments?.name,
@@ -154,7 +157,9 @@ const JobSeekerDetailsAndDocs = () => {
       directDepositVoidChequeStatus: IDocumentStatus.PENDING,
       sinDocumentStatus: IDocumentStatus.PENDING,
       job_applications: [],
+      other_documents: other,
     };
+
     try {
       dispatch(setLoading(true));
       const submitUserDetailsResponse = await Promise.all([
@@ -195,8 +200,8 @@ const JobSeekerDetailsAndDocs = () => {
   return (
     <LinearGradient
       style={[styles.container, {paddingTop: insetsTop}]}
-      locations={[0, 0.2, 1]}
-      colors={['#182452', 'rgba(24, 36, 82, 0.80)', '#5F70AF']}>
+      locations={[0.05, 0.25, 1]}
+      colors={['#F9751A', '#FFBB8C', '#FFF']}>
       <View style={styles.headerContainer}>
         <HeaderWithBack
           withArrow={false}

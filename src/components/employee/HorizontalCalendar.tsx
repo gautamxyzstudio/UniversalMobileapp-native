@@ -35,17 +35,19 @@ const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({
     let selectedDates: {
       date: Moment;
     }[] = [];
-    selectedDates = stateJobs.map(job => {
-      return {
-        date: moment(job.eventDate),
-        dots: [
-          {
-            color: 'red',
-          },
-        ],
-      };
-    });
-    setDates(selectedDates);
+    if (stateJobs) {
+      selectedDates = stateJobs?.map(job => {
+        return {
+          date: moment(job.eventDate),
+          dots: [
+            {
+              color: 'red',
+            },
+          ],
+        };
+      });
+      setDates(selectedDates);
+    }
   }, [stateJobs]);
 
   console.log(dates);

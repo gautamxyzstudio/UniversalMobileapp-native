@@ -52,6 +52,8 @@ const JobSeekerDetailsStepsThree = forwardRef<{}, jobSeekerThirdRef>(
       },
     );
 
+    console.log(state, 'sonone');
+
     const otherDocRef = useRef<BottomSheetModal | null>(null);
     const [predefinedCertificates, setPredefinedCertificates] = useState<
       PredefinedCertificates[]
@@ -77,7 +79,7 @@ const JobSeekerDetailsStepsThree = forwardRef<{}, jobSeekerThirdRef>(
         const response = await uploadImage({asset: [document]});
         if (response) {
           const prev = [...otherDocuments];
-          prev.push({id: response[0].id, ...document});
+          prev.push({...document, id: response[0].id});
           setOtherDocuments(prev);
         }
       } catch (error) {
@@ -94,17 +96,6 @@ const JobSeekerDetailsStepsThree = forwardRef<{}, jobSeekerThirdRef>(
     console.log(otherDocuments, 'OTHER DOCUMENTS');
 
     const validateStepThree = async () => {
-      const otherDocs = otherDocuments
-        .map(doc => {
-          if (doc) {
-            return {
-              docId: doc.id,
-              name: doc.name,
-            };
-          }
-          return null;
-        })
-        .filter(Boolean);
       try {
         const fields = await userDetailsStep3Schema.validate(
           {govtid: state.govtId, supportingDocument: state.document},
@@ -112,6 +103,17 @@ const JobSeekerDetailsStepsThree = forwardRef<{}, jobSeekerThirdRef>(
             abortEarly: false,
           },
         );
+        const otherDocs = otherDocuments
+          .map(doc => {
+            if (doc) {
+              return {
+                docId: doc.id,
+                name: doc.name,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
 
         if (fields) {
           return {
@@ -128,12 +130,12 @@ const JobSeekerDetailsStepsThree = forwardRef<{}, jobSeekerThirdRef>(
         }
       } catch (error) {
         const validationErrors = error as ValidationError;
-        if (validationErrors.inner[0].path === 'govtId') {
+        if (validationErrors.inner[0].path === 'govtid') {
           setState({
             ...state,
             govtIdError: validationErrors.inner[0].message,
           });
-        } else if (validationErrors.inner[0].path === 'document') {
+        } else if (validationErrors.inner[0].path === 'supportingDocument') {
           setState({
             ...state,
             documentError: validationErrors.inner[0].message,

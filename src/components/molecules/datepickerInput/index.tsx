@@ -49,7 +49,7 @@ const DatePickerInput: React.FC<IDatePickerInputPropTypes> = ({
       displayDate: getDisplayDate(currentDate ?? null, mode),
       actualDate: currentDate,
     });
-  }, [currentDate]);
+  }, [currentDate, mode]);
 
   const [open, setOpen] = useState(false);
 

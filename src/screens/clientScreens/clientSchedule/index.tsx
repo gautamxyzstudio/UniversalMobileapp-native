@@ -1,110 +1,155 @@
-import {StyleSheet, View} from 'react-native';
-import React from 'react';
+import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
-import HorizontalCalendar from '@components/employee/HorizontalCalendar';
 import {verticalScale} from '@utils/metrics';
 import {IJobPostTypes} from '@api/features/client/types';
-import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import {useLazyGetClientScheduleQuery} from '@api/features/client/clientApi';
+import {withAsyncErrorHandlingGet} from '@utils/constants';
+import {useSelector} from 'react-redux';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {Moment} from 'moment';
+import moment from 'moment';
+import {IC_EMPTY_SCHEDULE} from '@assets/exporter';
+import {Row} from '@components/atoms/Row';
+import HorizontalCalendar from '@components/employee/HorizontalCalendar';
+import ScheduleCardLoading from '@components/employee/ScheduleCardLoading';
+import EmptyState from '@screens/common/emptyAndErrorScreen';
+import {Theme} from '@theme/Theme.type';
+import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import ScheduledEventCard from '@components/client/ScheduleEventCard';
 
 const ClientSchedules = () => {
+  const [fetchClientSchedule, {isLoading, error}] =
+    useLazyGetClientScheduleQuery();
+  const user = useSelector(userBasicDetailsFromState);
+  const styles = useThemeAwareObject(createStyles);
+  const [refreshing, setIsRefreshing] = useState<boolean>(false);
+  const [currentDate, setCurrentDate] = useState<Moment>(moment());
+  const [scheduledJobs, setScheduledJobs] = useState<IJobPostTypes[]>([]);
+  const [currentDayJobs, setCurrentDayJobs] = useState<IJobPostTypes[]>([]);
+
+  useEffect(() => {
+    fetchClientScheduleHandler();
+  }, []);
+
+  const onRefresh = () => {
+    fetchClientScheduleHandler();
+  };
+
+  const fetchClientScheduleHandler = withAsyncErrorHandlingGet(
+    async () => {
+      const ClientSchedule = await fetchClientSchedule({
+        clientId: user?.details?.detailsId ?? 0,
+      }).unwrap();
+      if (ClientSchedule) {
+        setScheduledJobs(ClientSchedule);
+        const filteredCurrentJobs = ClientSchedule.filter(job =>
+          moment(job.eventDate).isSame(currentDate, 'day'),
+        );
+        setCurrentDayJobs(filteredCurrentJobs);
+      }
+    },
+    () => {
+      setIsRefreshing(false);
+    },
+  );
+
+  useEffect(() => {
+    const filteredJobs = scheduledJobs.filter(job =>
+      moment(job.eventDate).isSame(currentDate, 'day'),
+    );
+    setCurrentDayJobs(filteredJobs);
+  }, [currentDate, scheduledJobs]);
+
   return (
     <OnBoardingBackground
       childrenStyles={styles.children}
       hideBack
       title={STRINGS.schedules}>
-      <HorizontalCalendar />
-      <View style={styles.mainView}>
-        <ScheduledEventCard jobDetails={mockJobPosts[0]} />
-        <ScheduledEventCard jobDetails={mockJobPosts[1]} />
-      </View>
+      {isLoading && (
+        <View style={styles.loadingView}>
+          <View style={styles.headerLoading} />
+          <Row spaceBetween>
+            {[...Array(6)].map((_, idx) => (
+              <View key={idx} style={styles.element} />
+            ))}
+          </Row>
+          <View style={styles.body}>
+            <ScheduleCardLoading />
+            <ScheduleCardLoading />
+          </View>
+        </View>
+      )}
+      {!isLoading && (
+        <>
+          <HorizontalCalendar
+            onSelectDate={setCurrentDate}
+            stateJobs={scheduledJobs}
+          />
+          <ScrollView
+            refreshControl={
+              <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+            }>
+            <View style={styles.mainView}>
+              {currentDayJobs.length > 0 && !error ? (
+                currentDayJobs.map(job => (
+                  <ScheduledEventCard key={job.id} jobDetails={job} />
+                ))
+              ) : (
+                <View style={styles.emptyView}>
+                  <EmptyState
+                    data={currentDayJobs}
+                    emptyListIllustration={IC_EMPTY_SCHEDULE}
+                    emptyListMessage="No Scheduled Events"
+                    emptyListSubTitle="Apply to more jobs. Your scheduled tasks will show up here."
+                    errorObj={error}
+                  />
+                </View>
+              )}
+            </View>
+          </ScrollView>
+        </>
+      )}
     </OnBoardingBackground>
   );
 };
 
 export default ClientSchedules;
 
-const styles = StyleSheet.create({
-  children: {
-    paddingHorizontal: 0,
-  },
-  header: {
-    marginLeft: 24,
-    marginBottom: 16,
-  },
-  mainView: {
-    marginHorizontal: 24,
-    marginTop: verticalScale(20),
-    gap: verticalScale(12),
-  },
-});
-
-export const mockJobPosts: IJobPostTypes[] = [
-  {
-    id: 1,
-    job_name: 'Software Engineer',
-    required_certificates: [
-      'B.Sc in Computer Science',
-      'AWS Certified Developer',
-    ],
-    city: 'Toronto',
-    address: '123 Main Street',
-    postalCode: 'M1P 4R7',
-    gender: 'Any',
-    salary: '$80,000 - $100,000',
-    jobDuties: 'Develop and maintain web applications using React and Node.js.',
-    job_type: IJobTypesEnum.STATIC,
-    publishedAt: new Date('2024-01-15'),
-    applicants: null,
-    location: 'Toronto, Ontario',
-    description:
-      'Looking for an experienced software engineer to join our dynamic team.',
-    eventDate: new Date('2024-02-01'),
-    endShift: new Date('2024-02-01T18:00:00'),
-    startShift: new Date('2024-02-01T09:00:00'),
-    requiredEmployee: 3,
-    status: IJobPostStatus.CLOSED,
-    client_details: {
-      id: 101,
-      Name: 'John Doe',
-      companyname: 'Tech Innovations Inc.',
-      Industry: 'Software Development',
-      Email: 'john.doe@techinnovations.com',
-      location: 'Toronto, Ontario',
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    children: {
+      paddingHorizontal: 0,
     },
-  },
-  {
-    id: 2,
-    job_name: 'Warehouse Manager',
-    required_certificates: [
-      'Forklift Certification',
-      'Supply Chain Management',
-    ],
-    city: 'Vancouver',
-    address: '456 Industrial Road',
-    postalCode: 'V5K 3J9',
-    gender: 'Any',
-    salary: '$60,000 - $70,000',
-    jobDuties: 'Oversee warehouse operations and manage inventory control.',
-    job_type: IJobTypesEnum.EVENT,
-    publishedAt: new Date('2024-01-20'),
-    applicants: null,
-    location: 'Vancouver, British Columbia',
-    description:
-      'Seeking an experienced warehouse manager to oversee daily operations.',
-    eventDate: new Date('2024-03-01'),
-    endShift: new Date('2024-03-01T17:00:00'),
-    startShift: new Date('2024-03-01T08:00:00'),
-    requiredEmployee: 1,
-    status: IJobPostStatus.OPEN,
-    client_details: {
-      id: 102,
-      Name: 'Jane Smith',
-      companyname: 'Logistics Pros Inc.',
-      Industry: 'Logistics',
-      Email: 'jane.smith@logisticspros.com',
-      location: 'Vancouver, British Columbia',
+    loadingView: {
+      marginHorizontal: verticalScale(24),
     },
-  },
-];
+    headerLoading: {
+      alignSelf: 'center',
+      marginBottom: verticalScale(16),
+      width: verticalScale(130),
+      backgroundColor: theme.color.skelton,
+      height: verticalScale(24),
+      borderRadius: 8,
+    },
+    element: {
+      width: verticalScale(37),
+      height: verticalScale(56),
+      backgroundColor: theme.color.skelton,
+      borderRadius: 40,
+    },
+    mainView: {
+      flex: 1,
+      gap: verticalScale(12),
+      marginHorizontal: verticalScale(24),
+    },
+    emptyView: {
+      flex: 1,
+      marginBottom: verticalScale(50),
+    },
+    body: {
+      marginTop: verticalScale(40),
+      gap: verticalScale(12),
+    },
+  });

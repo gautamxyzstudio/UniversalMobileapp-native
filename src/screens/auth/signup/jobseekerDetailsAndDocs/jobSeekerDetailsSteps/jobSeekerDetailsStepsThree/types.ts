@@ -44,7 +44,7 @@ export type jobSeekerThirdRef = {
   validate?: () => Promise<{
     fields: userDocuments;
     isValid: boolean;
-    otherDocs: IOtherDocSpecifications;
+    otherDocs: IOtherDocSpecifications[];
   }>;
 };
 

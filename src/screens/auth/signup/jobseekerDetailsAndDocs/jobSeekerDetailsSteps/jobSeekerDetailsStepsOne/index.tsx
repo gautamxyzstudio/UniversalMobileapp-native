@@ -156,7 +156,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
       <KeyboardAwareScrollView
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="always">
+        enableResetScrollToCoords={false}>
         <UploadProfilePhoto
           getUploadedImageIds={ids => setState({...state, selfie: ids})}
         />

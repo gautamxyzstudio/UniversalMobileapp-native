@@ -85,7 +85,6 @@ const UploadOtherCertificatesBottomSheet = React.forwardRef<
         <CustomTextInput
           title={STRINGS.document_name}
           value={state.inputName}
-          maxLength={10}
           onChangeText={e => setState(prev => ({...prev, inputName: e}))}
           errorMessage={undefined}
         />

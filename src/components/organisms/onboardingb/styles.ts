@@ -16,7 +16,7 @@ export const getStyles = (theme: Theme) => {
     title: {
       ...fonts.heading,
       lineHeight: verticalScale(28),
-      color: theme.color.primary,
+      color: theme.color.textPrimary,
     },
     row: {
       marginTop: verticalScale(16),
@@ -27,7 +27,7 @@ export const getStyles = (theme: Theme) => {
     subTitle: {
       marginTop: verticalScale(4),
       ...fonts.medium,
-      color: theme.color.disabled,
+      color: theme.color.textPrimary,
     },
     mainView: {
       borderTopLeftRadius: 56,

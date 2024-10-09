@@ -6,6 +6,7 @@ export interface IDocument {
   fileName: string;
   uri: string;
   size: number;
+  id: number;
   extension: string;
 }
 
@@ -25,6 +26,7 @@ export const documentPicker = async ({
         uri: document.uri,
         url: undefined,
         status: 'pending',
+        id: 0,
         size: document.size ?? 0,
         fileName: document.name ?? 'unknown',
         extension: document.type ?? 'unknown',

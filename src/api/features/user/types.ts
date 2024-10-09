@@ -218,6 +218,7 @@ export type IUserDetailsRequestParams = {
   securityDocumentAdv?: number | null;
   securityDocumentAdvStatus?: IDocumentStatus;
   govtidStaus?: IDocumentStatus;
+  other_documents: number[];
   directDepositVoidChequeStatus?: IDocumentStatus;
   sinDocumentStatus?: IDocumentStatus;
   job_applications?: number[];

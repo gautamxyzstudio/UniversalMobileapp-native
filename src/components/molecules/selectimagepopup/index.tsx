@@ -77,7 +77,7 @@ const SelectImagePopup: React.FC<ISelectImagePopupProps> = ({
       if (documents) {
         getSelectedImages({
           type: 'document',
-          assets: documents,
+          assets: {...documents},
         });
       }
     } catch (error) {

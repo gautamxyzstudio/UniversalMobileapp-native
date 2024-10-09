@@ -42,4 +42,6 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/status`,
   stopAJobPost: (jobId: number) =>
     `${process.env.BASE_URL}/api/jobs/${jobId}/not-accepting`,
+  getScheduleClient: (clientId: number) =>
+    `${process.env.BASE_URL}/api/jobs/client/${clientId}`,
 };
