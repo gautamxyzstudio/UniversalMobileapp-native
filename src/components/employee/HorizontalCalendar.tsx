@@ -53,7 +53,7 @@ const HorizontalCalendar: React.FC<IHorizontalCalendarPropTypes> = ({
   return (
     <View>
       <CalendarStrip
-        style={{height: verticalScale(140)}}
+        style={{height: verticalScale(120)}}
         scrollable={true}
         selectedDate={date}
         dayComponentHeight={verticalScale(56)}

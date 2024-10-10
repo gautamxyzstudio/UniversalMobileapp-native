@@ -104,10 +104,10 @@ const createStyles = (theme: Theme) => {
       fontFamily: fontFamily.regular,
       color: theme.color.textPrimary,
       fontSize: moderateScale(14),
-      padding: verticalScale(8),
     },
     inputMain: {
       height: verticalScale(40),
+      justifyContent: 'center',
       borderWidth: 1,
       borderColor: theme.color.strokeLight,
     },

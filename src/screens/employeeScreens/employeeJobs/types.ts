@@ -29,12 +29,12 @@ export const getJobStatus = (status: IJobPostStatus) => {
 export const getEventStatus = (status: IJobPostStatus) => {
   switch (status) {
     case IJobPostStatus.OPEN:
-      return 'Applied';
+      return 'Created';
     case IJobPostStatus.CLOSED:
       return 'Completed';
     case IJobPostStatus.CANCELED:
       return 'Canceled';
     default:
-      return 'Applied';
+      return 'Created';
   }
 };

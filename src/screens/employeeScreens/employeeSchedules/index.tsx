@@ -84,36 +84,36 @@ const EmployeeSchedules = () => {
           </View>
         </View>
       )}
-      {!isLoading && (
-        <>
-          <HorizontalCalendar
-            onSelectDate={setCurrentDate}
-            stateJobs={scheduledJobs}
-          />
-          <ScrollView
-            refreshControl={
-              <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
-            }>
-            <View style={styles.mainView}>
-              {currentDayJobs.length > 0 && !error ? (
-                currentDayJobs.map(job => (
-                  <ScheduledJobCard key={job.id} jobDetails={job} />
-                ))
-              ) : (
-                <View style={styles.emptyView}>
-                  <EmptyState
-                    data={currentDayJobs}
-                    emptyListIllustration={IC_EMPTY_SCHEDULE}
-                    emptyListMessage="No Scheduled Jobs"
-                    emptyListSubTitle="Apply to more jobs. Your scheduled tasks will show up here."
-                    errorObj={error}
-                  />
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        </>
-      )}
+
+      <>
+        <HorizontalCalendar
+          onSelectDate={setCurrentDate}
+          stateJobs={scheduledJobs}
+        />
+        <ScrollView
+          refreshControl={
+            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+          }>
+          <View style={styles.mainView}>
+            {currentDayJobs.length > 0 && !error ? (
+              currentDayJobs.map(job => (
+                <ScheduledJobCard key={job.id} jobDetails={job} />
+              ))
+            ) : (
+              <View style={styles.emptyView}>
+                <EmptyState
+                  data={currentDayJobs}
+                  emptyListIllustration={IC_EMPTY_SCHEDULE}
+                  emptyListMessage="No Scheduled Jobs"
+                  emptyListSubTitle="Apply to more jobs. Your scheduled tasks will show up here."
+                  errorObj={error}
+                />
+              </View>
+            )}
+            <View style={styles.footer} />
+          </View>
+        </ScrollView>
+      </>
     </OnBoardingBackground>
   );
 };
@@ -126,7 +126,13 @@ const createStyles = (theme: Theme) =>
       paddingHorizontal: 0,
     },
     loadingView: {
-      marginHorizontal: verticalScale(24),
+      width: '100%',
+      height: '100%',
+      zIndex: 1,
+      position: 'absolute',
+      backgroundColor: '#fff',
+      marginTop: verticalScale(32),
+      paddingHorizontal: verticalScale(24),
     },
     headerLoading: {
       alignSelf: 'center',
@@ -154,5 +160,8 @@ const createStyles = (theme: Theme) =>
     body: {
       marginTop: verticalScale(40),
       gap: verticalScale(12),
+    },
+    footer: {
+      height: verticalScale(150),
     },
   });

@@ -344,7 +344,7 @@ const clientApi = baseApi.injectEndpoints({
 
 export const {
   usePostAJobMutation,
-  useLazyGetClientScheduleQuery,
+  useGetClientScheduleQuery,
   useStopAJobPostMutation,
   usePatchADraftMutation,
   useLazyGetPostedJobQuery,

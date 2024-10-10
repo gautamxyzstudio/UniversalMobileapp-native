@@ -9,7 +9,7 @@ import CandidateProfilePictureView from './CandidateProfilePictureView';
 import {ICandidateStatusEnum} from '@utils/enums';
 import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import TextWithIcon from '@components/molecules/TextWithIcon';
-import {CALENDAR, LOCATION_ICON} from '@assets/exporter';
+import {CALENDAR, LOCATION_TERNARY} from '@assets/exporter';
 import {dateFormatter} from '@utils/utils.common';
 
 type IOpenJobsListCardProps = {
@@ -54,7 +54,7 @@ const OpenJobsListCard: React.FC<IOpenJobsListCardProps> = ({
           size={textSizeEnum.regular}
         />
         <TextWithIcon
-          icon={LOCATION_ICON}
+          icon={LOCATION_TERNARY}
           value={job.details.location}
           size={textSizeEnum.regular}
         />
@@ -82,7 +82,7 @@ const createStyles = (theme: Theme) =>
     },
     containerSelected: {
       backgroundColor: theme.color.ternary,
-      borderColor: '#C2CCF2',
+      borderColor: theme.color.darkBlue,
       borderWidth: 1,
     },
     container: {

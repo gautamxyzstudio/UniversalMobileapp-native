@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {getStyles} from './styles';
-import {Animated as AnimatedNative, Text} from 'react-native';
+import {Platform} from 'react-native';
 import Animated, {
   Easing,
   interpolate,
@@ -59,54 +59,59 @@ const Splash = () => {
   };
 
   const navigateToNextScreen = async () => {
-    if (user?.token) {
-      if (user.user_type === 'emp') {
-        if (isUserDetails) {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'employeeTabBar'}],
-          });
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'jobSeekerDetailsAndDocs'}],
-          });
-        }
-      } else {
-        if (isUserDetails) {
-          let client = isUserDetails as IClientDetails;
-          if (client.status === 'pending') {
-            let isApproved = await fetchUserDetails();
-            if (isApproved) {
+    setTimeout(
+      async () => {
+        if (user?.token) {
+          if (user.user_type === 'emp') {
+            if (isUserDetails) {
               navigation.reset({
                 index: 0,
-                routes: [{name: 'clientTabBar'}],
+                routes: [{name: 'employeeTabBar'}],
               });
             } else {
               navigation.reset({
                 index: 0,
-                routes: [{name: 'approval'}],
+                routes: [{name: 'jobSeekerDetailsAndDocs'}],
               });
             }
           } else {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'clientTabBar'}],
-            });
+            if (isUserDetails) {
+              let client = isUserDetails as IClientDetails;
+              if (client.status === 'pending') {
+                let isApproved = await fetchUserDetails();
+                if (isApproved) {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{name: 'clientTabBar'}],
+                  });
+                } else {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{name: 'approval'}],
+                  });
+                }
+              } else {
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'clientTabBar'}],
+                });
+              }
+            } else {
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'recruiterDetails'}],
+              });
+            }
           }
         } else {
           navigation.reset({
             index: 0,
-            routes: [{name: 'recruiterDetails'}],
+            routes: [{name: 'onBoarding'}],
           });
         }
-      }
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'onBoarding'}],
-      });
-    }
+      },
+      Platform.OS === 'android' ? 100 : 500,
+    );
   };
 
   useEffect(() => {

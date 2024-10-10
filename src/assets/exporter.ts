@@ -19,7 +19,6 @@ import GOOGLE from './icons/svg/google.svg';
 import FACEBOOK from './icons/svg/facebook.svg';
 import GREEN_TICK from './icons/svg/greenTick.svg';
 import GLOW_TICK from './icons/svg/glowTick.svg';
-import LOCATION_ICON from './icons/svg/location.svg';
 import ARROW_DARK from './icons/svg/arrowDark.svg';
 import SEARCH from './icons/svg/search.svg';
 import ADD_ADDRESS from './icons/svg/addAddress.svg';
@@ -29,7 +28,6 @@ import IC_CROSS from './icons/svg/ic_cross.svg';
 import IC_DOCUMENT from './icons/svg/id_document.svg';
 import IC_REPLACE from './icons/svg/replace.svg';
 import IC_EDIT from './icons/svg/edit.svg';
-import LOCATION_POINTER from './icons/svg/locationPointer.svg';
 import IC_GPS from './icons/svg/gps.svg';
 import EYE from './icons/svg/eyeOpen.svg';
 import EYE_CLOSED from './icons/svg/eyeClosed.svg';
@@ -230,7 +228,6 @@ export {
   IC_GPS,
   CLOCK,
   DOLLAR,
-  LOCATION_POINTER,
   RIGHT_ARROW_DROPDOWN,
   IC_CROSS,
   ADD_ADDRESS,
@@ -246,7 +243,6 @@ export {
   SEARCH,
   GLOW_TICK,
   PICK,
-  LOCATION_ICON,
   CALENDER_THIRD,
   PERSON,
   CAMERA_BLUE,
