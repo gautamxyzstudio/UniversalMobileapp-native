@@ -121,8 +121,9 @@ import IC_EMPTY_APPLIED from './icons/svg/noApplied.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
-  logo: require('./icons/png/logo.png'),
   tick: require('./icons/png/tick.png'),
+  logoOne: require('./icons/png/logoOne.png'),
+  logoTwo: require('./icons/png/logoTwo.png'),
   dropDown: require('./icons/png/dropdown.png'),
   home: require('./icons/png/tabaricons/home.png'),
   homeFilled: require('./icons/png/tabaricons/home_filled.png'),

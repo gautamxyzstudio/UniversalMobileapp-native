@@ -106,7 +106,7 @@ const createStyles = (theme: Theme) => {
     },
     headerTitle: {
       marginLeft: 16,
-      color: '#fff',
+      color: theme.color.textPrimary,
       ...fonts.heading,
     },
     main: {

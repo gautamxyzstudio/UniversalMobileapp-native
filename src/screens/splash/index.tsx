@@ -1,12 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {getStyles} from './styles';
-import {ICONS} from '@assets/exporter';
+import {Animated as AnimatedNative, Text} from 'react-native';
 import Animated, {
+  Easing,
+  interpolate,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withTiming,
 } from 'react-native-reanimated';
 import {useTheme} from '@theme/Theme.context';
@@ -20,18 +22,16 @@ import {
 import {IClientDetails} from '@api/features/user/types';
 import {useLazyGetUserQuery} from '@api/features/user/userApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
+import {ICONS} from '@assets/exporter';
+import {windowWidth} from '@utils/metrics';
+import {Row} from '@components/atoms/Row';
 
 const Splash = () => {
   const styles = useThemeAwareObject(getStyles);
-  const animationValue = useSharedValue(-100);
-  const animationValueX = useSharedValue(0);
-  const bottomViewOpacity = useSharedValue(1);
-  const scaleValue = useSharedValue(1);
-  const opacity = useSharedValue(1);
+  const animationValue = useSharedValue(0);
+  const animationValueSec = useSharedValue(0);
   const {theme} = useTheme();
-  const backgroundColor = useSharedValue(theme.color.blueLight);
-  const iconSecOpacity = useSharedValue(0);
-  const iconSecScale = useSharedValue(0.2);
+  const backgroundColor = useSharedValue(theme.color.primary);
 
   const user = useSelector(userBasicDetailsFromState);
   const dispatch = useDispatch();
@@ -110,105 +110,24 @@ const Splash = () => {
   };
 
   useEffect(() => {
-    animationValue.value = withTiming(
-      250,
-      {
-        duration: 1000,
-      },
-      () => {
-        animationValue.value = withTiming(
-          0,
-          {
-            duration: 1000,
-          },
-          () => {
-            animationValue.value = withTiming(250, {
-              duration: 300,
-            });
-            bottomViewOpacity.value = withTiming(0);
-            animationValueX.value = withTiming(
-              -250,
-              {
-                duration: 300,
-              },
-              () => {
-                backgroundColor.value = withTiming(
-                  '#fff',
-                  {
-                    duration: 300,
-                  },
-                  () => {
-                    iconSecOpacity.value = withTiming(
-                      1,
-                      {
-                        duration: 1000,
-                      },
-                      () => {
-                        iconSecScale.value = withTiming(
-                          1,
-                          {
-                            duration: 1000,
-                          },
-                          () => {
-                            runOnJS(navigateToNextScreen)();
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            );
-          },
-        );
-        scaleValue.value = withTiming(0.2, {
-          duration: 500,
-        });
-      },
-    );
-    opacity.value = withTiming(0, {
+    animationValue.value = withTiming(1, {
       duration: 500,
+      easing: Easing.linear,
     });
+    animationValueSec.value = withDelay(
+      700,
+      withTiming(
+        1,
+        {
+          duration: 500,
+          easing: Easing.linear,
+        },
+        () => {
+          runOnJS(navigateToNextScreen)();
+        },
+      ),
+    );
   }, []);
-
-  const imageStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: animationValueX.value,
-        },
-        {
-          translateY: -animationValue.value,
-        },
-        {
-          scale: scaleValue.value,
-        },
-      ],
-    };
-  });
-
-  const opacityStyles = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
-
-  const bottomViewOpacityStyles = useAnimatedStyle(() => {
-    return {
-      opacity: bottomViewOpacity.value,
-    };
-  });
-
-  const iconSecStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: iconSecScale.value,
-        },
-      ],
-      opacity: iconSecOpacity.value,
-    };
-  });
 
   const backgroundStyles = useAnimatedStyle(() => {
     return {
@@ -216,15 +135,50 @@ const Splash = () => {
     };
   }, []);
 
+  const logoOneStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {scale: interpolate(animationValue.value, [0, 1], [0.7, 1])},
+        {
+          translateX: interpolate(
+            animationValue.value,
+            [0, 1],
+            [windowWidth * 1.2, 0],
+          ),
+        },
+        {
+          rotate: `${interpolate(animationValue.value, [0, 1], [180, 0])}deg`,
+        },
+      ],
+    };
+  }, []);
+
+  const logoTwoStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(
+            animationValueSec.value,
+            [0, 1],
+            [windowWidth, 0],
+          ),
+        },
+      ],
+    };
+  }, []);
+
   return (
     <Animated.View style={[styles.container, backgroundStyles]}>
-      <Animated.View style={[styles.oval, opacityStyles]} />
-      <Animated.Image
-        style={[styles.icon, iconSecStyles]}
-        source={ICONS.logo}
-      />
-      <Animated.Image style={[styles.icon, imageStyles]} source={ICONS.globe} />
-      <Animated.View style={[styles.popOver, bottomViewOpacityStyles]} />
+      <Row>
+        <Animated.Image
+          style={[styles.logoOne, logoOneStyles]}
+          source={ICONS.logoOne}
+        />
+        <Animated.Image
+          style={[styles.logoTwo, logoTwoStyles]}
+          source={ICONS.logoTwo}
+        />
+      </Row>
     </Animated.View>
   );
 };

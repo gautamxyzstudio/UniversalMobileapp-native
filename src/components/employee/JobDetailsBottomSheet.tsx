@@ -47,12 +47,13 @@ type IJobDetailsBottomSheetProps = {
   jobDetails: IJobPostTypes | null;
   onPressApply?: () => void;
   isDraft?: boolean;
+  onClose: () => void;
 };
 
 const JobDetailsBottomSheet = React.forwardRef<
   BottomSheetModal,
   IJobDetailsBottomSheetProps
->(({jobDetails, isDraft, onPressApply}, ref) => {
+>(({jobDetails, isDraft, onClose, onPressApply}, ref) => {
   const styles = useThemeAwareObject(createStyles);
   const [isLoading, setIsLoading] = useState(true);
   const {theme} = useTheme();
@@ -63,12 +64,8 @@ const JobDetailsBottomSheet = React.forwardRef<
   const modalHeight = verticalScale(windowHeight * 0.83);
   const user = useSelector(userBasicDetailsFromState);
   const snapPoints = useMemo(() => [0.01, modalHeight], [modalHeight]);
-  const onClose = () => {
-    setIsLoading(true);
-    setDetails(null);
-    // @ts-ignore
-    ref.current?.snapToIndex(0);
-  };
+
+  console.log(isLoading, jobDetails);
 
   useEffect(() => {
     if (jobDetails) {
@@ -157,8 +154,6 @@ const JobDetailsBottomSheet = React.forwardRef<
     onPressApply,
     statusAttributes,
   ]);
-
-  console.log(details);
 
   return (
     <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onClose}>

@@ -76,6 +76,11 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
     dispatch,
   );
 
+  const onCloseHandler = () => {
+    updateSelectedJobDetails(null);
+    modalRef.current?.snapToIndex(0);
+  };
+
   const contextValue: IJobDetailsContextProviderProps = {
     onPressSheet: sheetPressHandler,
     jobDetails: null,
@@ -85,6 +90,7 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
     <JobDetailsContext.Provider value={contextValue}>
       {children}
       <JobDetailsBottomSheet
+        onClose={onCloseHandler}
         onPressApply={() =>
           selectedJobDetails && onPressJobHandler(selectedJobDetails)
         }

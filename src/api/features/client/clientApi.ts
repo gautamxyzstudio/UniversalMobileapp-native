@@ -15,7 +15,7 @@ import {
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
-import {IGetAppliedJobsResponse, IJobTypes} from '../employee/types';
+import {IJobTypes} from '../employee/types';
 
 const clientApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -331,20 +331,10 @@ const clientApi = baseApi.injectEndpoints({
         url: apiEndPoints.getScheduleClient(body.clientId),
         method: apiMethodType.get,
       }),
-      transformResponse: (response: IGetAppliedJobsResponse): IJobTypes[] => {
+      transformResponse: (response: IPostedJobsResponse): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
-        response.forEach(details => {
-          if (
-            details.status === IJobPostStatus.CONFIRMED ||
-            details.status === IJobPostStatus.COMPLETED
-          ) {
-            jobs.push({
-              id: details.id,
-              ...details.jobs[0],
-              status: details.status,
-              client_details: details.jobs[0].client_details[0],
-            });
-          }
+        response.data.forEach(details => {
+          jobs.push(details);
         });
         return jobs;
       },

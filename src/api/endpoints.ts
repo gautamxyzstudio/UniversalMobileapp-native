@@ -20,9 +20,9 @@ export const apiEndPoints = {
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
   getOpenJobPost: (detailsId: number) =>
-    `${process.env.BASE_URL}/api/jobs/client/open/${detailsId}?sort=createdAt:desc`,
+    `${process.env.BASE_URL}/api/jobs/client/open/${detailsId}`,
   getClosedJobPost: (detailsId: number) =>
-    `${process.env.BASE_URL}/api/jobs/client/closed/${detailsId}?sort=createdAt:desc`,
+    `${process.env.BASE_URL}/api/jobs/client/closed/${detailsId}`,
   getJobsEmployee: (pageNumber: number) =>
     `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&pagination[page]=${
       pageNumber ?? 1

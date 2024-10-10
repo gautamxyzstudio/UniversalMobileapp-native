@@ -25,7 +25,7 @@ const ProgressSteps: React.FC<IProgressStepProps> = ({activeStep, labels}) => {
     currentStepIndicatorSize: verticalScale(70),
     labelColor: theme.color.disabled,
     labelFontFamily: fontFamily.regular,
-    currentStepLabelColor: '#ffff',
+    currentStepLabelColor: theme.color.textPrimary,
     stepIndicatorLabelFinishedColor: '#ffff',
     labelSize: moderateScale(12),
     stepIndicatorLabelFontSize: moderateScale(12),

@@ -143,19 +143,19 @@ const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
     }
     if (jobPostStepThreeRef.current?.validate && currentIndex === 2) {
       const stepThreeResult = await jobPostStepThreeRef!.current!.validate();
-      if (stepThreeResult.isValid) {
+      if (stepThreeResult.isValid === true) {
         updateJobPostFields((prev: any) => {
           const prevData = {...prev};
           return {...prevData, ...stepThreeResult.fields};
         });
-      }
-      let postDetails = {...jobPostFields, ...stepThreeResult.fields};
-      if (draftId) {
-        updateDraftHandler(postDetails);
-      } else {
-        navigation.navigate('reviewJobPost', {
-          postDetails,
-        });
+        let postDetails = {...jobPostFields, ...stepThreeResult.fields};
+        if (draftId) {
+          updateDraftHandler(postDetails);
+        } else {
+          navigation.navigate('reviewJobPost', {
+            postDetails,
+          });
+        }
       }
     }
   };

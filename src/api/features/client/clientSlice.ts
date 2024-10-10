@@ -77,7 +77,7 @@ const clientSlice = createSlice({
         shortlisted: new Map<number, ICandidateTypes>(),
         denied: new Map<number, ICandidateTypes>(),
       };
-      state.candidateList.push(candidateItem);
+      state.candidateList.unshift(candidateItem);
     },
     postADraft: (state, action: PayloadAction<IJobPostTypes>) => {
       const draftIndex = state.jobs.drafts.findIndex(
@@ -98,7 +98,7 @@ const clientSlice = createSlice({
           shortlisted: new Map<number, ICandidateTypes>(),
           denied: new Map<number, ICandidateTypes>(),
         };
-        state.candidateList.push(candidateItem);
+        state.candidateList.unshift(candidateItem);
       }
     },
     updateDraftReducer: (state, action: PayloadAction<IJobPostTypes>) => {

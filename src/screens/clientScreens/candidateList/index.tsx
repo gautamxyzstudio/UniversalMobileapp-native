@@ -43,6 +43,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
   const user = useSelector(userBasicDetailsFromState);
   const candidateJobs = useSelector(candidateListFromState);
+  const [localCandidatesLength, setLocalCandidatesLength] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
@@ -86,12 +87,20 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
       }
     }
   }, [selectedJobId]);
+  console.log('===============');
+
+  console.log(candidateJobs);
+  console.log('===============');
 
   useEffect(() => {
     if (candidateJobs) {
       setCurrentSelectedJob(candidateJobs[0]);
     }
-  }, []);
+  }, [localCandidatesLength]);
+
+  useEffect(() => {
+    setLocalCandidatesLength(() => candidateJobs.length);
+  }, [candidateJobs]);
 
   const onPressTab = (index: number) => {
     scrollViewRef.current?.scrollTo({
@@ -143,7 +152,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
             <View style={styles.container}>
               <ScrollView
                 style={styles.flexMain}
-                scrollEnabled={false}
+                scrollEnabled={true}
                 contentContainerStyle={styles.scrollMain}
                 refreshControl={
                   <RefreshControl
