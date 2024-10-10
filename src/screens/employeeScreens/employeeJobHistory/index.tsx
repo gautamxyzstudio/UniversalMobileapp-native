@@ -49,7 +49,6 @@ const EmployeeJobHistory = () => {
   return (
     <SafeAreaView hideBottomSpace>
       <View style={styles.headerContainer}>
-        <StatusBar backgroundColor={theme.color.backgroundWhite} />
         <HeaderWithBack
           isDark
           renderRightIcon

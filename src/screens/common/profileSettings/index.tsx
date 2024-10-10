@@ -35,7 +35,6 @@ const ProfileSettings = () => {
     <SafeAreaView
       backgroundColor={theme.color.backgroundWhite}
       paddingHorizontal>
-      <StatusBar backgroundColor={theme.color.backgroundWhite} />
       <HeaderWithBack headerTitle={STRINGS.settings} isDark />
       <View style={styles.container}>
         <EmployeeProfileTab

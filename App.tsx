@@ -93,13 +93,7 @@ const App = () => {
             </PortalProvider>
           </Provider>
         </View>
-        <StatusBar
-          animated
-          translucent
-          backgroundColor={
-            Platform.OS === 'android' ? theme.color.darkBlue : 'transparent'
-          }
-        />
+        <StatusBar translucent={true} backgroundColor="transparent" />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

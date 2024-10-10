@@ -18,7 +18,7 @@ const EmployeeTabBarIcon = ({
         return isFocused ? ICONS.homeFilled : ICONS.home;
       case employeeTabBarRoutes.jobs:
         return isFocused ? ICONS.jobsFilled : ICONS.jobs;
-      case employeeTabBarRoutes.schedules:
+      case employeeTabBarRoutes.schedule:
         return isFocused ? ICONS.schedulesFilled : ICONS.schedules;
       case employeeTabBarRoutes.profile:
         return isFocused ? ICONS.profileFilled : ICONS.profile;
