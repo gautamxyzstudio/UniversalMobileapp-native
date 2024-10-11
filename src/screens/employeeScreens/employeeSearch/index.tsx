@@ -1,61 +1,110 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
 import SearchInput from '@components/molecules/InputTypes/SearchInput';
 import {useTheme} from '@theme/Theme.context';
 import {verticalScale} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
 import RecentSearches from '@components/molecules/recentSearch';
-
-import SearchJobListing from '@components/employee/SearchJobListing';
-import SearchJobTItleList from '@components/employee/SearchJobTItleList';
-import {mockJobTitles, mockRecentSearches, mockJobs} from '@api/mockData';
+import {mockRecentSearches} from '@api/mockData';
 import {useNavigation} from '@react-navigation/native';
+import _ from 'lodash';
+import {IJobPostTypes} from '@api/features/client/types';
+import {useLazyGetJobPostsViaSearchQuery} from '@api/features/employee/employeeApi';
+import CustomList from '@components/molecules/customList';
+import JobPostCard from '@components/client/JobPostCard';
+import {IC_EMPTY_JOBS_LIST, IC_SEARCH_EMPTY} from '@assets/exporter';
 
 const EmployeeSearch = () => {
   const {theme} = useTheme();
   const [search, setSearch] = useState('');
+  const [searchJobsHandler, {error}] = useLazyGetJobPostsViaSearchQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLastPage, setIsLastPage] = useState(true);
+  const [jobs, setJobs] = useState<IJobPostTypes[]>([]);
   const navigation = useNavigation();
-  const [jobTitles, setJobTitles] = useState<{id: number; title: string}[]>([]);
-  const [searchState, updateSearchState] = useState<
-    'idle' | 'searching' | 'fetched'
-  >('idle');
+
+  const [searchState, updateSearchState] = useState<'idle' | 'searching'>(
+    'idle',
+  );
 
   const onPressRecentSearch = (recentSearch: {id: number; title: string}) => {
     setSearch(recentSearch.title);
-    updateSearchState('fetched');
+  };
+
+  const jobSearchQuery = async (
+    character: string,
+    isFirstPage: boolean = false,
+  ) => {
+    let perPage = 10;
+    let page = isFirstPage ? 1 : currentPage + 1;
+    try {
+      const res = await searchJobsHandler({
+        character: character,
+        page: page,
+        perPage: perPage,
+      }).unwrap();
+      setIsLoading(false);
+      setJobs(prevJobs =>
+        isFirstPage ? res.data : [...prevJobs, ...res.data],
+      );
+      setCurrentPage(page);
+      setIsLastPage(res.data.length === 0 || res.data.length !== perPage);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
   };
 
   const onPressCross = () => {
     setSearch('');
     updateSearchState('idle');
+    setJobs([]);
   };
 
-  const onPressSuggestion = () => {
-    updateSearchState('fetched');
-  };
-
-  const handleTextChange = (e: string) => {
-    if (e.length > 0) {
-      updateSearchState('searching');
-      setSearch(e);
-      const filteredData = mockJobTitles.filter(job =>
-        job.title.toLowerCase().includes(e.trim().toLowerCase()),
-      );
-      setJobTitles(filteredData);
-    } else {
-      setSearch(e);
-      updateSearchState('idle');
+  const loadMore = () => {
+    if (!isLastPage) {
+      jobSearchQuery(search);
     }
   };
+
+  const handleSearch = useCallback(
+    _.debounce(query => {
+      if (query) {
+        jobSearchQuery(query, true); // Reset to first page when searching
+      }
+    }, 400),
+    [],
+  );
+
+  useEffect(() => {
+    if (search.length > 0) {
+      updateSearchState('searching');
+      setIsLoading(true);
+      handleSearch(search);
+    } else {
+      updateSearchState('idle');
+      setCurrentPage(1);
+      setIsLastPage(true);
+      setJobs([]);
+    }
+  }, [search]);
+
+  const renderItem = useCallback(({item}: {item: IJobPostTypes}) => {
+    return <JobPostCard {...item} />;
+  }, []);
+
   return (
     <SafeAreaView
       backgroundColor={theme.color.backgroundWhite}
       paddingHorizontal>
       <SearchInput
         value={search}
+        showLoader={isLoading}
         innerContainerStyle={styles.search}
-        onChangeText={handleTextChange}
+        onChangeText={e => setSearch(e)}
         onPressCross={onPressCross}
         placeHolder={STRINGS.search_by_job_title}
         navigation={navigation}
@@ -67,12 +116,20 @@ const EmployeeSearch = () => {
             onPressRecentSearch={onPressRecentSearch}
           />
         )}
-        {searchState === 'fetched' && <SearchJobListing data={mockJobs} />}
         {searchState === 'searching' && (
-          <SearchJobTItleList
-            data={jobTitles}
-            search={search}
-            onPressSuggestion={onPressSuggestion}
+          <CustomList
+            isLastPage={isLastPage}
+            estimatedItemSize={verticalScale(177)}
+            error={error}
+            emptyListIllustration={
+              isLoading ? IC_EMPTY_JOBS_LIST : IC_SEARCH_EMPTY
+            }
+            emptyListSubTitle={
+              isLoading ? STRINGS.searching : STRINGS.no_jobs_found
+            }
+            onResponderEnd={loadMore}
+            data={jobs}
+            renderItem={renderItem}
           />
         )}
       </View>

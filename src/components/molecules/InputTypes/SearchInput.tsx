@@ -24,11 +24,13 @@ import {
 } from '@react-navigation/native';
 import {StyleProps} from 'react-native-reanimated';
 import {Row} from '@components/atoms/Row';
+import {ActivityIndicator} from 'react-native-paper';
 
 type ISearchInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   onPressCross: () => void;
+  showLoader: boolean;
   placeHolder: string;
   leftIcon?: boolean;
   innerContainerStyle?: StyleProp<ViewStyle>;
@@ -50,6 +52,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
   withBack = true,
   containerStyles,
   leftIcon = true,
+  showLoader,
   innerContainerStyle,
   placeHolder,
   onPressCross,
@@ -85,9 +88,20 @@ const SearchInput: React.FC<ISearchInputProps> = ({
         />
         <View>
           {value && (
-            <Pressable onPress={onPressCross} style={styles.rightIcon}>
-              <IC_CROSS />
-            </Pressable>
+            <>
+              {showLoader ? (
+                <View style={styles.rightIcon}>
+                  <ActivityIndicator
+                    size={'small'}
+                    color={theme.color.darkBlue}
+                  />
+                </View>
+              ) : (
+                <Pressable onPress={onPressCross} style={styles.rightIcon}>
+                  <IC_CROSS />
+                </Pressable>
+              )}
+            </>
           )}
         </View>
       </Row>

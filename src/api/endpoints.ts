@@ -45,4 +45,6 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/jobs/${jobId}/not-accepting`,
   getScheduleClient: (clientId: number) =>
     `${process.env.BASE_URL}/api/jobs/client/${clientId}`,
+  employeeJobsSearch: (character: string, page: number, pageSize: number) =>
+    `${process.env.BASE_URL}/api/jobs?search=${character}&page=${page}&pageSize=${pageSize}`,
 };

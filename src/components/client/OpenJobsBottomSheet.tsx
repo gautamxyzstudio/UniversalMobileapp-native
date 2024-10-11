@@ -132,6 +132,7 @@ const OpenJobsBottomSheet = React.forwardRef<
                   placeHolder={STRINGS.search}
                   withBack={false}
                   navigation={navigation}
+                  showLoader={false}
                 />
                 <Spacers type="vertical" size={20} scalable />
               </>

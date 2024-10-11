@@ -7,13 +7,13 @@ export const onBoardingData = [
     title: STRINGS.connect_job_seekers,
     icon: POSTER_ONE,
     description:
-      ' Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenea commodo ligula eget dolor',
+      'Quickly connect with temporary job opportunities that offer flexibility and immediate earnings.',
   },
   {
     id: 1,
     title: STRINGS.jobs_that_match_your_skills,
     description:
-      ' Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenea commodo ligula eget dolor',
+      'Match your skills with temporary jobs that offer flexibility and growth potential.',
     icon: POSTER_TWO,
   },
   {
@@ -21,6 +21,6 @@ export const onBoardingData = [
     title: STRINGS.easy_to_communicate,
     icon: POSTER_THREE,
     description:
-      ' Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenea commodo ligula eget dolor',
+      'Seamless communication with employers helps you navigate your job search with ease.',
   },
 ];

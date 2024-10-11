@@ -142,3 +142,54 @@ export type IGetAppliedJobsResponse = {
     }[];
   }[];
 }[];
+
+export type IGetJobPostResponse = {
+  data: {
+    Event: null;
+    address: string;
+    city: string;
+    client_details: {
+      id: number;
+      Name: string;
+      companyname: string;
+      Industry: string;
+      Email: string;
+      location: string;
+    }[];
+    createdAt: Date;
+    delete: null;
+    description: string;
+    endShift: Date;
+    eventDate: Date;
+    gender: string;
+    id: number;
+    jobDuties: string;
+    job_applications: {
+      id: number;
+      status: IJobPostStatus;
+      employee_details: {
+        id: number;
+      }[];
+    }[];
+    job_name: string;
+    job_type: IJobTypesEnum;
+    location: string;
+    notAccepting: boolean;
+    postID: null;
+    postalCode: string;
+    publishedAt: Date;
+    requiredEmployee: number;
+    required_certificates: string[];
+    salary: string;
+    startShift: Date;
+    state: null;
+    status: IJobPostStatus;
+    updatedAt: Date;
+  }[];
+  meta: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+};

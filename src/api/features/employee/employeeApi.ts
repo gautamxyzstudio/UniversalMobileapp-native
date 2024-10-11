@@ -5,6 +5,7 @@ import {
   IApplyForJobRequest,
   ICustomizedJobsResponse,
   IGetAppliedJobsResponse,
+  IGetJobPostResponse,
   IJobTypes,
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
@@ -18,35 +19,38 @@ const employeeApi = baseApi.injectEndpoints({
         url: apiEndPoints.getJobsEmployee(pageNumber),
         method: apiMethodType.get,
       }),
-      transformResponse: (response: any): ICustomizedJobsResponse => {
+      transformResponse: (
+        response: IGetJobPostResponse,
+      ): ICustomizedJobsResponse => {
+        console.log(response, 'apifetchjobsresponse');
         let customizedJobs: IJobTypes[] = [];
         response.data.forEach(job => {
           if (
-            job.attributes.status !== IJobPostStatus.CLOSED &&
-            job.attributes.notAccepting !== true
+            job.status !== IJobPostStatus.CLOSED &&
+            job.notAccepting !== true
           ) {
             let details: IJobTypes = {
-              job_name: job.attributes.job_name,
-              endShift: job.attributes.endShift,
-              publishedAt: job.attributes.publishedAt,
-              location: job.attributes.location,
+              job_name: job.job_name,
+              endShift: job.endShift,
+              publishedAt: job.publishedAt,
+              location: job.location,
               id: job.id,
               job_applications: job.job_applications,
-              requiredEmployee: job.attributes.requiredEmployee,
-              job_type: job.attributes.job_type,
-              jobDuties: job.attributes.jobDuties,
-              description: job.attributes.description,
-              eventDate: job.attributes.eventDate,
-              startShift: job.attributes.startShift,
-              city: job.attributes.city,
-              status: job.attributes.status,
-              address: job.attributes.address,
-              postalCode: job.attributes.postalCode,
-              gender: job.attributes.gender,
-              salary: job.attributes.salary,
+              requiredEmployee: job.requiredEmployee,
+              job_type: job.job_type,
+              jobDuties: job.jobDuties,
+              description: job.description,
+              eventDate: job.eventDate,
+              startShift: job.startShift,
+              city: job.city,
+              status: job.status,
+              address: job.address,
+              postalCode: job.postalCode,
+              gender: job.gender,
+              salary: job.salary,
               client_details: job.client_details[0],
-              required_certificates: job.attributes.required_certificates,
-              postID: job.attributes.postID,
+              required_certificates: job.required_certificates,
+              postID: job.postID,
             };
             customizedJobs.push(details);
           }
@@ -54,10 +58,10 @@ const employeeApi = baseApi.injectEndpoints({
         return {
           data: customizedJobs,
           pagination: response?.meta && {
-            page: response?.meta.pagination?.page ?? 1,
-            pageSize: response?.meta.pagination?.pageSize ?? 1,
-            pageCount: response?.meta.pagination?.pageCount ?? 1,
-            total: response?.meta.pagination?.total ?? 1,
+            page: response?.meta?.page ?? 1,
+            pageSize: response?.meta?.pageSize ?? 1,
+            pageCount: response?.meta?.total ?? 1,
+            total: response?.meta?.total ?? 1,
           },
         };
       },
@@ -146,6 +150,60 @@ const employeeApi = baseApi.injectEndpoints({
         method: apiMethodType.get,
       }),
     }),
+    getJobPostsViaSearch: builder.query({
+      query: (body: {character: string; page: number; perPage: number}) => ({
+        url: apiEndPoints.employeeJobsSearch(
+          body.character,
+          body.page,
+          body.perPage,
+        ),
+      }),
+      transformResponse: (
+        response: IGetJobPostResponse,
+      ): ICustomizedJobsResponse => {
+        let customizedJobs: IJobTypes[] = [];
+        response.data.forEach(job => {
+          if (
+            job.status !== IJobPostStatus.CLOSED &&
+            job.notAccepting !== true
+          ) {
+            let details: IJobTypes = {
+              job_name: job.job_name,
+              endShift: job.endShift,
+              publishedAt: job.publishedAt,
+              location: job.location,
+              id: job.id,
+              job_applications: job.job_applications,
+              requiredEmployee: job.requiredEmployee,
+              job_type: job.job_type,
+              jobDuties: job.jobDuties,
+              description: job.description,
+              eventDate: job.eventDate,
+              startShift: job.startShift,
+              city: job.city,
+              status: job.status,
+              address: job.address,
+              postalCode: job.postalCode,
+              gender: job.gender,
+              salary: job.salary,
+              client_details: job.client_details[0],
+              required_certificates: job.required_certificates,
+              postID: job.postID,
+            };
+            customizedJobs.push(details);
+          }
+        });
+        return {
+          data: customizedJobs,
+          pagination: response?.meta && {
+            page: response?.meta?.page ?? 1,
+            pageSize: response?.meta?.pageSize ?? 1,
+            pageCount: response?.meta?.total ?? 1,
+            total: response?.meta?.total ?? 1,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -153,44 +211,6 @@ export const {
   useLazyFetchJobsQuery,
   useApplyForJobMutation,
   useLazyFetchScheduledJobsQuery,
+  useLazyGetJobPostsViaSearchQuery,
   useLazyFetchAppliedJobsQuery,
 } = employeeApi;
-
-//  getPostedJob: builder.query({
-//       query: () => ({
-//         url: apiEndPoints.getJobPost,
-//         method: apiMethodType.get,
-//       }),
-//       transformResponse: (
-//         response: IPostedJobsResponse,
-//       ): IJobPostCustomizedResponse => {
-//         let data: IJobPostTypes[] = [];
-//         response.data.forEach((job, index) => {
-//           if (job.id && job.attributes) {
-//             data.push({
-//               ...job.attributes,
-//               id: job.id,
-//               postedBy: 'posted by Yash',
-//               status: IJobPostStatus.OPEN,
-//             });
-//           }
-//         });
-//         return {
-//           data: data,
-//           pagination: response?.meta && {
-//             page: response.meta?.pagination?.page ?? 1,
-//             pageSize: response?.meta.pagination?.pageSize ?? 1,
-//             pageCount: response?.meta.pagination?.pageCount ?? 1,
-//             total: response?.meta.pagination?.total ?? 1,
-//           },
-//         };
-//       },
-//       transformErrorResponse: (
-//         response: IErrorResponse,
-//       ): ICustomErrorResponse => {
-//         return {
-//           statusCode: response.status,
-//           message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-//         };
-//       },
-//     }),

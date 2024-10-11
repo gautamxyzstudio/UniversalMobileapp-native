@@ -58,10 +58,7 @@ const OnBoarding = () => {
             height={verticalScale(410)}
           />
           <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.paragraph}>
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
-            commodo ligula eget dolor
-          </Text>
+          <Text style={styles.paragraph}>{item.description}</Text>
         </View>
       );
     },

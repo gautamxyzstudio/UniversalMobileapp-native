@@ -297,4 +297,5 @@ export const STRINGS = {
   downloadCheckinSheets: 'Download checkin sheets',
   no_jobs_found: 'No Jobs Found',
   restore: 'Restore',
+  searching: 'searching...',
 };
