@@ -82,6 +82,8 @@ const EmployeeDocuments = () => {
   const newDocRef = useRef<BottomSheetModal | null>(null);
   const [refreshing, updateRefreshing] = useState(false);
 
+  console.log(JSON.stringify(user.documents), 'JSON');
+
   useEffect(() => {
     if (user.documents?.primary) {
       let options: {name: string; key: IEmployeeDocsApiKeys}[] = [];
@@ -89,7 +91,6 @@ const EmployeeDocuments = () => {
       previousDocs?.map(doc => {
         if (
           doc.docStatus === IDocumentStatus.APPROVED ||
-          doc.docStatus === IDocumentStatus.PENDING ||
           doc.docStatus === IDocumentStatus.DENIED
         ) {
           options.push({
@@ -100,11 +101,10 @@ const EmployeeDocuments = () => {
       });
       setValidUpdateDocument(options);
     }
-  }, []);
+  }, [user.documents]);
 
   console.log(validUpdateDocument, 'balid');
 
-  // useEffect to set initial values for upload new document dropdown options
   useEffect(() => {
     setDocuments(prev => {
       const prevDocs = [...prev];
@@ -166,29 +166,32 @@ const EmployeeDocuments = () => {
         [STRINGS.license_advance]: 'securityDocumentAdv',
         [STRINGS.license_basic]: 'securityDocumentBasic',
       };
-      const key = keyMap[doc.docType] || '';
+      const key = keyMap[doc.docType] || null;
 
-      const requestData = doc.name
+      const requestData = key
         ? {
-            data: [
-              {
-                name: doc.name,
-                Document: doc.docValue,
-                employee_detail: user.detailsId ?? 0,
-                Docstatus: IDocumentStatus.PENDING,
-              },
-            ],
-          }
-        : {
             data: {
               data: {
                 [key]: doc.docValue,
               },
               docId: user.detailsId as number,
             },
+          }
+        : {
+            data: [
+              {
+                name: doc.name,
+                Document: doc.docValue,
+                employee_detail: user.detailsId ?? 0,
+                Docstatus:
+                  doc.name === STRINGS.Resume
+                    ? IDocumentStatus.APPROVED
+                    : IDocumentStatus.PENDING,
+              },
+            ],
           };
 
-      const response: ISubmitOtherDocumentsResponse = await (doc.name
+      const response: ISubmitOtherDocumentsResponse = await (key
         ? uploadNewDoc(requestData as IEmployeeUploadOtherDocumentsRequest)
         : uploadPrevDocuments(requestData as IUpdateUserDetailsRequest)
       ).unwrap();

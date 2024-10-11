@@ -140,6 +140,12 @@ const employeeApi = baseApi.injectEndpoints({
         };
       },
     }),
+    getUpdateDocRequests: builder.query({
+      query: () => ({
+        url: apiEndPoints.updateEmployeeDocsRequest,
+        method: apiMethodType.get,
+      }),
+    }),
   }),
 });
 

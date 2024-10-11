@@ -18,6 +18,7 @@ export const apiEndPoints = {
   clientDetails: `${process.env.BASE_URL}/api/client-details`,
   uploadOtherDocuments: `${process.env.BASE_URL}/api/other-documents/bulk-create`,
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
+  updateEmployeeDocsRequest: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
   getOpenJobPost: (detailsId: number) =>
     `${process.env.BASE_URL}/api/jobs/client/open/${detailsId}`,

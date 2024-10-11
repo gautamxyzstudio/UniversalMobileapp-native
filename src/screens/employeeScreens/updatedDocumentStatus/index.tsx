@@ -9,13 +9,8 @@ import {verticalScale} from '@utils/metrics';
 import CustomList from '@components/molecules/customList';
 import UpdatedDocumentStatusCard from '@components/doucment/UpdatedDocumentStatusCard';
 import {mockAsset} from '@api/mockData';
-import {IEmployeeDocument} from '@api/features/user/types';
 
-type IUpdatedDocumentStatusProps = {
-  data: IEmployeeDocument[];
-};
-
-const UpdatedDocumentStatus: React.FC<IUpdatedDocumentStatusProps> = () => {
+const UpdatedDocumentStatus = () => {
   const styles = useThemeAwareObject(createStyles);
 
   const renderItem = useCallback(() => {

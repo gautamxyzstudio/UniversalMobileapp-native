@@ -38,6 +38,7 @@ const UploadNewDocumentFromProfilePopup = React.forwardRef<
     docTypeError: '',
     docValueError: '',
   };
+
   const modalHeight = verticalScale(570);
   const keyboardHeight = useKeyboardHeight();
   const [state, setState] = useState<{
@@ -106,7 +107,7 @@ const UploadNewDocumentFromProfilePopup = React.forwardRef<
     }
     if (isValid && state.docValue && state.docType) {
       getSelectedDocument({
-        name: state.docName,
+        name: state.docType.label,
         docValue: state.docValue,
         docType: state.docType.value,
       });
