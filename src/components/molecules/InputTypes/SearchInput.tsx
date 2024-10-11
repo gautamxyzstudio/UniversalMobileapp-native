@@ -116,7 +116,7 @@ const createStyles = (theme: Theme) => {
     textInput: {
       flex: 1,
       justifyContent: 'center',
-      paddingTop: verticalScale(10),
+      paddingTop: verticalScale(Platform.OS === 'android' ? 10 : 0),
       fontFamily: fontFamily.regular,
       lineHeight: verticalScale(20),
       color: theme.color.textPrimary,
