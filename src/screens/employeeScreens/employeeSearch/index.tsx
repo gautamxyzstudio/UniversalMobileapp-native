@@ -73,7 +73,7 @@ const EmployeeSearch = () => {
   const handleSearch = useCallback(
     _.debounce(query => {
       if (query) {
-        jobSearchQuery(query, true); // Reset to first page when searching
+        jobSearchQuery(query, true);
       }
     }, 400),
     [],

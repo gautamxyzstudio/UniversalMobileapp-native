@@ -63,7 +63,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
 
   return (
     <View style={styles.inputMain}>
-      <Row alignCenter>
+      <Row alignCenter style={{height: 40}}>
         <View style={styles.leftIcon}>
           {leftIcon && (
             <View>
@@ -115,7 +115,10 @@ const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     textInput: {
       flex: 1,
+      justifyContent: 'center',
+      paddingTop: verticalScale(10),
       fontFamily: fontFamily.regular,
+      lineHeight: verticalScale(20),
       color: theme.color.textPrimary,
       fontSize: moderateScale(14),
     },
