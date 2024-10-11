@@ -89,6 +89,7 @@ const EmployeeDocuments = () => {
       previousDocs?.map(doc => {
         if (
           doc.docStatus === IDocumentStatus.APPROVED ||
+          doc.docStatus === IDocumentStatus.PENDING ||
           doc.docStatus === IDocumentStatus.DENIED
         ) {
           options.push({
@@ -264,7 +265,7 @@ const EmployeeDocuments = () => {
         onPressRightIcon={() => navigation.navigate('updatedDocumentStatus')}
         headerTitle={STRINGS.documents}
       />
-
+      <StatusBar backgroundColor={theme.color.primary} />
       <View style={styles.mainView}>
         <ScrollView
           refreshControl={
@@ -303,6 +304,7 @@ const EmployeeDocuments = () => {
             {user.documents?.primary?.map(doc => (
               <PreUploadedDocCardWithView
                 document={doc}
+                key={doc.docId}
                 withTitle={true}
                 navigation={navigation}
               />
@@ -310,6 +312,7 @@ const EmployeeDocuments = () => {
             {user.documents?.secondary?.map(doc => (
               <PreUploadedDocCardWithView
                 document={doc}
+                key={doc.docId}
                 withTitle={true}
                 navigation={navigation}
               />

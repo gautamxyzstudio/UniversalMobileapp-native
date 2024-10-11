@@ -15,9 +15,7 @@ type IUpdatedDocumentStatusProps = {
   data: IEmployeeDocument[];
 };
 
-const UpdatedDocumentStatus: React.FC<IUpdatedDocumentStatusProps> = ({
-  data,
-}) => {
+const UpdatedDocumentStatus: React.FC<IUpdatedDocumentStatusProps> = () => {
   const styles = useThemeAwareObject(createStyles);
 
   const renderItem = useCallback(() => {
@@ -35,7 +33,7 @@ const UpdatedDocumentStatus: React.FC<IUpdatedDocumentStatusProps> = ({
       <HeaderWithBack isDark headerTitle={STRINGS.updatedDocument} />
       <View style={styles.container}>
         <CustomList
-          data={data}
+          data={[]}
           renderItem={renderItem}
           estimatedItemSize={100}
           error={undefined}

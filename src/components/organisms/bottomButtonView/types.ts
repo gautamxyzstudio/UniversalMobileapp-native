@@ -8,6 +8,7 @@ export interface IButtonButtonView {
   rippleColor?: string;
   isLoading?: boolean;
   isMultiple?: boolean;
+  isSecondaryDisabled?: boolean;
   secondaryButtonTitles?: string;
   onPressSecondaryButton?: () => void;
   secondaryButtonTitleStyles?: StyleProp<TextStyle>;

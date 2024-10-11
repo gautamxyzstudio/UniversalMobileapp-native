@@ -16,6 +16,7 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
   primaryButtonStyles,
   isLoading,
   disabled,
+  isSecondaryDisabled,
   onPressSecondaryButton,
   secondaryButtonTitleStyles,
   primaryButtonTitleStyles,
@@ -30,7 +31,7 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
       <Row alignCenter style={[styles.mainView]}>
         {isMultiple && (
           <CustomButton
-            disabled={disabled}
+            disabled={isSecondaryDisabled ?? false}
             type="outline"
             onButtonPress={onPressSecondaryButton}
             buttonStyle={[styles.button, secondaryButtonStyles]}
