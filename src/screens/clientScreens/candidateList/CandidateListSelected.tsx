@@ -87,7 +87,7 @@ const CandidateListSelected: React.FC<ICandidateListSelectedProps> = ({
           onPressThreeDots('show', jobId ?? 0, 'shortlisted', item)
         }
         onPressCard={() =>
-          onPressSheet('show', 'applications', item, jobId ?? 0)
+          onPressSheet('show', 'shortlisted', item, jobId ?? 0)
         }
       />
     ),

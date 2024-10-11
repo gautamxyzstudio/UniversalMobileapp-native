@@ -17,7 +17,11 @@ import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
 import {IJobTypes} from '../employee/types';
 
-const clientApi = baseApi.injectEndpoints({
+const baseApiWithTag = baseApi.enhanceEndpoints({
+  addTagTypes: ['ClientSchedule'],
+});
+
+const clientApi = baseApiWithTag.injectEndpoints({
   endpoints: builder => ({
     postAJob: builder.mutation<IJobPostTypes, {data: IJobPostInterface}>({
       query: body => ({
@@ -25,6 +29,7 @@ const clientApi = baseApi.injectEndpoints({
         method: apiMethodType.post,
         body,
       }),
+      invalidatesTags: ['ClientSchedule'],
       transformResponse: (response: INewPostedJobResponse): IJobPostTypes => {
         return {
           id: response.data.id,
@@ -331,6 +336,7 @@ const clientApi = baseApi.injectEndpoints({
         url: apiEndPoints.getScheduleClient(body.clientId),
         method: apiMethodType.get,
       }),
+      providesTags: ['ClientSchedule'],
       transformResponse: (response: IPostedJobsResponse): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
         response.data.forEach(details => {

@@ -6,10 +6,10 @@ import {STRINGS} from 'src/locales/english';
 import UploadProfilePhoto from '@components/molecules/uploadProfilePhoto';
 import {Row} from '@components/atoms/Row';
 import {
+  CALENDAR,
   CALENDER_THIRD,
   DOLLAR_SMALL,
-  EVENT,
-  LOCATION_ICON,
+  LOCATION_TERNARY,
 } from '@assets/exporter';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale} from '@utils/metrics';
@@ -137,7 +137,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
               )}
 
             <Row style={styles.row} alignCenter>
-              <LOCATION_ICON />
+              <LOCATION_TERNARY />
               <Text style={styles.location}>{jobDetails?.location}</Text>
             </Row>
           </View>
@@ -146,7 +146,7 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
           <Row wrap spaceBetween>
             <JobDetailsTopTag
               iconSize={verticalScale(20)}
-              icon={EVENT}
+              icon={CALENDAR}
               title={jobDetails?.job_type ?? 'static'}
             />
             <JobDetailsTopTag icon={DOLLAR_SMALL} title={wage} />

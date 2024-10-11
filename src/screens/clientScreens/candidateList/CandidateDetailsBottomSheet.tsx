@@ -8,7 +8,7 @@ import {Theme} from '@theme/Theme.type';
 import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import TextWithIcon from '@components/molecules/TextWithIcon';
-import {LOCATION_ICON} from '@assets/exporter';
+
 import CandidatesContactDetails from '@components/client/CandidatesContactDetails';
 import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import Spacers from '@components/atoms/Spacers';
@@ -22,6 +22,7 @@ import {ICandidateStatusEnum} from '@utils/enums';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import {ICandidateTypes} from '@api/features/client/types';
 import {IDocumentStatus, IEmployeeDocsApiKeys} from '@api/features/user/types';
+import {LOCATION_TERNARY} from '@assets/exporter';
 
 interface ICandidateDetailsBottomSheet {
   details: ICandidateTypes | undefined;
@@ -73,7 +74,7 @@ const CandidateDetailsBottomSheet = React.forwardRef<
                 customTextStyles={styles.text}
               />
               <TextWithIcon
-                icon={LOCATION_ICON}
+                icon={LOCATION_TERNARY}
                 value={details.jobLocation}
                 size={textSizeEnum.small}
                 customTextStyles={styles.text}

@@ -64,12 +64,13 @@ const JobPostDrafts = () => {
     try {
       const posts = await getDrafts(null).unwrap();
       if (posts.data) {
-        setIsLoading(false);
         dispatch(saveDrafts(posts.data));
       }
     } catch (e) {
       setIsLoading(false);
       console.error('Error fetching drafts:', e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -173,6 +174,11 @@ const JobPostDrafts = () => {
 
   const renderLoadingItem = () => <JobPostCardLoading isDraft />;
 
+  const onCloseHandler = () => {
+    setCurrentSelectedDraft(null);
+    jobDetailsSheetRef.current?.snapToIndex(0);
+  };
+
   return (
     <OnBoardingBackground title={STRINGS.draft}>
       <CustomList
@@ -215,6 +221,7 @@ const JobPostDrafts = () => {
       <JobDetailsBottomSheet
         ref={jobDetailsSheetRef}
         jobDetails={currentSelectedDraft}
+        onClose={onCloseHandler}
       />
     </OnBoardingBackground>
   );
