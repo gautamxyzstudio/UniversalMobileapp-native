@@ -298,4 +298,7 @@ export const STRINGS = {
   no_jobs_found: 'No Jobs Found',
   restore: 'Restore',
   searching: 'searching...',
+  start_your_job_search_today: 'Start Your job Search Today',
+  find_the_perfect_job:
+    'Find the perfect job that matches your skills and preferences',
 };

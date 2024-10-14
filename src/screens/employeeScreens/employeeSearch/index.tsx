@@ -7,7 +7,6 @@ import {useTheme} from '@theme/Theme.context';
 import {verticalScale} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
 import RecentSearches from '@components/molecules/recentSearch';
-import {mockRecentSearches} from '@api/mockData';
 import {useNavigation} from '@react-navigation/native';
 import _ from 'lodash';
 import {IJobPostTypes} from '@api/features/client/types';
@@ -15,13 +14,26 @@ import {useLazyGetJobPostsViaSearchQuery} from '@api/features/employee/employeeA
 import CustomList from '@components/molecules/customList';
 import JobPostCard from '@components/client/JobPostCard';
 import {IC_EMPTY_JOBS_LIST, IC_SEARCH_EMPTY} from '@assets/exporter';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  addNewSearchEmployee,
+  deleteRecentSearch,
+  getRecentSearchesFromStateEmployee,
+  userBasicDetailsFromState,
+} from '@api/features/user/userSlice';
+import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
+import {IJobPostStatus} from '@utils/enums';
 
 const EmployeeSearch = () => {
   const {theme} = useTheme();
   const [search, setSearch] = useState('');
+  const user = useSelector(userBasicDetailsFromState);
   const [searchJobsHandler, {error}] = useLazyGetJobPostsViaSearchQuery();
+  const {onPressSheet, appliedJobDetails} = useJobDetailsContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
+  const recentSearches = useSelector(getRecentSearchesFromStateEmployee);
   const [isLastPage, setIsLastPage] = useState(true);
   const [jobs, setJobs] = useState<IJobPostTypes[]>([]);
   const navigation = useNavigation();
@@ -30,8 +42,8 @@ const EmployeeSearch = () => {
     'idle',
   );
 
-  const onPressRecentSearch = (recentSearch: {id: number; title: string}) => {
-    setSearch(recentSearch.title);
+  const onPressRecentSearch = (recentSearch: string) => {
+    setSearch(recentSearch);
   };
 
   const jobSearchQuery = async (
@@ -47,16 +59,41 @@ const EmployeeSearch = () => {
         perPage: perPage,
       }).unwrap();
       setIsLoading(false);
+
+      let jobsToShow: IJobPostTypes[] = res.data.filter(job => {
+        const isApplied = job.job_applications?.some(
+          applicant =>
+            applicant.employee_details[0].id === user?.details?.detailsId,
+        );
+        return !isApplied;
+      });
+
       setJobs(prevJobs =>
-        isFirstPage ? res.data : [...prevJobs, ...res.data],
+        isFirstPage ? jobsToShow : [...prevJobs, ...jobsToShow],
       );
       setCurrentPage(page);
       setIsLastPage(res.data.length === 0 || res.data.length !== perPage);
-    } catch (error) {
+    } catch (cs) {
       setIsLoading(false);
-      console.log(error);
+      console.log(cs);
     }
   };
+
+  useEffect(() => {
+    if (appliedJobDetails) {
+      let currentIndex = jobs.findIndex(job => job.id === appliedJobDetails.id);
+      if (currentIndex !== -1) {
+        setJobs(prev => {
+          let prevJobs = [...prev];
+          prevJobs[currentIndex] = {
+            ...prevJobs[currentIndex],
+            status: IJobPostStatus.APPLIED,
+          };
+          return prevJobs;
+        });
+      }
+    }
+  }, [appliedJobDetails]);
 
   const onPressCross = () => {
     setSearch('');
@@ -92,9 +129,32 @@ const EmployeeSearch = () => {
     }
   }, [search]);
 
-  const renderItem = useCallback(({item}: {item: IJobPostTypes}) => {
-    return <JobPostCard {...item} />;
-  }, []);
+  const onPressDone = () => {
+    if (search) {
+      let searchIndex = recentSearches.findIndex(
+        value => value.toLocaleLowerCase() === search.toLocaleLowerCase(),
+      );
+      if (searchIndex === -1) {
+        dispatch(addNewSearchEmployee(search));
+      }
+    }
+  };
+
+  const onPressCrossRecent = (recentSearchValue: string) => {
+    dispatch(deleteRecentSearch(recentSearchValue));
+  };
+
+  const renderItem = useCallback(
+    ({item}: {item: IJobPostTypes}) => {
+      return (
+        <JobPostCard
+          {...item}
+          onPress={() => onPressSheet('show', item, true)}
+        />
+      );
+    },
+    [jobs],
+  );
 
   return (
     <SafeAreaView
@@ -108,11 +168,13 @@ const EmployeeSearch = () => {
         onPressCross={onPressCross}
         placeHolder={STRINGS.search_by_job_title}
         navigation={navigation}
+        onPressDone={onPressDone}
       />
       <View style={styles.mainView}>
         {searchState === 'idle' && (
           <RecentSearches
-            searches={mockRecentSearches}
+            onPressCross={onPressCrossRecent}
+            searches={recentSearches}
             onPressRecentSearch={onPressRecentSearch}
           />
         )}

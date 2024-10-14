@@ -22,7 +22,6 @@ const employeeApi = baseApi.injectEndpoints({
       transformResponse: (
         response: IGetJobPostResponse,
       ): ICustomizedJobsResponse => {
-        console.log(response, 'apifetchjobsresponse');
         let customizedJobs: IJobTypes[] = [];
         response.data.forEach(job => {
           if (
@@ -60,8 +59,8 @@ const employeeApi = baseApi.injectEndpoints({
           pagination: response?.meta && {
             page: response?.meta?.page ?? 1,
             pageSize: response?.meta?.pageSize ?? 1,
-            pageCount: response?.meta?.total ?? 1,
-            total: response?.meta?.total ?? 1,
+            pageCount: response?.meta?.totalPages ?? 1,
+            total: response?.meta?.totalPages ?? 1,
           },
         };
       },

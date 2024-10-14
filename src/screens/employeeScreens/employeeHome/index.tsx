@@ -58,6 +58,9 @@ const EmployeeHome = () => {
 
   useEffect(() => {
     getUser();
+  }, []);
+
+  useEffect(() => {
     getJobsPosts(true);
   }, []);
 
@@ -91,9 +94,10 @@ const EmployeeHome = () => {
   const getJobsPosts = async (isFirstPage: boolean = false) => {
     try {
       let page = isFirstPage ? 1 : currentPage + 1;
-      let perPageRecord = 10;
       const usersJobsResponse = await getJobs(page).unwrap();
       if (usersJobsResponse) {
+        console.log(usersJobsResponse.data, 'latest response');
+
         dispatch(
           updateJobs({
             currentPage: page,
@@ -103,10 +107,7 @@ const EmployeeHome = () => {
         );
         setIsRefreshing(false);
         setCurrentPage(page);
-        setIsLastPage(
-          usersJobsResponse.data.length === 0 ||
-            usersJobsResponse.data.length !== perPageRecord,
-        );
+        setIsLastPage(page === usersJobsResponse.pagination.total);
       }
     } catch (err) {
       setIsRefreshing(false);

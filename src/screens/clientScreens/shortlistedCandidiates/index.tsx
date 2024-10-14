@@ -1,5 +1,5 @@
-import {StyleSheet, View} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet, TextInput, View} from 'react-native';
+import React, {useRef, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import SearchInput from '@components/molecules/InputTypes/SearchInput';
@@ -8,6 +8,7 @@ import ShortlistedCandidateCard from '@components/client/ShortlistedCandidateCar
 
 const ShortListedCandidates = () => {
   const [search, setSearch] = useState('');
+  const searchRef = useRef<TextInput | null>(null);
   const navigation = useNavigation();
 
   const onChangeSearch = (e: string) => {
@@ -18,15 +19,22 @@ const ShortListedCandidates = () => {
     setSearch('');
   };
 
+  const onPressDone = () => {
+    console.log(search);
+  };
+
   return (
     <OnBoardingBackground isInlineTitle title={STRINGS.check_in}>
       <SearchInput
+        onPressDone={onPressDone}
         value={search}
+        inputRef={searchRef}
         onChangeText={e => onChangeSearch(e)}
         onPressCross={onPresCrossSearch}
         placeHolder={STRINGS.search}
         withBack={false}
         navigation={navigation}
+        showLoader={false}
       />
       <View>
         <ShortlistedCandidateCard />

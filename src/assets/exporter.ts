@@ -116,6 +116,7 @@ import IC_SEARCH_EMPTY from './icons/svg/searchEmpty.svg';
 import IC_EMPTY_SCHEDULE from './icons/svg/noSchedules.svg';
 import IC_EMPTY_JOBS_LIST from './icons/svg/noJobs.svg';
 import IC_EMPTY_APPLIED from './icons/svg/noApplied.svg';
+import IC_NO_RECENT from './icons/svg/ic_no_recent.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -148,6 +149,7 @@ export {
   LOCATION_SMALL,
   PLUS_WHITE,
   IC_LOG_ACTIVITY,
+  IC_NO_RECENT,
   IC_DOWNLOAD_SHEET,
   NO_INTERNET,
   EMPTY,

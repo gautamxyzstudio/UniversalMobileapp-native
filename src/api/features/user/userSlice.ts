@@ -11,6 +11,7 @@ import {RootState} from '@api/store';
 const initialState: IUserSliceInitialState = {
   user: null,
   isEmailVerified: false,
+  recentSearchesEmployee: [],
 };
 
 const userSlice = createSlice({
@@ -62,6 +63,15 @@ const userSlice = createSlice({
         state.user.details = {...prevData, ...action.payload};
       }
     },
+    addNewSearchEmployee: (state, action: PayloadAction<string>) => {
+      state.recentSearchesEmployee.push(action.payload);
+    },
+    deleteRecentSearch: (state, action: PayloadAction<string>) => {
+      const index = state.recentSearchesEmployee.indexOf(action.payload);
+      if (index !== -1) {
+        state.recentSearchesEmployee.splice(index, 1);
+      }
+    },
   },
 });
 
@@ -69,6 +79,8 @@ export const {
   saveUserDetails,
   updateEmployeeDetails,
   updateEmployeeResume,
+  addNewSearchEmployee,
+  deleteRecentSearch,
   updateClientDetails,
   addNewDocumentEmployee,
 } = userSlice.actions;
@@ -80,3 +92,5 @@ export const isEmailVerifiedFromState = (state: RootState) =>
   state.user.isEmailVerified;
 export const getUserTypeFromState = (state: RootState) =>
   state.user.user?.user_type;
+export const getRecentSearchesFromStateEmployee = (state: RootState) =>
+  state.user.recentSearchesEmployee;

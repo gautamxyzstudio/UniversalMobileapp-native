@@ -9,22 +9,16 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import React, {useRef} from 'react';
-import CustomTextInput from '@components/atoms/customtextInput';
+import React from 'react';
 import {useTheme} from '@theme/Theme.context';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {fontFamily, fonts} from '@utils/common.styles';
+import {fonts} from '@utils/common.styles';
 import {moderateScale, verticalScale} from '@utils/metrics';
 import {ARROW_LEFT, IC_CROSS, SEARCH} from '@assets/exporter';
-import {
-  NavigationProp,
-  NavigationState,
-  useNavigation,
-} from '@react-navigation/native';
-import {StyleProps} from 'react-native-reanimated';
-import {Row} from '@components/atoms/Row';
+import {NavigationProp, NavigationState} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native-paper';
+import Spacers from '@components/atoms/Spacers';
 
 type ISearchInputProps = {
   value: string;
@@ -43,6 +37,7 @@ type ISearchInputProps = {
   };
   withBack?: boolean;
   inputRef?: React.LegacyRef<TextInput>;
+  onPressDone?: () => void;
 };
 
 const SearchInput: React.FC<ISearchInputProps> = ({
@@ -50,61 +45,59 @@ const SearchInput: React.FC<ISearchInputProps> = ({
   onChangeText,
   navigation,
   withBack = true,
-  containerStyles,
   leftIcon = true,
+  inputRef,
+  onPressDone,
   showLoader,
-  innerContainerStyle,
   placeHolder,
   onPressCross,
-  inputRef,
 }) => {
   const {theme} = useTheme();
   const styles = useThemeAwareObject(createStyles);
 
   return (
     <View style={styles.inputMain}>
-      <Row alignCenter style={{height: 40}}>
-        <View style={styles.leftIcon}>
-          {leftIcon && (
-            <View>
-              {withBack ? (
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <ARROW_LEFT />
-                </TouchableOpacity>
-              ) : (
-                <Pressable style={styles.leftIcon}>
-                  <SEARCH />
-                </Pressable>
-              )}
-            </View>
-          )}
-        </View>
-        <TextInput
-          value={value}
-          style={styles.textInput}
-          placeholder={placeHolder}
-          onChangeText={onChangeText}
-          placeholderTextColor={theme.color.disabled}
-        />
+      {leftIcon && (
         <View>
-          {value && (
-            <>
-              {showLoader ? (
-                <View style={styles.rightIcon}>
-                  <ActivityIndicator
-                    size={'small'}
-                    color={theme.color.darkBlue}
-                  />
-                </View>
-              ) : (
-                <Pressable onPress={onPressCross} style={styles.rightIcon}>
-                  <IC_CROSS />
-                </Pressable>
-              )}
-            </>
+          {withBack ? (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ARROW_LEFT />
+            </TouchableOpacity>
+          ) : (
+            <Pressable style={styles.leftIcon}>
+              <SEARCH />
+            </Pressable>
           )}
         </View>
-      </Row>
+      )}
+      <Spacers size={4} scalable type="horizontal" />
+      <TextInput
+        value={value}
+        ref={inputRef}
+        style={styles.textInput}
+        onBlur={onPressDone}
+        placeholder={placeHolder}
+        onChangeText={onChangeText}
+        placeholderTextColor={theme.color.disabled}
+      />
+      <View>
+        {value && (
+          <>
+            {showLoader ? (
+              <View style={styles.rightIcon}>
+                <ActivityIndicator
+                  size={'small'}
+                  color={theme.color.darkBlue}
+                />
+              </View>
+            ) : (
+              <Pressable onPress={onPressCross} style={styles.rightIcon}>
+                <IC_CROSS />
+              </Pressable>
+            )}
+          </>
+        )}
+      </View>
     </View>
   );
 };
@@ -115,28 +108,25 @@ const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     textInput: {
       flex: 1,
-      justifyContent: 'center',
-      paddingTop: verticalScale(Platform.OS === 'android' ? 10 : 0),
-      fontFamily: fontFamily.regular,
-      lineHeight: verticalScale(20),
       color: theme.color.textPrimary,
-      fontSize: moderateScale(14),
+      margin: 0,
+      padding: 0,
+      ...fonts.regular,
+      lineHeight:
+        Platform.OS === 'android' ? moderateScale(28) : moderateScale(18),
     },
     inputMain: {
+      flexDirection: 'row',
       height: verticalScale(40),
-      justifyContent: 'center',
+      alignItems: 'center',
       borderWidth: 1,
       borderColor: theme.color.strokeLight,
+      borderRadius: 40,
     },
     leftIcon: {
-      justifyContent: 'center',
-      alignItems: 'center',
       marginLeft: verticalScale(8),
     },
     rightIcon: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%',
       marginRight: verticalScale(12),
     },
   });

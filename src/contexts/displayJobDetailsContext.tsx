@@ -9,15 +9,20 @@ import {withAsyncErrorHandlingPost} from '@utils/constants';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
 import {STRINGS} from 'src/locales/english';
-import {applyJobAction} from '@api/features/employee/employeeSlice';
+import {
+  applyJobAction,
+  applyJobActionSearch,
+} from '@api/features/employee/employeeSlice';
 import {useApplyForJobMutation} from '@api/features/employee/employeeApi';
 
 type IJobDetailsContextProviderProps = {
   onPressSheet: (
     option: 'show' | 'hide',
     JobDetails?: IJobPostTypes | null,
+    isSearched?: boolean,
   ) => void;
   jobDetails: IJobPostTypes | null;
+  appliedJobDetails: IJobPostTypes | null;
 };
 
 const JobDetailsContext = createContext<IJobDetailsContextProviderProps | null>(
@@ -30,15 +35,23 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
   const toast = useToast();
   const [applyForJob] = useApplyForJobMutation();
   const dispatch = useDispatch();
+  const [isSearch, setIsSearch] = useState(false);
+  const [appliedJobDetailState, setAppliedJobDetailState] =
+    useState<IJobPostTypes | null>(null);
   const [selectedJobDetails, updateSelectedJobDetails] =
     useState<IJobPostTypes | null>(null);
 
   const sheetPressHandler = (
     option: 'show' | 'hide',
     JobDetails?: IJobPostTypes | null,
+    isSearchFlow?: boolean,
   ) => {
     if (JobDetails) {
       updateSelectedJobDetails(JobDetails);
+      setAppliedJobDetailState(null);
+      if (isSearchFlow !== undefined) {
+        setIsSearch(isSearchFlow);
+      }
     }
     if (option === 'show') {
       modalRef.current?.snapToIndex(1);
@@ -62,12 +75,16 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
         if (applyJobResponse) {
           showToast(toast, STRINGS.job_applied_successfully, 'success');
           if (selectedJobDetails !== null) {
-            dispatch(
-              applyJobAction({
-                ...selectedJobDetails,
-                status: IJobPostStatus.APPLIED,
-              }),
-            );
+            let jobDetails = {
+              ...selectedJobDetails,
+              status: IJobPostStatus.APPLIED,
+            };
+            if (isSearch) {
+              setAppliedJobDetailState(jobDetails);
+              dispatch(applyJobActionSearch(jobDetails));
+            } else {
+              dispatch(applyJobAction(jobDetails));
+            }
           }
         }
       }
@@ -84,6 +101,7 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
   const contextValue: IJobDetailsContextProviderProps = {
     onPressSheet: sheetPressHandler,
     jobDetails: null,
+    appliedJobDetails: appliedJobDetailState,
   };
 
   return (

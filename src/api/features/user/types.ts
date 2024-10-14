@@ -1,6 +1,7 @@
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
   isEmailVerified: boolean;
+  recentSearchesEmployee: string[];
 };
 
 type UserDetailsMap = {
