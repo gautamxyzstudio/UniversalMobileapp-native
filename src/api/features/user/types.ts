@@ -1,3 +1,5 @@
+import {IEmployeeDocsApiKeys} from '@utils/enums';
+
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
   isEmailVerified: boolean;
@@ -68,15 +70,6 @@ export enum IDocumentStatus {
   APPROVED = 's1',
   DENIED = 's2',
   UPDATE = 's3',
-}
-export enum IEmployeeDocsApiKeys {
-  SIN_DOCUMENT = 'sinDocument',
-  LICENSE_ADVANCE = 'securityDocumentAdv',
-  LICENSE_BASIC = 'securityDocumentBasic',
-  SUPPORTING_DOCUMENT = 'supportingDocument',
-  GOVT_ID = 'govtid',
-  CHEQUE = 'directDepositVoidCheque',
-  RESUME = 'resume',
 }
 
 // requestsArgs and responses

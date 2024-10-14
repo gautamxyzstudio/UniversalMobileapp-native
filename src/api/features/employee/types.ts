@@ -1,4 +1,5 @@
-import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import {IDocumentNames, IJobPostStatus, IJobTypesEnum} from '@utils/enums';
+import {IDocumentStatus} from '../user/types';
 
 export type IEmployeeSliceInitialState = {
   jobs: IJobTypes[];
@@ -191,5 +192,14 @@ export type IGetJobPostResponse = {
     pageSize: number;
     total: number;
     totalPages: number;
+  };
+};
+
+export type IUpdateEmployeePrimaryDocumentRequest = {
+  data: {
+    document: number;
+    DocName: IDocumentNames;
+    status: IDocumentStatus;
+    employee_detail: number;
   };
 };

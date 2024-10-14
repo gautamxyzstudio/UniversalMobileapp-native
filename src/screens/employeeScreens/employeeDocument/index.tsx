@@ -16,7 +16,7 @@ import {getStyles} from './styles';
 import PreUploadedDocCardWithView from '@components/doucment/PreUploadedDocCardWithView';
 import Spacers from '@components/atoms/Spacers';
 import BottomButtonView from '@components/organisms/bottomButtonView';
-import {EDIT_PROFILE, STATUS} from '@assets/exporter';
+import {EDIT_PROFILE, IC_PLUS_DISABLED, STATUS} from '@assets/exporter';
 import SelectDocumentToUpdatePopup from '@components/doucment/SelectDocumentToUpdatePopup';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
@@ -57,6 +57,7 @@ import useUploadAssets from 'src/hooks/useUploadAsset';
 import {IFile} from '@components/organisms/uploadPopup/types';
 import {getImageUrl} from '@utils/constants';
 import {useTheme} from '@theme/Theme.context';
+import {IDocumentNames} from '@utils/enums';
 
 const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -70,7 +71,7 @@ const EmployeeDocuments = () => {
   const [getUserDetails] = useLazyGetUserQuery();
   const [updateEmployeeDocument] = useUpdateEmployeeDocumentsMutation();
   const [currentDocumentToUpdate, setCurrentDocumentToUpdate] =
-    useState<string>('');
+    useState<IDocumentNames>(IDocumentNames.SIN_DOCUMENT);
   const [validUpdateDocument, setValidUpdateDocument] = useState<
     {name: string; key: IEmployeeDocsApiKeys}[]
   >([]);
@@ -230,30 +231,28 @@ const EmployeeDocuments = () => {
 
   // to update previously approved documents
   const updateDocument = async (asset: IFile[]) => {
-    dispatch(setLoading(true));
-    try {
-      const response = await uploadImage({asset: asset});
-      if (response && user.detailsId) {
-        const resumeResponse = await updateEmployeeDocument({
-          data: {
-            [currentDocumentToUpdate]: response[0].id,
-            employee_details: [user.detailsId],
-          },
-        }).unwrap();
-        console.log(resumeResponse, 'RESPONSE RESUME');
-      }
-    } catch (error) {
-      console.log(error, 'ERROR');
-    } finally {
-      dispatch(setLoading(false));
-    }
+    console.log(currentDocumentToUpdate, 'dovToUpdate');
+    // dispatch(setLoading(true));
+    // try {
+    //   const response = await uploadImage({asset: asset});
+    //   if (response && user.detailsId) {
+    //     const resumeResponse = await updateEmployeeDocument({
+    //       data: {
+    //         resume: response[0].id,
+    //         employee_details: [user.detailsId],
+    //       },
+    //     }).unwrap();
+    //     console.log(resumeResponse, 'RESPONSE RESUME');
+    //   }
+    // } catch (error) {
+    //   console.log(error, 'ERROR');
+    // } finally {
+    //   dispatch(setLoading(false));
+    // }
   };
 
   // execute once the document to update is selected
-  const onSelectDocumentToUpdate = (e: {
-    name: string;
-    key: IEmployeeDocsApiKeys;
-  }) => {
+  const onSelectDocumentToUpdate = (e: {name: string; key: IDocumentNames}) => {
     setCurrentDocumentToUpdate(e.key);
     resumePopupRef.current?.snapToIndex(1);
   };
@@ -277,19 +276,26 @@ const EmployeeDocuments = () => {
               onRefresh={fetchUserDetailsHandler}
             />
           }>
-          {user.resume?.doc?.url && (
-            <>
-              <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
-                <Text style={styles.heading}>{STRINGS.resume_title}</Text>
-                <TouchableOpacity
-                  onPress={() => resumePopupRef.current?.snapToIndex(1)}
-                  style={styles.resumeContainer}>
+          <>
+            <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
+              <Text style={styles.heading}>{STRINGS.resume_title}</Text>
+              <TouchableOpacity
+                onPress={() => resumePopupRef.current?.snapToIndex(1)}
+                style={styles.resumeContainer}>
+                {user.resume?.doc?.url ? (
                   <EDIT_PROFILE
                     width={verticalScale(24)}
                     height={verticalScale(24)}
                   />
-                </TouchableOpacity>
-              </Row>
+                ) : (
+                  <IC_PLUS_DISABLED
+                    width={verticalScale(20)}
+                    height={verticalScale(20)}
+                  />
+                )}
+              </TouchableOpacity>
+            </Row>
+            {user.resume?.doc?.url && (
               <View style={styles.listView}>
                 <PreUploadedDocCardWithView
                   document={user.resume}
@@ -297,11 +303,12 @@ const EmployeeDocuments = () => {
                   navigation={navigation}
                 />
               </View>
-            </>
-          )}
+            )}
+          </>
+
           <Spacers type="vertical" scalable />
           <View style={styles.docHeadingContainer}>
-            <Text style={styles.heading}>{STRINGS.documents}</Text>
+            <Text style={styles.heading}>{STRINGS.primary_document}</Text>
           </View>
           <View style={styles.listView}>
             {user.documents?.primary?.map(doc => (

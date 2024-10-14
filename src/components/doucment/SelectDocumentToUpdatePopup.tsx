@@ -6,12 +6,13 @@ import {verticalScale} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
 import SelectedDocumentToUpdateCard from './SelectedDocumentToUpdateCard';
 import BottomButtonView from '@components/organisms/bottomButtonView';
-import {IEmployeeDocsApiKeys} from '@api/features/user/types';
+
+import {IDocumentNames, IEmployeeDocsApiKeys} from '@utils/enums';
 
 type ISelectDocumentToUpdatePopupTypes = {
   addOrUpdateDocument: (selectedOption: {
     name: string;
-    key: IEmployeeDocsApiKeys;
+    key: IDocumentNames;
   }) => void;
   documents: {name: string; key: IEmployeeDocsApiKeys}[];
 };

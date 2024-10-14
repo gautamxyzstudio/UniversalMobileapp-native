@@ -104,6 +104,8 @@ export const STRINGS = {
   rate_us: 'Rate us',
   logOut: 'Log out',
   documents: 'Documents',
+  primary_document: 'Primary Document',
+  secondary_document: 'Secondary Document',
   settings: 'Settings',
   my_Accounts: 'My Accounts',
   address: 'Address',

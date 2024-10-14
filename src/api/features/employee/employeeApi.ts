@@ -7,6 +7,7 @@ import {
   IGetAppliedJobsResponse,
   IGetJobPostResponse,
   IJobTypes,
+  IUpdateEmployeePrimaryDocumentRequest,
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
@@ -145,8 +146,15 @@ const employeeApi = baseApi.injectEndpoints({
     }),
     getUpdateDocRequests: builder.query({
       query: () => ({
-        url: apiEndPoints.updateEmployeeDocsRequest,
+        url: apiEndPoints.updatePrimaryDocuments,
         method: apiMethodType.get,
+      }),
+    }),
+    updateUserPrimaryDocuments: builder.mutation({
+      query: (body: IUpdateEmployeePrimaryDocumentRequest) => ({
+        url: apiEndPoints.updatePrimaryDocuments,
+        method: apiMethodType.post,
+        body,
       }),
     }),
     getJobPostsViaSearch: builder.query({
@@ -212,4 +220,5 @@ export const {
   useLazyFetchScheduledJobsQuery,
   useLazyGetJobPostsViaSearchQuery,
   useLazyFetchAppliedJobsQuery,
+  useUpdateUserPrimaryDocumentsMutation,
 } = employeeApi;

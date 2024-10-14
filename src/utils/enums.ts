@@ -29,3 +29,22 @@ export enum ICandidateStatusEnum {
   selected = 2,
   declined = 3,
 }
+
+export enum IDocumentNames {
+  GOVT_ID = 'd0',
+  DIRECT_DEPOSIT_VOID_CHEQUE = 'd1',
+  SIN_DOCUMENT = 'd2',
+  SECURITY_DOCUMENT_BASIC = 'd3',
+  SECURITY_DOCUMENT_ADV = 'd4',
+  SUPPORTING_DOCUMENT = 'd5',
+}
+
+export enum IEmployeeDocsApiKeys {
+  SIN_DOCUMENT = 'sinDocument',
+  LICENSE_ADVANCE = 'securityDocumentAdv',
+  LICENSE_BASIC = 'securityDocumentBasic',
+  SUPPORTING_DOCUMENT = 'supportingDocument',
+  GOVT_ID = 'govtid',
+  CHEQUE = 'directDepositVoidCheque',
+  RESUME = 'resume',
+}

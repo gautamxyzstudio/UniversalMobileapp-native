@@ -138,7 +138,6 @@ const createStyles = (theme: Theme) =>
       alignSelf: 'center',
       marginBottom: verticalScale(16),
       width: verticalScale(130),
-      backgroundColor: theme.color.skelton,
       height: verticalScale(32),
       borderRadius: 8,
     },

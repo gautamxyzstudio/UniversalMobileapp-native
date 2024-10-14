@@ -117,6 +117,7 @@ import IC_EMPTY_SCHEDULE from './icons/svg/noSchedules.svg';
 import IC_EMPTY_JOBS_LIST from './icons/svg/noJobs.svg';
 import IC_EMPTY_APPLIED from './icons/svg/noApplied.svg';
 import IC_NO_RECENT from './icons/svg/ic_no_recent.svg';
+import IC_PLUS_DISABLED from './icons/svg/plusDisabled.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -151,6 +152,7 @@ export {
   IC_LOG_ACTIVITY,
   IC_NO_RECENT,
   IC_DOWNLOAD_SHEET,
+  IC_PLUS_DISABLED,
   NO_INTERNET,
   EMPTY,
   CROSS_ORANGE,
