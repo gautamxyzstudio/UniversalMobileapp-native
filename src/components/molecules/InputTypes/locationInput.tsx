@@ -2,8 +2,9 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import CustomTextInput from '@components/atoms/customtextInput';
 import {STRINGS} from 'src/locales/english';
-import {LOCATION_ICON} from '@assets/exporter';
+
 import {verticalScale} from '@utils/metrics';
+import {LOCATION_TERNARY} from '@assets/exporter';
 
 type ILocationInputPropTypes = {
   onPress: () => void;
@@ -26,7 +27,7 @@ const LocationInput: React.FC<ILocationInputPropTypes> = ({
         keyboardType="email-address"
         right={
           <TouchableOpacity onPress={onPress} style={styles.locationContainer}>
-            <LOCATION_ICON
+            <LOCATION_TERNARY
               width={verticalScale(24)}
               height={verticalScale(24)}
             />

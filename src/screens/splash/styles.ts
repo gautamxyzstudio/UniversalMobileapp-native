@@ -1,5 +1,5 @@
 import {Theme} from '@theme/Theme.type';
-import {verticalScale} from '@utils/metrics';
+import {verticalScale, windowHeight} from '@utils/metrics';
 import {StyleSheet} from 'react-native';
 
 export const getStyles = (colors: Theme) => {
@@ -19,6 +19,14 @@ export const getStyles = (colors: Theme) => {
       top: verticalScale(19),
       left: verticalScale(89),
       backgroundColor: colors.color.primary,
+    },
+    loaderView: {
+      height: windowHeight / 2,
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      bottom: 0,
+      position: 'absolute',
     },
   });
   return styles;

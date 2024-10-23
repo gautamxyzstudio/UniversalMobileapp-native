@@ -30,19 +30,26 @@ import {useDispatch, useSelector} from 'react-redux';
 import store, {AppDispatch} from '@api/store';
 
 import {
+  useLazyGetUserQuery,
   useSubmitOtherDocumentsMutation,
   useSubmitUserDetailsMutation,
 } from '@api/features/user/userApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {customModalRef} from '@components/molecules/customModal/types';
 import ActionPopup from '@components/molecules/ActionPopup';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {
+  updateEmployeeDetails,
+  userBasicDetailsFromState,
+} from '@api/features/user/userSlice';
 import {
   IDocumentStatus,
+  IEmployeeDetails,
   IUserDetailsRequestParams,
 } from '@api/features/user/types';
 import {useToast} from 'react-native-toast-notifications';
 import {IOtherDocRequest} from './types';
+import {showToast} from '@components/organisms/customToast';
+import {ICustomErrorResponse} from '@api/types';
 
 const JobSeekerDetailsAndDocs = () => {
   const stepOneRef = useRef<jobSeekerRef>(null);
@@ -55,6 +62,7 @@ const JobSeekerDetailsAndDocs = () => {
   const [submitUserDetails] = useSubmitUserDetailsMutation();
   const [uploadOtherDocuments] = useSubmitOtherDocumentsMutation();
   const navigation = useNavigation<NavigationProps>();
+  const [getUserDetails] = useLazyGetUserQuery();
   const [isSuccessPopupVisible] = useState(false);
   const styles = useThemeAwareObject(getStyles);
   const {insetsBottom, insetsTop} = useScreenInsets();
@@ -162,33 +170,37 @@ const JobSeekerDetailsAndDocs = () => {
         data: fields,
       }).unwrap();
       if (submitUserDetailsResponse) {
-        console.log(submitUserDetailsResponse, 'customResponse');
         if (otherDocument.length > 0) {
-          uploadOtherDocHandler(
+          const isOtherDocumentsUploaded = await uploadOtherDocHandler(
             otherDocument,
             submitUserDetailsResponse.detailsId,
           );
-        } else {
-          dispatch(setLoading(false));
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'employeeTabBar'}],
-          });
+          if (isOtherDocumentsUploaded) {
+            const userDetails = await getUser();
+            if (userDetails) {
+              dispatch(updateEmployeeDetails(userDetails));
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'employeeTabBar'}],
+              });
+            }
+          }
         }
       }
     } catch (error) {
-      dispatch(setLoading(false));
       toast.show('Failed to upload Details', {
         type: 'error',
       });
       console.log(error);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
   const uploadOtherDocHandler = async (
     otherDocument: IOtherDocSpecifications[],
     detailsId: number,
-  ) => {
+  ): Promise<boolean> => {
     let otherDocs: IOtherDocRequest[] = [];
     otherDocs = otherDocument.map(doc => {
       return {
@@ -203,18 +215,34 @@ const JobSeekerDetailsAndDocs = () => {
         data: otherDocs,
       }).unwrap();
       if (otherDocsResponse) {
-        dispatch(setLoading(false));
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'employeeTabBar'}],
-        });
+        return true;
       }
+      return false;
     } catch (error) {
-      dispatch(setLoading(false));
       console.log(error);
       toast.show('Failed to upload documents', {
         type: 'error',
       });
+      return false;
+    }
+  };
+
+  const getUser = async (): Promise<IEmployeeDetails | null> => {
+    try {
+      const userDetailsResponse = await getUserDetails(null).unwrap();
+      if (user?.user_type === 'emp') {
+        const details = userDetailsResponse as IEmployeeDetails;
+        return details;
+      }
+      return null;
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      showToast(
+        toast,
+        customError?.message ?? STRINGS.someting_went_wrong,
+        'error',
+      );
+      return null;
     }
   };
 

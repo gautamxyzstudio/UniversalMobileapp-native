@@ -1,5 +1,4 @@
 import React from 'react';
-import {IUser} from '@api/features/user/types';
 import {ICONS} from '@assets/exporter';
 import {BottomTabNavigationOptions} from '@react-navigation/bottom-tabs';
 import {
@@ -30,7 +29,10 @@ export type RootStackParamList = {
   selectLocation: undefined;
   addLocationManually: undefined;
   otpVerification: {
-    user: IUser<'client' | 'emp'>;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    userType: 'emp' | 'client';
   };
   forgotPassword: undefined;
   confirmPassword: undefined;

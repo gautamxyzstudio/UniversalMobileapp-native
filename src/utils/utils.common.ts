@@ -2,12 +2,12 @@ import {
   IDoc,
   IDocumentStatus,
   IEmployeeDetailsApiResponse,
-  IEmployeeDocsApiKeys,
   IEmployeeDocument,
 } from '@api/features/user/types';
 import moment from 'moment';
 import {getImageUrl} from './constants';
 import {STRINGS} from 'src/locales/english';
+import {IEmployeeDocsApiKeys} from './enums';
 
 export const minTwoDigits = (n: number) => {
   return (n < 10 ? '0' : '') + n;

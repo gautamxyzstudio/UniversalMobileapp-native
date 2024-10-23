@@ -63,8 +63,9 @@ const Approval = () => {
         index: 0,
         routes: [{name: 'onBoarding'}],
       });
-    }, timeOutTimeSheets);
+    }, 350);
   };
+
   return (
     <OnBoardingBackground
       hideBack={true}

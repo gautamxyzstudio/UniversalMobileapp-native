@@ -25,7 +25,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   IDocumentStatus,
   IEmployeeDetails,
-  IEmployeeDocsApiKeys,
   IEmployeeDocument,
   IEmployeeUploadOtherDocumentsRequest,
   ISubmitOtherDocumentsResponse,
@@ -57,23 +56,25 @@ import useUploadAssets from 'src/hooks/useUploadAsset';
 import {IFile} from '@components/organisms/uploadPopup/types';
 import {getImageUrl} from '@utils/constants';
 import {useTheme} from '@theme/Theme.context';
-import {IDocumentNames} from '@utils/enums';
+import {IDocumentNames, IEmployeeDocsApiKeys} from '@utils/enums';
+import {getDocNameCodeThroughName} from './types';
+import {useUpdateUserPrimaryDocumentsMutation} from '@api/features/employee/employeeApi';
 
 const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
   const user = useSelector(userAdvanceDetailsFromState) as IEmployeeDetails;
 
   const {uploadImage} = useUploadAssets();
-  const resumePopupRef = useRef<BottomSheetModal | null>(null);
+  const documentSelector = useRef<BottomSheetModal | null>(null);
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const [document, setDocuments] = useState<IDropDownItem[]>([]);
   const [uploadNewDoc] = useSubmitOtherDocumentsMutation();
   const [getUserDetails] = useLazyGetUserQuery();
-  const [updateEmployeeDocument] = useUpdateEmployeeDocumentsMutation();
+  const [updateEmployeeDocument] = useUpdateUserPrimaryDocumentsMutation();
   const [currentDocumentToUpdate, setCurrentDocumentToUpdate] =
     useState<IDocumentNames>(IDocumentNames.SIN_DOCUMENT);
   const [validUpdateDocument, setValidUpdateDocument] = useState<
-    {name: string; key: IEmployeeDocsApiKeys}[]
+    {name: string; key: IDocumentNames}[]
   >([]);
   const [uploadPrevDocuments] = useUpdateEmployeeDetailsMutation();
   const navigation = useNavigation<NavigationProps>();
@@ -83,11 +84,9 @@ const EmployeeDocuments = () => {
   const newDocRef = useRef<BottomSheetModal | null>(null);
   const [refreshing, updateRefreshing] = useState(false);
 
-  console.log(JSON.stringify(user.documents), 'JSON');
-
   useEffect(() => {
     if (user.documents?.primary) {
-      let options: {name: string; key: IEmployeeDocsApiKeys}[] = [];
+      let options: {name: string; key: IDocumentNames}[] = [];
       let previousDocs = [...user.documents.primary];
       previousDocs?.map(doc => {
         if (
@@ -95,8 +94,10 @@ const EmployeeDocuments = () => {
           doc.docStatus === IDocumentStatus.DENIED
         ) {
           options.push({
-            name: doc.docName,
-            key: doc.apiKey ?? IEmployeeDocsApiKeys.SIN_DOCUMENT,
+            name: getDocNameCodeThroughName(doc.apiKey as IEmployeeDocsApiKeys)
+              .name,
+            key: getDocNameCodeThroughName(doc.apiKey as IEmployeeDocsApiKeys)
+              .key,
           });
         }
       });
@@ -231,30 +232,31 @@ const EmployeeDocuments = () => {
 
   // to update previously approved documents
   const updateDocument = async (asset: IFile[]) => {
-    console.log(currentDocumentToUpdate, 'dovToUpdate');
-    // dispatch(setLoading(true));
-    // try {
-    //   const response = await uploadImage({asset: asset});
-    //   if (response && user.detailsId) {
-    //     const resumeResponse = await updateEmployeeDocument({
-    //       data: {
-    //         resume: response[0].id,
-    //         employee_details: [user.detailsId],
-    //       },
-    //     }).unwrap();
-    //     console.log(resumeResponse, 'RESPONSE RESUME');
-    //   }
-    // } catch (error) {
-    //   console.log(error, 'ERROR');
-    // } finally {
-    //   dispatch(setLoading(false));
-    // }
+    dispatch(setLoading(true));
+    try {
+      const response = await uploadImage({asset: asset});
+      if (response && user.detailsId) {
+        const doucmentResponse = await updateEmployeeDocument({
+          data: {
+            document: response[0].id,
+            DocName: currentDocumentToUpdate,
+            status: IDocumentStatus.PENDING,
+            employee_detail: user.detailsId,
+          },
+        }).unwrap();
+        console.log(doucmentResponse, 'RESPONSE RESUME');
+      }
+    } catch (error) {
+      console.log(error, 'ERROR');
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   // execute once the document to update is selected
   const onSelectDocumentToUpdate = (e: {name: string; key: IDocumentNames}) => {
     setCurrentDocumentToUpdate(e.key);
-    resumePopupRef.current?.snapToIndex(1);
+    documentSelector.current?.snapToIndex(1);
   };
 
   return (
@@ -280,7 +282,7 @@ const EmployeeDocuments = () => {
             <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
               <Text style={styles.heading}>{STRINGS.resume_title}</Text>
               <TouchableOpacity
-                onPress={() => resumePopupRef.current?.snapToIndex(1)}
+                onPress={() => documentSelector.current?.snapToIndex(1)}
                 style={styles.resumeContainer}>
                 {user.resume?.doc?.url ? (
                   <EDIT_PROFILE
@@ -380,7 +382,7 @@ const EmployeeDocuments = () => {
         isDocumentMultiple={false}
         selectionLimit={1}
         getSelectedImages={asset => updateDocument(asset.assets)}
-        compRef={resumePopupRef}
+        compRef={documentSelector}
       />
       <UploadNewDocumentFromProfilePopup
         ref={newDocRef}

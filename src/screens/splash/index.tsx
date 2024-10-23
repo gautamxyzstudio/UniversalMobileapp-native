@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {getStyles} from './styles';
-import {Platform} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import Animated, {
   Easing,
   interpolate,
@@ -32,7 +32,7 @@ const Splash = () => {
   const animationValueSec = useSharedValue(0);
   const {theme} = useTheme();
   const backgroundColor = useSharedValue(theme.color.primary);
-
+  const [showLoader, setShowLoader] = useState(true);
   const user = useSelector(userBasicDetailsFromState);
   const dispatch = useDispatch();
   const isUserDetails = useSelector(userAdvanceDetailsFromState);
@@ -59,59 +59,54 @@ const Splash = () => {
   };
 
   const navigateToNextScreen = async () => {
-    setTimeout(
-      async () => {
-        if (user?.token) {
-          if (user.user_type === 'emp') {
-            if (isUserDetails) {
+    if (user?.token) {
+      if (user.user_type === 'emp') {
+        if (isUserDetails) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'employeeTabBar'}],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'jobSeekerDetailsAndDocs'}],
+          });
+        }
+      } else {
+        if (isUserDetails) {
+          let client = isUserDetails as IClientDetails;
+          if (client.status === 'pending') {
+            let isApproved = await fetchUserDetails();
+            if (isApproved) {
               navigation.reset({
                 index: 0,
-                routes: [{name: 'employeeTabBar'}],
+                routes: [{name: 'clientTabBar'}],
               });
             } else {
               navigation.reset({
                 index: 0,
-                routes: [{name: 'jobSeekerDetailsAndDocs'}],
+                routes: [{name: 'approval'}],
               });
             }
           } else {
-            if (isUserDetails) {
-              let client = isUserDetails as IClientDetails;
-              if (client.status === 'pending') {
-                let isApproved = await fetchUserDetails();
-                if (isApproved) {
-                  navigation.reset({
-                    index: 0,
-                    routes: [{name: 'clientTabBar'}],
-                  });
-                } else {
-                  navigation.reset({
-                    index: 0,
-                    routes: [{name: 'approval'}],
-                  });
-                }
-              } else {
-                navigation.reset({
-                  index: 0,
-                  routes: [{name: 'clientTabBar'}],
-                });
-              }
-            } else {
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'recruiterDetails'}],
-              });
-            }
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'clientTabBar'}],
+            });
           }
         } else {
           navigation.reset({
             index: 0,
-            routes: [{name: 'onBoarding'}],
+            routes: [{name: 'recruiterDetails'}],
           });
         }
-      },
-      Platform.OS === 'android' ? 100 : 500,
-    );
+      }
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'onBoarding'}],
+      });
+    }
   };
 
   useEffect(() => {
@@ -173,18 +168,25 @@ const Splash = () => {
   }, []);
 
   return (
-    <Animated.View style={[styles.container, backgroundStyles]}>
-      <Row>
-        <Animated.Image
-          style={[styles.logoOne, logoOneStyles]}
-          source={ICONS.logoOne}
-        />
-        <Animated.Image
-          style={[styles.logoTwo, logoTwoStyles]}
-          source={ICONS.logoTwo}
-        />
-      </Row>
-    </Animated.View>
+    <>
+      <Animated.View style={[styles.container, backgroundStyles]}>
+        <Row>
+          <Animated.Image
+            style={[styles.logoOne, logoOneStyles]}
+            source={ICONS.logoOne}
+          />
+          <Animated.Image
+            style={[styles.logoTwo, logoTwoStyles]}
+            source={ICONS.logoTwo}
+          />
+        </Row>
+      </Animated.View>
+      {showLoader && (
+        <View style={styles.loaderView}>
+          <ActivityIndicator size={'large'} color={theme.color.accent} />
+        </View>
+      )}
+    </>
   );
 };
 

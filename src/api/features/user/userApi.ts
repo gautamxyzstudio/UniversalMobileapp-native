@@ -8,7 +8,6 @@ import {
   IDocumentStatus,
   IEmployeeBankDetails,
   IEmployeeDetails,
-  IEmployeeDocsApiKeys,
   IEmployeeUploadOtherDocumentsRequest,
   IGetUserResponse,
   ILoginArgs,
@@ -38,6 +37,7 @@ import {
   extractEmployeeSecondaryDocumentsFromApiResponse,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
+import {IEmployeeDocsApiKeys} from '@utils/enums';
 
 const authApi = baseApi.injectEndpoints({
   endpoints: builder => ({

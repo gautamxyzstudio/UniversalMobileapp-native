@@ -12,107 +12,108 @@ import PasswordTextInput from '@components/molecules/InputTypes/passwordInput';
 import {signupSchema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {
-  useRegisterMutation,
+  useLazyCheckEmailVerificationStatusQuery,
   useSendEmailOtpMutation,
 } from '@api/features/user/userApi';
 import {useDispatch} from 'react-redux';
-
-import {ICustomErrorResponse} from '@api/types';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {ISignUp, ISignUpParams} from './types';
-import {generateUniqueUserName} from '@utils/constants';
 import {useToast} from 'react-native-toast-notifications';
-import {IUser} from '@api/features/user/types';
 
 const SignUp: React.FC<ISignUpParams> = ({route}) => {
   const userType = route.params.user_type;
   const navigation = useNavigation<NavigationProps>();
   const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const toast = useToast();
+  const [checkEmailStatus] = useLazyCheckEmailVerificationStatusQuery();
   const reduxDispatch = useDispatch();
 
-  const [register] = useRegisterMutation();
   const [state, dispatch] = useReducer(
-    (prev: ISignUp, next: ISignUp) => {
-      return {
-        ...prev,
-        ...next,
-      };
-    },
+    (prev: ISignUp, next: ISignUp) => ({
+      ...prev,
+      ...next,
+    }),
     {
+      email: '',
       password: '',
       confirmPassword: '',
+      isCheckedPrivacyPolicy: false,
+      emailError: '',
+      passwordError: '',
+      confirmPasswordError: '',
+      isPasswordVisible: false,
+      isConfirmPasswordVisible: false,
     },
   );
 
-  const sendOtp = async (response: IUser<'emp' | 'client'>) => {
-    if (response?.email) {
-      try {
-        reduxDispatch(setLoading(true));
-        const result = await sendOptVerificationRequest({
-          email: response?.email,
-        }).unwrap();
-        if (result?.message) {
-          toast.hideAll();
-          toast.show('OTP sent successfully', {
-            type: 'success',
-          });
-          navigation.navigate('otpVerification', {
-            user: response,
-          });
-        }
-      } catch (error) {
-        toast.hideAll();
-        toast.show('unable to send otp', {
+  const checkEmailStatusAndUserDetails = async (
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => {
+    try {
+      const emailStatusResponse = await checkEmailStatus({email}).unwrap();
+      if (emailStatusResponse.verified) {
+        reduxDispatch(setLoading(false));
+        toast.show('An account already exists with this email', {
           type: 'error',
         });
+      } else {
+        const otpSent = await sendOtp(email);
+        if (otpSent) {
+          reduxDispatch(setLoading(false));
+          toast.show('OTP sent successfully', {type: 'success'});
+          navigation.navigate('otpVerification', {
+            email,
+            password,
+            confirmPassword,
+            userType,
+          });
+        } else {
+          toast.show('Failed to send OTP', {type: 'error'});
+          reduxDispatch(setLoading(false));
+        }
       }
+    } catch (error) {
+      reduxDispatch(setLoading(false));
+      toast.show(STRINGS.someting_went_wrong, {type: 'error'});
+    }
+  };
+
+  const sendOtp = async (email: string): Promise<boolean> => {
+    try {
+      const result = await sendOptVerificationRequest({email}).unwrap();
+      return result?.message ? true : false;
+    } catch (error) {
+      return false;
     }
   };
 
   const onPressSignup = async () => {
     try {
-      const fields = await signupSchema.validate(state, {
-        abortEarly: false,
-      });
-      if (fields) {
-        try {
-          reduxDispatch(setLoading(true));
-          const response = await register({
-            username: generateUniqueUserName(fields.email),
-            email: fields.email,
-            password: fields.password,
-            user_type: userType,
-            role: userType === 'emp' ? 'EmployeeUser' : 'ClientUser',
-          }).unwrap();
-          if (response) {
-            sendOtp(response);
-          }
-        } catch (err) {
-          const error = err as ICustomErrorResponse;
-          toast.show(`${error.message}`, {
-            type: 'error',
-          });
-        } finally {
-          reduxDispatch(setLoading(false));
-        }
-      }
+      const fields = await signupSchema.validate(state, {abortEarly: false});
+      reduxDispatch(setLoading(true));
+      checkEmailStatusAndUserDetails(
+        fields.email,
+        fields.password,
+        fields.confirmPassword,
+      );
     } catch (error) {
       const validationErrors = error as ValidationError;
       const errors: {[key: string]: string} = {};
       validationErrors.inner.forEach(err => {
-        if (err.path) {
-          errors[err.path] = err.message;
-        }
+        if (err.path) errors[err.path] = err.message;
       });
-      if (errors.isCheckedPrivacyPolicy) {
-        toast.show(`${errors.isCheckedPrivacyPolicy}`, {type: 'error'});
-      }
+
       dispatch({
         emailError: errors.email,
         passwordError: errors.password,
         confirmPasswordError: errors.confirmPassword,
       });
+
+      if (errors.isCheckedPrivacyPolicy) {
+        toast.show(`${errors.isCheckedPrivacyPolicy}`, {type: 'error'});
+      }
     }
   };
 
@@ -124,7 +125,7 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.spacer} />
         <CustomTextInput
-          onTextChange={e => dispatch({email: e, emailError: ''})}
+          onTextChange={email => dispatch({email, emailError: ''})}
           value={state.email}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -133,7 +134,7 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
         />
         <View style={styles.spacer} />
         <PasswordTextInput
-          onChangeText={e => dispatch({password: e, passwordError: ''})}
+          onChangeText={password => dispatch({password, passwordError: ''})}
           isPasswordVisible={state.isPasswordVisible ?? false}
           value={state.password}
           errorMessage={state.passwordError}
@@ -144,8 +145,8 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
         />
         <View style={styles.spacer} />
         <PasswordTextInput
-          onChangeText={e =>
-            dispatch({confirmPassword: e, confirmPasswordError: ''})
+          onChangeText={confirmPassword =>
+            dispatch({confirmPassword, confirmPasswordError: ''})
           }
           isPasswordVisible={state.isConfirmPasswordVisible ?? false}
           value={state.confirmPassword}
@@ -162,7 +163,7 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
           normalText={STRINGS.By_Signing_up_I_agree_to_the}
           withCheckbox={true}
           checkboxCurrentValue={state.isCheckedPrivacyPolicy}
-          onTextPress={() => Alert.alert('ehllo')}
+          onTextPress={() => Alert.alert('Privacy Policy')}
           focusedText={STRINGS.privacy_Policy}
           checkBoxClickHandler={() =>
             dispatch({isCheckedPrivacyPolicy: !state.isCheckedPrivacyPolicy})
@@ -170,7 +171,7 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
         />
         <View style={styles.bottomView}>
           <CustomButton
-            disabled={false}
+            disabled={!state.isCheckedPrivacyPolicy}
             title={STRINGS.signUp}
             onButtonPress={onPressSignup}
           />
@@ -190,16 +191,8 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
 export default SignUp;
 
 const styles = StyleSheet.create({
-  spacer: {
-    height: 16,
-  },
-  photoContainer: {},
+  spacer: {height: 16},
   top: {marginTop: 12},
-  bottomView: {
-    marginVertical: 38,
-  },
-  bottom: {
-    marginTop: 16,
-    alignSelf: 'center',
-  },
+  bottomView: {marginVertical: 38},
+  bottom: {marginTop: 16, alignSelf: 'center'},
 });

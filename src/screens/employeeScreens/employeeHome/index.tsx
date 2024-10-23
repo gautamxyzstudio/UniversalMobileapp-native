@@ -56,9 +56,11 @@ const EmployeeHome = () => {
     [],
   );
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  console.log(user, 'EMPYSER');
+
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
 
   useEffect(() => {
     getJobsPosts(true);

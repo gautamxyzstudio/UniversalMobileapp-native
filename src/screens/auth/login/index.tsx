@@ -21,33 +21,25 @@ import {ValidationError} from 'yup';
 import PasswordTextInput from '@components/molecules/InputTypes/passwordInput';
 import {useDispatch} from 'react-redux';
 import {
-  saveUserDetails,
-  updateClientDetails,
-} from '@api/features/user/userSlice';
-import {
-  useLazyCheckEmailVerificationStatusQuery,
   useLazyGetUserQuery,
   useLoginMutation,
-  useSendEmailOtpMutation,
 } from '@api/features/user/userApi';
 import {ICustomErrorResponse} from '@api/types';
 import {setLoading} from '@api/features/loading/loadingSlice';
-import {
-  IClientDetails,
-  IEmployeeDetails,
-  IUser,
-} from '@api/features/user/types';
 import {useToast} from 'react-native-toast-notifications';
-import {showToast} from '@components/organisms/customToast';
+import {
+  saveUserDetails,
+  updateClientDetails,
+  updateEmployeeDetails,
+} from '@api/features/user/userSlice';
+import {IClientDetails, IEmployeeDetails} from '@api/features/user/types';
 
 const Login = () => {
   const styles = useThemeAwareObject(getStyles);
 
   const [login, {}] = useLoginMutation();
-  const toast = useToast();
-  const [checkEmailStatus] = useLazyCheckEmailVerificationStatusQuery();
   const [getUserDetails] = useLazyGetUserQuery();
-  const [sendOptVerificationRequest] = useSendEmailOtpMutation();
+  const toast = useToast();
   const reduxDispatch = useDispatch();
   const [state, dispatch] = useReducer(
     (prev: ICollectionFormProperties, next: ICollectionFormProperties) => {
@@ -93,96 +85,6 @@ const Login = () => {
     }
   };
 
-  const sendOtp = async (response: IUser<'emp' | 'client'>) => {
-    if (response?.email) {
-      try {
-        reduxDispatch(setLoading(true));
-        const result = await sendOptVerificationRequest({
-          email: response?.email,
-        }).unwrap();
-        if (result?.message) {
-          toast.hideAll();
-          toast.show('OTP sent successfully', {
-            type: 'success',
-          });
-          navigation.navigate('otpVerification', {
-            user: response,
-          });
-        }
-      } catch (error) {
-        toast.hideAll();
-        toast.show('unable to send otp', {
-          type: 'error',
-        });
-      }
-    }
-  };
-
-  const updateUserDetails = async (response: IUser<'client' | 'emp'>) => {
-    try {
-      const userDetails = await getUserDetails({
-        userId: response.id,
-      }).unwrap();
-      if (userDetails) {
-        if (response.user_type === 'emp') {
-          let employeeDetails = userDetails as IEmployeeDetails;
-          if (employeeDetails?.detailsId) {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'employeeTabBar'}],
-            });
-          } else {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'jobSeekerDetailsAndDocs'}],
-            });
-          }
-        } else {
-          let client = userDetails as IClientDetails;
-          if (client.detailsId) {
-            reduxDispatch(updateClientDetails(client));
-            if (client.status === 'pending') {
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'approval'}],
-              });
-            } else {
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'clientTabBar'}],
-              });
-            }
-          } else {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'recruiterDetails'}],
-            });
-          }
-        }
-      }
-    } catch (error) {
-      showToast(toast, STRINGS.someting_went_wrong, 'error');
-    }
-  };
-
-  const checkEmailStatusAndUserDetails = async (
-    response: IUser<'client' | 'emp'>,
-  ) => {
-    try {
-      const emailStatusResponse = await checkEmailStatus({
-        email: response.email ?? '',
-      }).unwrap();
-      if (emailStatusResponse) {
-        reduxDispatch(saveUserDetails(response));
-        updateUserDetails(response);
-      } else {
-        sendOtp(response);
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const onPressLogin = async () => {
     try {
       reduxDispatch(setLoading(true));
@@ -199,10 +101,50 @@ const Login = () => {
             password: fields.password,
           }).unwrap();
           if (response) {
-            checkEmailStatusAndUserDetails(response);
+            reduxDispatch(saveUserDetails(response));
+            let userDetails = await getUser();
+            if (response.user_type === 'emp') {
+              if (userDetails) {
+                let empDetails = userDetails as IEmployeeDetails;
+                reduxDispatch(updateEmployeeDetails(empDetails));
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'employeeTabBar'}],
+                });
+              } else {
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'jobSeekerDetailsAndDocs'}],
+                });
+              }
+            }
+            if (response.user_type === 'client') {
+              if (userDetails) {
+                let clientDetails = userDetails as IClientDetails;
+                reduxDispatch(updateClientDetails(clientDetails));
+                if (clientDetails.status === 'approved') {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{name: 'clientTabBar'}],
+                  });
+                }
+                if (clientDetails.status === 'pending') {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{name: 'approval'}],
+                  });
+                }
+              } else {
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'recruiterDetails'}],
+                });
+              }
+            }
           }
         } catch (err) {
           const error = err as ICustomErrorResponse;
+          console.log(',yeyeey', error);
           toast.hideAll();
           toast.show(`${error.message}`, {type: 'error'});
         } finally {
@@ -223,6 +165,22 @@ const Login = () => {
       });
     } finally {
       reduxDispatch(setLoading(false));
+    }
+  };
+
+  const getUser = async (): Promise<
+    IEmployeeDetails | null | ICustomErrorResponse | IClientDetails
+  > => {
+    try {
+      const userDetailsResponse = await getUserDetails(null).unwrap();
+      if (userDetailsResponse) {
+        const details = userDetailsResponse as IEmployeeDetails;
+        return details;
+      }
+      return null;
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      throw customError;
     }
   };
 
@@ -306,3 +264,30 @@ const Login = () => {
 };
 
 export default Login;
+
+// if (response?.user_type === 'client') {
+//   navigation.reset({
+//     index: 0,
+//     routes: [{name: 'employeeTabBar'}],
+//   });
+// }
+// if (response?.user_type === 'emp') {
+//   navigation.reset({
+//     index: 0,
+//     routes: [{name: 'jobSeekerDetailsAndDocs'}],
+//   });
+// }
+// } else {
+// if (response?.user_type === 'client') {
+//   navigation.reset({
+//     index: 0,
+//     routes: [{name: 'approval'}],
+//   });
+// }
+// if (response?.user_type === 'emp') {
+//   navigation.reset({
+//     index: 0,
+//     routes: [{name: 'jobSeekerDetailsAndDocs'}],
+//   });
+// }
+// }

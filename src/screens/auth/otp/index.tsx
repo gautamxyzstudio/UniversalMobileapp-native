@@ -18,27 +18,33 @@ import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {useDispatch} from 'react-redux';
 import {
+  useRegisterMutation,
   useSendEmailOtpMutation,
   useVerifyOtpEmailMutation,
 } from '@api/features/user/userApi';
-import {setLoading} from '@api/features/loading/loadingSlice';
-import {IUser} from '@api/features/user/types';
-import {saveUserDetails} from '@api/features/user/userSlice';
 import {useToast} from 'react-native-toast-notifications';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {generateUniqueUserName} from '@utils/constants';
+import {saveUserDetails} from '@api/features/user/userSlice';
+import {ICustomErrorResponse} from '@api/types';
+import {IUser} from '@api/features/user/types';
 
 type IOptVerificationPros = {
   route: {
     params: {
-      user: IUser<'client' | 'emp'>;
+      email: string;
+      password: string;
+      confirmPassword: string;
+      userType: 'emp' | 'client';
     };
   };
 };
 
 const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
-  const user = route.params?.user;
-
   const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const [verifyOtpRequest] = useVerifyOtpEmailMutation();
+  const [register] = useRegisterMutation();
+  const userCred = route.params;
   const styles = useThemeAwareObject(createStyles);
   const toast = useToast();
   const dispatch = useDispatch();
@@ -53,41 +59,42 @@ const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
   };
 
   const sendOtp = async () => {
-    if (user?.email) {
-      try {
-        dispatch(setLoading(true));
-        const result = await sendOptVerificationRequest({
-          email: user?.email,
-        });
+    try {
+      dispatch(setLoading(true));
+      const result = await sendOptVerificationRequest({
+        email: userCred?.email,
+      });
+      if (result) {
+        dispatch(setLoading(false));
         toast.hideAll();
         toast.show('OTP sent successfully', {
           type: 'success',
         });
-        if (result) {
-          dispatch(setLoading(false));
-        }
-      } catch (error) {
-        dispatch(setLoading(false));
-        toast.hideAll();
-        toast.show('unable to send otp', {
-          type: 'error',
-        });
       }
+    } catch (error) {
+      dispatch(setLoading(false));
+      toast.hideAll();
+      toast.show('unable to send otp', {
+        type: 'error',
+      });
     }
   };
 
   const verifyOtp = async () => {
-    if (user?.email) {
-      try {
-        dispatch(setLoading(true));
-        const verityOptResult = await verifyOtpRequest({
-          otp: opt,
-          email: user?.email,
-        }).unwrap();
-        dispatch(setLoading(false));
-        if (verityOptResult.approved) {
-          dispatch(saveUserDetails(user));
-          if (user.user_type === 'emp') {
+    try {
+      dispatch(setLoading(true));
+      const verityOptResult = await verifyOtpRequest({
+        otp: opt,
+        email: userCred?.email,
+      }).unwrap();
+      if (verityOptResult.approved) {
+        let userSignUpRes = await userSignUp();
+        if (userSignUpRes) {
+          dispatch(saveUserDetails(userSignUpRes));
+          toast.show('SignUp Successful', {
+            type: 'success',
+          });
+          if (userCred.userType === 'emp') {
             navigation.reset({
               index: 0,
               routes: [{name: 'jobSeekerDetailsAndDocs'}],
@@ -98,18 +105,41 @@ const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
               routes: [{name: 'recruiterDetails'}],
             });
           }
-        } else {
-          toast.show(`${verityOptResult.details[0]}`, {
-            type: 'error',
-          });
         }
-      } catch (error) {
-        console.log(error, 'ERROR');
-        dispatch(setLoading(false));
-        toast.show('unable to verify otp', {
+      } else {
+        toast.show(`${verityOptResult.details[0]}`, {
           type: 'error',
         });
       }
+    } catch (error) {
+      console.log(error, 'ERROR');
+      toast.show('unable to verify otp', {
+        type: 'error',
+      });
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const userSignUp = async (): Promise<IUser<'emp' | 'client'> | null> => {
+    try {
+      const response = await register({
+        username: generateUniqueUserName(userCred.email),
+        email: userCred.email,
+        password: userCred.password,
+        user_type: userCred.userType,
+        role: userCred.userType === 'emp' ? 'EmployeeUser' : 'ClientUser',
+      }).unwrap();
+      if (response) {
+        return response;
+      }
+      return null;
+    } catch (err) {
+      const error = err as ICustomErrorResponse;
+      toast.show(`${error.message}`, {
+        type: 'error',
+      });
+      return null;
     }
   };
   return (
@@ -124,7 +154,7 @@ const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
           </Text>
           <Text style={styles.textMain}>{STRINGS.email}</Text>
         </Text>
-        <Text style={styles.emailText}>{user?.email}</Text>
+        <Text style={styles.emailText}>{userCred?.email}</Text>
         <KeyboardAvoidingView behavior="position" style={styles.container}>
           <View style={styles.top}>
             <OtpInput

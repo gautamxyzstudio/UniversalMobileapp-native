@@ -7,14 +7,14 @@ import {STRINGS} from 'src/locales/english';
 import SelectedDocumentToUpdateCard from './SelectedDocumentToUpdateCard';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 
-import {IDocumentNames, IEmployeeDocsApiKeys} from '@utils/enums';
+import {IDocumentNames} from '@utils/enums';
 
 type ISelectDocumentToUpdatePopupTypes = {
   addOrUpdateDocument: (selectedOption: {
     name: string;
     key: IDocumentNames;
   }) => void;
-  documents: {name: string; key: IEmployeeDocsApiKeys}[];
+  documents: {name: string; key: IDocumentNames}[];
 };
 
 const SelectDocumentToUpdatePopup = forwardRef<
@@ -23,7 +23,7 @@ const SelectDocumentToUpdatePopup = forwardRef<
 >(({addOrUpdateDocument, documents}, ref) => {
   const [selectedOption, setSelectedOption] = useState<{
     name: string;
-    key: IEmployeeDocsApiKeys;
+    key: IDocumentNames;
   }>();
 
   const onClose = () => {
@@ -43,7 +43,7 @@ const SelectDocumentToUpdatePopup = forwardRef<
             {documents.map((item, index) => (
               <SelectedDocumentToUpdateCard
                 key={index}
-                title={item.key}
+                title={item.name}
                 isSelected={selectedOption?.name === item.name}
                 onPressCard={() => setSelectedOption(item)}
               />
