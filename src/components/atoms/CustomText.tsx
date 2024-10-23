@@ -64,6 +64,8 @@ export enum textSizeEnum {
   mediumBold,
   small,
   regular,
+  headingBold,
+  medium,
 }
 
 export const getStylesAttributes = (
@@ -76,6 +78,10 @@ export const getStylesAttributes = (
       return {...fonts.regular};
     case textSizeEnum.small:
       return {...fonts.small};
+    case textSizeEnum.medium:
+      return {...fonts.medium};
+    case textSizeEnum.headingBold:
+      return {...fonts.heading};
     default:
       return {...fonts.mediumBold};
   }

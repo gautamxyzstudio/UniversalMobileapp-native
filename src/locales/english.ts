@@ -262,6 +262,7 @@ export const STRINGS = {
   no_jobs_created_description: 'Create your job and find the perfect candidate',
   no_completed_jobs_posted_yet: 'No Completed Jobs Yet',
   create_job_to_find: 'Once jobs are completed, you’ll find them here.',
+  create_to_find: 'Once jobs are created, you’ll find them here.',
   edit_draft: 'Update Draft',
   job_applied_successfully: 'Job applied successfully',
   confirmed: 'Confirmed',
@@ -303,4 +304,6 @@ export const STRINGS = {
   start_your_job_search_today: 'Start Your job Search Today',
   find_the_perfect_job:
     'Find the perfect job that matches your skills and preferences',
+  please_select_doc_to_upload: 'Please Select a doc to upload',
+  try_again: 'try again',
 };

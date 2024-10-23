@@ -2,7 +2,7 @@ import {ColorTheme, Theme} from '@theme/Theme.type';
 import {StyleProp, TextStyle, ViewStyle} from 'react-native';
 
 export type ICustomButtonProps = {
-  disabled: boolean;
+  disabled?: boolean;
   onButtonPress?: () => void;
   title?: string;
   backgroundColor?: string;

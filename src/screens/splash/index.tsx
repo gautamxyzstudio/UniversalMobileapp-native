@@ -16,15 +16,19 @@ import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  userAdvanceDetailsFromState,
+  updateClientDetails,
+  updateEmployeeDetails,
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
-import {IClientDetails} from '@api/features/user/types';
+import {IClientDetails, IEmployeeDetails} from '@api/features/user/types';
 import {useLazyGetUserQuery} from '@api/features/user/userApi';
-import {setLoading} from '@api/features/loading/loadingSlice';
 import {ICONS} from '@assets/exporter';
 import {windowWidth} from '@utils/metrics';
 import {Row} from '@components/atoms/Row';
+import {ICustomErrorResponse} from '@api/types';
+import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
+import CustomButton from '@components/molecules/customButton';
+import {STRINGS} from 'src/locales/english';
 
 const Splash = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -32,52 +36,55 @@ const Splash = () => {
   const animationValueSec = useSharedValue(0);
   const {theme} = useTheme();
   const backgroundColor = useSharedValue(theme.color.primary);
-  const [showLoader, setShowLoader] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
   const dispatch = useDispatch();
-  const isUserDetails = useSelector(userAdvanceDetailsFromState);
   const navigation = useNavigation<NavigationProps>();
-  const [getUserDetails] = useLazyGetUserQuery();
+  const [getUserDetails, {error}] = useLazyGetUserQuery();
 
-  const fetchUserDetails = async (): Promise<boolean> => {
+  const getUser = async (): Promise<
+    IEmployeeDetails | null | ICustomErrorResponse | IClientDetails
+  > => {
     try {
-      dispatch(setLoading(true));
-      const response = await getUserDetails(null).unwrap();
-      if (response) {
-        let userDetails = response as IClientDetails;
-        if (userDetails.status !== 'approved') {
-          return true;
-        }
+      setShowLoader(true);
+      const userDetailsResponse = await getUserDetails(null).unwrap();
+      if (userDetailsResponse) {
+        const details = userDetailsResponse as IEmployeeDetails;
+        return details;
       }
-      return false;
-    } catch (error) {
-      console.log(error);
-      return false;
+      return null;
+    } catch (err) {
+      let customError = err as ICustomErrorResponse;
+      throw customError;
     } finally {
-      dispatch(setLoading(false));
+      setShowLoader(false);
     }
   };
 
   const navigateToNextScreen = async () => {
     if (user?.token) {
-      if (user.user_type === 'emp') {
-        if (isUserDetails) {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'employeeTabBar'}],
-          });
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'jobSeekerDetailsAndDocs'}],
-          });
+      try {
+        const userDetails = await getUser();
+        console.log(userDetails, 'USERNDONDON');
+        if (user.user_type === 'emp') {
+          if (userDetails) {
+            dispatch(updateEmployeeDetails(userDetails as IEmployeeDetails));
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'employeeTabBar'}],
+            });
+          } else {
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'jobSeekerDetailsAndDocs'}],
+            });
+          }
         }
-      } else {
-        if (isUserDetails) {
-          let client = isUserDetails as IClientDetails;
-          if (client.status === 'pending') {
-            let isApproved = await fetchUserDetails();
-            if (isApproved) {
+        if (user.user_type === 'client') {
+          let clientDetails = userDetails as IClientDetails;
+          if (clientDetails) {
+            dispatch(updateClientDetails(clientDetails));
+            if (clientDetails.status === 'approved') {
               navigation.reset({
                 index: 0,
                 routes: [{name: 'clientTabBar'}],
@@ -91,15 +98,12 @@ const Splash = () => {
           } else {
             navigation.reset({
               index: 0,
-              routes: [{name: 'clientTabBar'}],
+              routes: [{name: 'recruiterDetails'}],
             });
           }
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'recruiterDetails'}],
-          });
         }
+      } catch (err) {
+        console.log(err);
       }
     } else {
       navigation.reset({
@@ -153,6 +157,8 @@ const Splash = () => {
     };
   }, []);
 
+  console.log(error, 'ERROR');
+
   const logoTwoStyles = useAnimatedStyle(() => {
     return {
       transform: [
@@ -184,6 +190,19 @@ const Splash = () => {
       {showLoader && (
         <View style={styles.loaderView}>
           <ActivityIndicator size={'large'} color={theme.color.accent} />
+        </View>
+      )}
+      {!showLoader && error && (
+        <View style={styles.bottomView}>
+          <CustomText size={textSizeEnum.headingBold} value={'Oops!'} />
+          <CustomText size={textSizeEnum.medium} value={error.message ?? 'e'} />
+          <CustomButton
+            disabled={false}
+            onButtonPress={navigateToNextScreen}
+            buttonStyle={styles.bottomButton}
+            type="outline"
+            title={STRINGS.try_again}
+          />
         </View>
       )}
     </>

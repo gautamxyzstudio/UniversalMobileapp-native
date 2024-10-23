@@ -14,13 +14,8 @@ import {useSharedValue} from 'react-native-reanimated';
 import CustomList from '@components/molecules/customList';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
-import {useLazyGetUserQuery} from '@api/features/user/userApi';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  updateEmployeeDetails,
-  userBasicDetailsFromState,
-} from '@api/features/user/userSlice';
-import {IEmployeeDetails} from '@api/features/user/types';
+import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {mockJobPostsLoading, provincesAndCities} from '@api/mockData';
 import {useLazyFetchJobsQuery} from '@api/features/employee/employeeApi';
 import {jobsFromState, updateJobs} from '@api/features/employee/employeeSlice';
@@ -31,9 +26,6 @@ import {IJobTypes} from '@api/features/employee/types';
 import JobPostCardLoading from '@components/client/JobPostCardLoading';
 import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
 import {IJobPostTypes} from '@api/features/client/types';
-import {showToast} from '@components/organisms/customToast';
-import {useToast} from 'react-native-toast-notifications';
-import {ICustomErrorResponse} from '@api/types';
 import {IC_EMPTY_JOBS_LIST} from '@assets/exporter';
 
 const EmployeeHome = () => {
@@ -45,8 +37,6 @@ const EmployeeHome = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
   const scrollY = useSharedValue(0);
-  const [getUserDetails] = useLazyGetUserQuery();
-  const toast = useToast();
   const [getJobs, {isLoading, error}] = useLazyFetchJobsQuery();
   const jobsInState = useSelector(jobsFromState);
   const {onPressSheet} = useJobDetailsContext();
@@ -55,12 +45,6 @@ const EmployeeHome = () => {
     () => bottomSheetRef.current?.snapToIndex(1),
     [],
   );
-
-  console.log(user, 'EMPYSER');
-
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
 
   useEffect(() => {
     getJobsPosts(true);
@@ -72,23 +56,6 @@ const EmployeeHome = () => {
     }
   }, [jobsInState]);
 
-  const getUser = async () => {
-    try {
-      const userDetailsResponse = await getUserDetails(null).unwrap();
-      if (user?.user_type === 'emp') {
-        const details = userDetailsResponse as IEmployeeDetails;
-        dispatch(updateEmployeeDetails(details));
-      }
-    } catch (err) {
-      let customError = err as ICustomErrorResponse;
-      showToast(
-        toast,
-        customError?.message ?? STRINGS.someting_went_wrong,
-        'error',
-      );
-    }
-  };
-
   const onPressViewDetails = (details: IJobPostTypes) => {
     onPressSheet('show', details);
   };
@@ -98,8 +65,6 @@ const EmployeeHome = () => {
       let page = isFirstPage ? 1 : currentPage + 1;
       const usersJobsResponse = await getJobs(page).unwrap();
       if (usersJobsResponse) {
-        console.log(usersJobsResponse.data, 'latest response');
-
         dispatch(
           updateJobs({
             currentPage: page,
@@ -139,7 +104,6 @@ const EmployeeHome = () => {
   );
 
   const onRefreshHandler = () => {
-    setCurrentPage(1);
     setIsRefreshing(true);
     getJobsPosts(true);
   };

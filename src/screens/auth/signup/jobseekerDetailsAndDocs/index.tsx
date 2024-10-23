@@ -1,4 +1,4 @@
-import {FlatList, View} from 'react-native';
+import {Alert, FlatList, View} from 'react-native';
 import React, {useRef, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -175,8 +175,8 @@ const JobSeekerDetailsAndDocs = () => {
             otherDocument,
             submitUserDetailsResponse.detailsId,
           );
+          const userDetails = await getUser();
           if (isOtherDocumentsUploaded) {
-            const userDetails = await getUser();
             if (userDetails) {
               dispatch(updateEmployeeDetails(userDetails));
               navigation.reset({
@@ -184,6 +184,15 @@ const JobSeekerDetailsAndDocs = () => {
                 routes: [{name: 'employeeTabBar'}],
               });
             }
+          }
+        } else {
+          const userDetails = await getUser();
+          if (userDetails) {
+            dispatch(updateEmployeeDetails(userDetails));
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'employeeTabBar'}],
+            });
           }
         }
       }

@@ -100,7 +100,7 @@ const ClientOpenJobs = () => {
         emptyListMessage={STRINGS.no_jobs_posted_yet}
         emptyListIllustration={EMPTY}
         onRefresh={onRefreshHandler}
-        emptyListSubTitle={STRINGS.create_job_to_find}
+        emptyListSubTitle={STRINGS.create_to_find}
         ListFooterComponentStyle={{height: verticalScale(150)}}
         isLastPage={isLastPage}
         onEndReached={loadMore}

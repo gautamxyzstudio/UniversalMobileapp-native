@@ -243,6 +243,12 @@ const authApi = baseApi.injectEndpoints({
         }
         return null;
       },
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => ({
+        statusCode: response.status,
+        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
+      }),
     }),
     getUserDetails: builder.query<any, IUserDetailsRequest>({
       query: body => ({
