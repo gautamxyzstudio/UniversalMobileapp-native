@@ -1,5 +1,4 @@
 import {IJobPostStatus} from '@utils/enums';
-
 export const apiEndPoints = {
   login: `${process.env.BASE_URL}/api/auth/local?populate=*`,
   register: `${process.env.BASE_URL}/api/auth/local/register`,

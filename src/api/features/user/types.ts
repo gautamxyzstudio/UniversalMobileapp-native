@@ -1,4 +1,4 @@
-import {IEmployeeDocsApiKeys} from '@utils/enums';
+import {IEmployeeDocsApiKeys, IWorkStatus} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
@@ -35,7 +35,7 @@ export interface IEmployeeDetails {
   selfie: IDoc | null;
   gender: string | null;
   sinNumber: string | null;
-  workStatus: string;
+  workStatus: IWorkStatus;
   city: string | null;
   resume: IEmployeeDocument | null;
   address: string | null;

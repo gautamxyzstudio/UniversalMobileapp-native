@@ -21,6 +21,7 @@ import {userDetailsStep1Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {getWorkStatusCodeFromText} from '@utils/constants';
 
 const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
@@ -82,7 +83,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           city: fields.city,
           address: fields.address,
           gender: fields.gender,
-          workStatus: fields.workStatus,
+          workStatus: getWorkStatusCodeFromText(fields.workStatus),
         },
         isValid: true,
       };

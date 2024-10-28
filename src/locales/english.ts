@@ -306,4 +306,6 @@ export const STRINGS = {
     'Find the perfect job that matches your skills and preferences',
   please_select_doc_to_upload: 'Please Select a doc to upload',
   try_again: 'try again',
+  fullTime: 'Full Time',
+  partTime: 'Part Time',
 };

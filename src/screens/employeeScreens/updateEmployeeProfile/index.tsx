@@ -24,6 +24,8 @@ import {useUpdateEmployeeDetailsMutation} from '@api/features/user/userApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {useToast} from 'react-native-toast-notifications';
 import {IEmployeeDetails} from '@api/features/user/types';
+import {getWorkStatusTextFromText} from '@utils/constants';
+import {IWorkStatus} from '@utils/enums';
 
 const UpdateEmployeeProfile = () => {
   const userBasicDetails = useSelector(userBasicDetailsFromState);
@@ -78,7 +80,7 @@ const UpdateEmployeeProfile = () => {
       gender: '',
       city: '',
       cityError: '',
-      workStatus: '',
+      workStatus: IWorkStatus.PART_TIME,
     },
   );
 
@@ -91,7 +93,7 @@ const UpdateEmployeeProfile = () => {
       gender: userDetails?.gender ?? '',
       city: userDetails?.city ?? '',
       selfie: userDetails?.selfie,
-      workStatus: userDetails?.workStatus ?? '',
+      workStatus: userDetails?.workStatus,
     });
     dispatch({
       ...state,
@@ -102,11 +104,9 @@ const UpdateEmployeeProfile = () => {
       gender: userDetails?.gender ?? '',
       selfie: userDetails?.selfie,
       city: userDetails?.city ?? '',
-      workStatus: userDetails?.workStatus ?? '',
+      workStatus: userDetails?.workStatus,
     });
   }, []);
-
-  console.log(defaultValues, 'SLEE');
 
   useEffect(() => {
     const myOBj = {
@@ -123,8 +123,6 @@ const UpdateEmployeeProfile = () => {
   }, [state, defaultValues]);
 
   const handleInputChange = (field: keyof IDefaultValues, value: any) => {
-    console.log(field, value);
-
     dispatch({
       ...state,
       [field]: value,
@@ -152,7 +150,6 @@ const UpdateEmployeeProfile = () => {
         dispatch({...state, [`${field}Error`]: `${field} is required`});
       }
     });
-    console.log(isValid);
     if (isValid) {
       try {
         reduxDispatch(setLoading(true));
@@ -235,7 +232,7 @@ const UpdateEmployeeProfile = () => {
             title={STRINGS.work_status}
             onChangeValue={e => handleInputChange('workStatus', e.value)}
             error={''}
-            value={state.workStatus}
+            value={getWorkStatusTextFromText(state.workStatus)}
             data={mockWorkStatus}
           />
         </View>

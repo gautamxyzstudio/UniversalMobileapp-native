@@ -2,8 +2,9 @@ import {ICompanyDetails, INotification} from './types';
 import {IFilterSheet} from '@components/molecules/filterListBottomSheet/types';
 import {IImage} from '@utils/photomanager';
 import {IDocument} from '@utils/doumentManager';
-import {ICandidateStatusEnum} from '@utils/enums';
+import {ICandidateStatusEnum, IWorkStatus} from '@utils/enums';
 import {IDocumentStatus, IEmployeeDocument} from './features/user/types';
+import {STRINGS} from 'src/locales/english';
 
 export const appendMockJob = {
   id: 1,
@@ -958,8 +959,8 @@ export const paymentSchedulesMockData = [
 ];
 
 export const mockWorkStatus = [
-  {label: 'Full Time', value: 'Full Time'},
-  {label: 'Part Time', value: 'Part Time'},
+  {label: STRINGS.fullTime, value: IWorkStatus.FULL_TIME},
+  {label: STRINGS.partTime, value: IWorkStatus.PART_TIME},
 ];
 
 export const provincesAndCities: IFilterSheet[] = [
