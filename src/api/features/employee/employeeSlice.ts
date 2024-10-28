@@ -26,8 +26,12 @@ const employeeSlice = createSlice({
         );
       });
 
-      if (action.payload.currentPage > 1) {
-        state.jobs = [...state.jobs, ...jobs];
+      if (action.payload.currentPage !== 1) {
+        const newJobs = jobs.filter(
+          newJob =>
+            !state.jobs.some(existingJob => existingJob.id === newJob.id),
+        );
+        state.jobs = [...state.jobs, ...newJobs];
       } else {
         state.jobs = [...jobs];
       }

@@ -24,9 +24,9 @@ export const apiEndPoints = {
   getClosedJobPost: (detailsId: number) =>
     `${process.env.BASE_URL}/api/jobs/client/closed/${detailsId}`,
   getJobsEmployee: (pageNumber: number) =>
-    `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&pagination[page]=${
+    `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&[page]=${
       pageNumber ?? 1
-    }&pagination[pageSize]=10`,
+    }&[pageSize]=10`,
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
   applyForJob: `${process.env.BASE_URL}/api/job-applications`,

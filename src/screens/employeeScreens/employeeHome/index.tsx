@@ -64,6 +64,7 @@ const EmployeeHome = () => {
     try {
       let page = isFirstPage ? 1 : currentPage + 1;
       const usersJobsResponse = await getJobs(page).unwrap();
+
       if (usersJobsResponse) {
         dispatch(
           updateJobs({
@@ -74,7 +75,10 @@ const EmployeeHome = () => {
         );
         setIsRefreshing(false);
         setCurrentPage(page);
-        setIsLastPage(page === usersJobsResponse.pagination.total);
+        setIsLastPage(
+          jobsInState.length === 0 ||
+            page === usersJobsResponse.pagination.total,
+        );
       }
     } catch (err) {
       setIsRefreshing(false);
