@@ -30,10 +30,14 @@ export const apiEndPoints = {
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
   applyForJob: `${process.env.BASE_URL}/api/job-applications`,
-  getAppliedJobs: (id: number, type: IJobPostStatus | null) =>
+  getAppliedJobs: (
+    id: number,
+    type: IJobPostStatus | null,
+    pageNumber: number,
+  ) =>
     type
-      ? `${process.env.BASE_URL}/api/job-applications/employee/${id}?status=${type}`
-      : `${process.env.BASE_URL}/api/job-applications/employee/${id}`,
+      ? `${process.env.BASE_URL}/api/job-applications/employee/${id}?status=${type}&[page]=${pageNumber}&[pageSize]=10`
+      : `${process.env.BASE_URL}/api/job-applications/employee/${id}?[page]=${pageNumber}&[pageSize]=10`,
   getCandidatesList: (
     jobId: number,
     type: 'open' | 'shortlisted' | 'denylist',

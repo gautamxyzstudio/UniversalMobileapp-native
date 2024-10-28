@@ -36,8 +36,19 @@ const employeeSlice = createSlice({
         state.jobs = [...jobs];
       }
     },
-    updateAppliedJobs: (state, action: PayloadAction<IJobTypes[]>) => {
-      state.myJobs = [...action.payload];
+    updateAppliedJobs: (
+      state,
+      action: PayloadAction<{data: IJobTypes[]; currentPage: number}>,
+    ) => {
+      if (action.payload.currentPage !== 1) {
+        const newJobs = action.payload.data.filter(
+          newJob =>
+            !state.jobs.some(existingJob => existingJob.id === newJob.id),
+        );
+        state.myJobs = [...state.myJobs, ...newJobs];
+      } else {
+        state.myJobs = [...action.payload.data];
+      }
     },
     applyJobAction: (state, action: PayloadAction<IJobTypes>) => {
       let current_job_index = state.jobs.findIndex(

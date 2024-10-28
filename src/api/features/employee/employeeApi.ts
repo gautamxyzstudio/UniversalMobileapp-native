@@ -4,8 +4,10 @@ import {apiEndPoints} from '@api/endpoints';
 import {
   IApplyForJobRequest,
   ICustomizedJobsResponse,
+  ICustomJobPostTypesResponse,
   IGetAppliedJobsResponse,
   IGetJobPostResponse,
+  IGetScheduledJobs,
   IJobTypes,
   IUpdateEmployeePrimaryDocumentRequest,
 } from './types';
@@ -82,16 +84,18 @@ const employeeApi = baseApi.injectEndpoints({
       }),
     }),
     fetchAppliedJobs: builder.query<
-      IJobTypes[],
-      {id: number; type: IJobPostStatus | null}
+      ICustomJobPostTypesResponse,
+      {id: number; type: IJobPostStatus | null; page: number}
     >({
-      query: ({id, type}) => ({
-        url: apiEndPoints.getAppliedJobs(id, type),
+      query: ({id, type, page}) => ({
+        url: apiEndPoints.getAppliedJobs(id, type, page),
         method: apiMethodType.get,
       }),
-      transformResponse: (response: IGetAppliedJobsResponse): IJobTypes[] => {
+      transformResponse: (
+        res: IGetAppliedJobsResponse,
+      ): ICustomJobPostTypesResponse => {
         let jobs: IJobTypes[] = [];
-        response.forEach(details => {
+        res.data.forEach(details => {
           jobs.push({
             id: details.id,
             ...details.jobs[0],
@@ -99,7 +103,10 @@ const employeeApi = baseApi.injectEndpoints({
             client_details: details.jobs[0].client_details[0],
           });
         });
-        return jobs;
+        return {
+          data: jobs,
+          pagination: res.pagination,
+        };
       },
       transformErrorResponse: (
         response: IErrorResponse,
@@ -118,7 +125,7 @@ const employeeApi = baseApi.injectEndpoints({
         url: apiEndPoints.getAppliedJobs(id, type),
         method: apiMethodType.get,
       }),
-      transformResponse: (response: IGetAppliedJobsResponse): IJobTypes[] => {
+      transformResponse: (response: IGetScheduledJobs): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
         response.forEach(details => {
           if (

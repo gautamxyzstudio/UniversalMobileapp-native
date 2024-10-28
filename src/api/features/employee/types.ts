@@ -6,6 +6,11 @@ export type IEmployeeSliceInitialState = {
   myJobs: IJobTypes[];
 };
 
+export type ICustomJobPostTypesResponse = {
+  data: IJobTypes[];
+  pagination: IPagination | null;
+};
+
 export type IJobTypes = {
   id: number;
   job_name: string;
@@ -106,7 +111,54 @@ export type IApplyForJobRequest = {
   };
 };
 
+export type IPagination = {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+};
+
 export type IGetAppliedJobsResponse = {
+  data: {
+    id: number;
+    status: IJobPostStatus;
+    jobs: {
+      job_name: string;
+      required_certificates: string[];
+      city: string;
+      state: string;
+      address: string;
+      postalCode: string;
+      postID: number | null;
+      gender: string;
+      salary: string;
+      Event: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+      publishedAt: Date;
+      jobDuties: string;
+      job_type: IJobTypesEnum;
+      location: string;
+      description: string;
+      delete: boolean;
+      status: IJobPostStatus;
+      eventDate: Date;
+      endShift: Date;
+      startShift: Date;
+      client_details: {
+        id: number;
+        Name: string;
+        companyname: string;
+        contactno: string;
+        Industry: string;
+        Email: string;
+        location: string;
+      }[];
+    }[];
+  }[];
+  pagination: IPagination;
+};
+export type IGetScheduledJobs = {
   id: number;
   status: IJobPostStatus;
   jobs: {
