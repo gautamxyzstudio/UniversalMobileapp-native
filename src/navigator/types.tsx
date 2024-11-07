@@ -49,6 +49,8 @@ export type RootStackParamList = {
   notifications: undefined;
   shortlistedCandidates: {
     jobId: number;
+    createdAt: Date;
+    name: string;
   };
   reviewJobPost:
     | {

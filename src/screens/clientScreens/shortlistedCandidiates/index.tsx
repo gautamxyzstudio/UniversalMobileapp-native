@@ -1,31 +1,37 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet, TextInput, View} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
-import SearchInput from '@components/molecules/InputTypes/SearchInput';
 import {useNavigation} from '@react-navigation/native';
 import ShortlistedCandidateCard from '@components/client/ShortlistedCandidateCard';
 import {useLazyGetCandidatesListQuery} from '@api/features/client/clientApi';
 import {IGetShortlistedCandidatesParams} from './types';
 import {useDispatch} from 'react-redux';
-import {updateShortlistedApplication} from '@api/features/client/clientSlice';
-import {SEARCH} from '@assets/exporter';
+import {IC_NO_SHORTLISTED, SEARCH} from '@assets/exporter';
 import CandidateListTopView from '@components/client/CandidateListTopView';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {createStyles} from './styles';
+import ShortlistedCandidateLoadingCard from '@components/client/ShortlistedCandidateLoadingCard';
+import {mockJobPostsLoading} from '@api/mockData';
+import {ICandidateTypes} from '@api/features/client/types';
+import CustomList from '@components/molecules/customList';
 
 const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
   route,
 }) => {
-  const [search, setSearch] = useState('');
-  const searchRef = useRef<TextInput | null>(null);
   const navigation = useNavigation();
   const styles = useThemeAwareObject(createStyles);
   const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+  const [shortlistedCandidates, updateShortlistedCandidates] = useState<
+    ICandidateTypes[]
+  >([]);
   const jobId = route?.params?.jobId;
+  const jobName = route?.params?.name;
+  const createdAt = route?.params?.createdAt;
 
-  const [getShortlistedCandidates, {isFetching, isError}] =
+  const [getShortlistedCandidates, {isFetching, error}] =
     useLazyGetCandidatesListQuery();
 
   const getApplications = async (jId: number) => {
@@ -36,35 +42,31 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
           jobId: jId,
         }).unwrap();
         if (applicants) {
-          dispatch(
-            updateShortlistedApplication({
-              jobId,
-              candidates: applicants,
-              pageNumber: 1,
-            }),
-          );
+          updateShortlistedCandidates(applicants);
         }
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setRefreshing(false);
       }
     }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    getApplications(jobId);
   };
 
   useEffect(() => {
     getApplications(jobId);
   }, [jobId]);
 
-  const onChangeSearch = (e: string) => {
-    setSearch(e);
-  };
-
-  const onPresCrossSearch = () => {
-    setSearch('');
-  };
-
-  const onPressDone = () => {
-    console.log(search);
-  };
+  const renderItem = useCallback(() => {
+    return <ShortlistedCandidateCard />;
+  }, [shortlistedCandidates]);
+  const renderItemLoading = useCallback(() => {
+    return <ShortlistedCandidateLoadingCard />;
+  }, [shortlistedCandidates]);
 
   return (
     <OnBoardingBackground
@@ -76,15 +78,26 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
       // rightIconPressHandler={}
       title={STRINGS.check_in}>
       <CandidateListTopView
-        jobName={'SOFTWARE'}
-        jobId={0}
-        creationDate={new Date()}
+        jobName={jobName}
+        jobId={jobId}
+        creationDate={createdAt}
         withSwitch={false}
         withSegmentView={false}
       />
-
-      <View>
-        <ShortlistedCandidateCard />
+      <View style={styles.mainView}>
+        <CustomList
+          contentContainerStyle={styles.list}
+          estimatedItemSize={196}
+          onRefresh={onRefresh}
+          refreshing
+          data={isFetching ? mockJobPostsLoading : shortlistedCandidates}
+          renderItem={isFetching ? renderItemLoading : renderItem}
+          emptyListMessage={STRINGS.no_shortlisted}
+          emptyListIllustration={IC_NO_SHORTLISTED}
+          emptyListSubTitle={STRINGS.please_review}
+          error={error}
+          isLastPage={true}
+        />
       </View>
     </OnBoardingBackground>
   );

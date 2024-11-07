@@ -97,6 +97,8 @@ const QuickLinksJobPostContextProvider = ({
         case 0:
           navigation.navigate('shortlistedCandidates', {
             jobId: selectedJobPost?.id,
+            createdAt: selectedJobPost?.publishedAt,
+            name: selectedJobPost?.job_name ?? '',
           });
           break;
         case 1:
