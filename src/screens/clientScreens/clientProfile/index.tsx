@@ -25,15 +25,15 @@ import {
   userAdvanceDetailsFromState,
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
-import {IEmployeeDetails} from '@api/features/user/types';
+import {IClientDetails} from '@api/features/user/types';
 
-const EmployeeProfile = () => {
+const ClientProfile = () => {
   const styles = useThemeAwareObject(createStyles);
   const navigation = useNavigation<NavigationProps>();
   const userBasicDetails = useSelector(userBasicDetailsFromState);
   const userAdvDetails = useSelector(
     userAdvanceDetailsFromState,
-  ) as IEmployeeDetails;
+  ) as IClientDetails;
 
   const popupRef = useRef<customModalRef>(null);
 
@@ -60,9 +60,10 @@ const EmployeeProfile = () => {
       title={STRINGS.profile}>
       <EmployeeInfoView
         name={userAdvDetails?.name ?? ''}
+        cpName="Xyz studios"
         email={userBasicDetails?.email ?? ''}
         onPressEdit={() => navigation.navigate('updateEmployeeDetails')}
-        profilePicture={userAdvDetails?.selfie}
+        profilePicture={userAdvDetails?.company?.companylogo}
       />
       <ScrollView>
         <View style={styles.container}>
@@ -117,7 +118,7 @@ const EmployeeProfile = () => {
   );
 };
 
-export default EmployeeProfile;
+export default ClientProfile;
 const createStyles = ({color}: Theme) => {
   const styles = StyleSheet.create({
     container: {

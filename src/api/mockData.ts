@@ -1,7 +1,5 @@
 import {ICompanyDetails, INotification} from './types';
 import {IFilterSheet} from '@components/molecules/filterListBottomSheet/types';
-import {IImage} from '@utils/photomanager';
-import {IDocument} from '@utils/doumentManager';
 import {ICandidateStatusEnum, IWorkStatus} from '@utils/enums';
 import {IDocumentStatus, IEmployeeDocument} from './features/user/types';
 import {STRINGS} from 'src/locales/english';
@@ -1118,24 +1116,6 @@ export const provincesAndCities: IFilterSheet[] = [
     ],
   },
 ];
-
-export const mockAsset: IImage | IDocument = {
-  extension: 'image/jpg',
-  fileName: 'E1EF9DA6-F51C-409E-9DAF-F0AF5CFEA3BF.jpg',
-  size: 82063,
-  status: 'pending',
-  uri: 'file:///Users/xyzstudio/Library/Developer/CoreSimulator/Devices/1EDBFD2A-EFFD-495C-B5C1-F781CC7DB35A/data/Containers/Data/Application/70193F13-BE78-49B9-B28A-0ED44AF3F477/tmp/E1EF9DA6-F51C-409E-9DAF-F0AF5CFEA3BF.jpg',
-  url: 'https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4',
-};
-
-export const mockPdf: IImage | IDocument = {
-  extension: 'image/jpg',
-  fileName: 'E1EF9DA6-F51C-409E-9DAF-F0AF5CFEA3BF.jpg',
-  size: 82063,
-  status: 'pending',
-  uri: 'http://samples.leanpub.com/thereactnativebook-sample.pdf',
-  url: 'http://samples.leanpub.com/thereactnativebook-sample.pdf',
-};
 
 export const nyDocuments = [
   {

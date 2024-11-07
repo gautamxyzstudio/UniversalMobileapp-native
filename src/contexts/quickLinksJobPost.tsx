@@ -95,7 +95,9 @@ const QuickLinksJobPostContextProvider = ({
     setTimeout(() => {
       switch (type) {
         case 0:
-          navigation.navigate('shortlistedCandidates');
+          navigation.navigate('shortlistedCandidates', {
+            jobId: selectedJobPost?.id,
+          });
           break;
         case 1:
           navigation.navigate('clientTabBar', {
@@ -112,7 +114,9 @@ const QuickLinksJobPostContextProvider = ({
           }
           break;
         default:
-          navigation.navigate('shortlistedCandidates');
+          navigation.navigate('shortlistedCandidates', {
+            jobId: selectedJobPost?.id,
+          });
           break;
       }
     }, timeOutTimeSheets);

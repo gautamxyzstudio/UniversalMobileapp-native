@@ -1,4 +1,4 @@
-import {Image, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import React, {useRef} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale} from '@utils/metrics';
@@ -10,13 +10,21 @@ import SegmentView, {
   ISegmentViewRefMethods,
 } from '@components/organisms/segmentView';
 import {STRINGS} from 'src/locales/english';
+import CustomImageComponent from '@components/atoms/customImage';
+import {userAdvanceDetailsFromState} from '@api/features/user/userSlice';
+import {useSelector} from 'react-redux';
+import {IClientDetails} from '@api/features/user/types';
+import {extractDayAndMonthFromDate} from '@utils/constants';
 
 type ICandidateListTopViewProps = {
-  onPressTab: (index: number) => void;
-  onPressFilter: () => void;
+  onPressTab?: (index: number) => void;
+  onPressFilter?: () => void;
   jobName: string;
-  index: number;
+  index?: number;
   jobId: number;
+  creationDate?: Date;
+  withSwitch?: boolean;
+  withSegmentView?: boolean;
 };
 
 const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
@@ -24,45 +32,59 @@ const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
   index,
   jobName,
   onPressTab,
+  creationDate,
+  withSwitch = true,
+  withSegmentView = true,
   onPressFilter,
 }) => {
   const ref = useRef<ISegmentViewRefMethods | null>(null);
   const styles = useThemeAwareObject(createStyles);
+  const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
 
   const onClick = (jIndex: number) => {
     ref.current?.getIndex(jIndex);
-    onPressTab(jIndex);
+    onPressTab && onPressTab(jIndex);
   };
 
   return (
     <View style={styles.mainView}>
       <Row spaceBetween alignCenter>
         <Row alignCenter>
-          <Image
-            resizeMode="cover"
-            style={styles.image}
-            source={ICONS.imagePlaceholder}
+          <CustomImageComponent
+            defaultSource={ICONS.imagePlaceholder}
+            image={user.company?.companylogo?.url}
+            customStyle={styles.image}
           />
           <View style={styles.detailsView}>
             <Text style={styles.title}>{jobName}</Text>
             <Text style={styles.jobId}>{`Job ID-${jobId}`}</Text>
+            {creationDate && (
+              <Text style={styles.jobId}>
+                {extractDayAndMonthFromDate(creationDate)}
+              </Text>
+            )}
           </View>
         </Row>
-        <TouchableOpacity onPress={onPressFilter}>
-          <SWITCH />
-          <View style={styles.redDot} />
-        </TouchableOpacity>
+        {withSwitch && (
+          <TouchableOpacity onPress={onPressFilter}>
+            <SWITCH />
+            <View style={styles.redDot} />
+          </TouchableOpacity>
+        )}
       </Row>
-      <View style={styles.segmentView}>
-        <SegmentView
-          tabs={[STRINGS.applicants, STRINGS.shortlisted, STRINGS.deny]}
-          segmentTextStyles={styles.segmentText}
-          marginHorizontal={0}
-          ref={ref}
-          onClick={onClick}
-          currentIndex={index}
-        />
-      </View>
+
+      {withSegmentView && (
+        <View style={styles.segmentView}>
+          <SegmentView
+            tabs={[STRINGS.applicants, STRINGS.shortlisted, STRINGS.deny]}
+            segmentTextStyles={styles.segmentText}
+            marginHorizontal={0}
+            ref={ref}
+            onClick={onClick}
+            currentIndex={index ?? 0}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -74,6 +96,7 @@ const createStyles = (theme: Theme) =>
       paddingTop: verticalScale(24),
       paddingBottom: verticalScale(12),
       paddingHorizontal: verticalScale(24),
+      // height: verticalScale(101.3),
       shadowColor: theme.color.shadow,
       backgroundColor: theme.color.ternary,
       shadowOffset: {width: 0, height: 0},

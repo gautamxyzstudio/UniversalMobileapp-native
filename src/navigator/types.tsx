@@ -47,7 +47,9 @@ export type RootStackParamList = {
   registerNewCompany: undefined;
   schedule: undefined;
   notifications: undefined;
-  shortlistedCandidates: undefined;
+  shortlistedCandidates: {
+    jobId: number;
+  };
   reviewJobPost:
     | {
         postDetails: IJobPostInterface;

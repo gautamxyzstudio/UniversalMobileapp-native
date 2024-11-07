@@ -16,6 +16,7 @@ import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
 import {IJobTypes} from '../employee/types';
+import {getImageUrl} from '@utils/constants';
 
 const baseApiWithTag = baseApi.enhanceEndpoints({
   addTagTypes: ['ClientSchedule'],
@@ -51,22 +52,15 @@ const clientApi = baseApiWithTag.injectEndpoints({
           publishedAt: response.data.attributes?.publishedAt ?? new Date(),
           salary: response.data.attributes?.salary ?? '0',
           applicants: null,
-          client_details: {
-            id: 0,
-            Name: '',
-            companyname: '',
-            Industry: '',
-            Email: '',
-            location: '',
-          },
+          client_details: null,
           address: response.data.attributes?.address ?? '0',
           postalCode: response.data.attributes?.postalCode ?? '0',
         };
       },
     }),
     getPostedJob: builder.query({
-      query: client_id => ({
-        url: apiEndPoints.getOpenJobPost(client_id),
+      query: company_id => ({
+        url: apiEndPoints.getOpenJobPost(company_id),
         method: apiMethodType.get,
       }),
       transformResponse: (
@@ -75,6 +69,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
         let data: IJobPostTypes[] = [];
         if (response.data) {
           response.data.forEach(job => {
+            console.log(job, 'JOOBS');
             if (job.id) {
               data.push({
                 ...job,
@@ -82,9 +77,41 @@ const clientApi = baseApiWithTag.injectEndpoints({
                 status: IJobPostStatus.OPEN,
                 notAccepting: job?.notAccepting ?? false,
                 applicants: null,
-                client_details: {
-                  ...job.client_details,
-                },
+                client_details: job.client_details
+                  ? {
+                      id: job.client_details[0].id,
+                      Name: job.client_details[0].Name,
+                      companyname: job.client_details[0].companyname,
+                      Industry: job.client_details[0].Industry,
+                      Email: job.client_details[0].Email,
+                      location: job.client_details[0].location,
+                      company_detail: job.client_details[0].company_detail
+                        ? {
+                            companyname:
+                              job.client_details[0].company_detail
+                                ?.companyname ?? '',
+                            id: job.client_details[0].company_detail?.id ?? 0,
+                            companylogo: job.client_details[0].company_detail
+                              ?.companylogo
+                              ? {
+                                  url: getImageUrl(
+                                    job.client_details[0].company_detail
+                                      ?.companylogo.url,
+                                  ),
+                                  mime: job.client_details[0].company_detail
+                                    ?.companylogo.mime,
+                                  id: job.client_details[0].company_detail
+                                    ?.companylogo.id,
+                                  name: job.client_details[0].company_detail
+                                    ?.companylogo.name,
+                                  size: job.client_details[0].company_detail
+                                    ?.companylogo.size,
+                                }
+                              : null,
+                          }
+                        : null,
+                    }
+                  : null,
               });
             }
           });
@@ -110,8 +137,8 @@ const clientApi = baseApiWithTag.injectEndpoints({
       },
     }),
     getClosedJobs: builder.query({
-      query: client_id => ({
-        url: apiEndPoints.getClosedJobPost(client_id),
+      query: company_id => ({
+        url: apiEndPoints.getClosedJobPost(company_id),
         method: apiMethodType.get,
       }),
       transformResponse: (
@@ -127,9 +154,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
                 status: IJobPostStatus.CLOSED,
                 notAccepting: job?.notAccepting ?? false,
                 applicants: null,
-                client_details: {
-                  ...job.client_details,
-                },
+                client_details: null,
               });
             }
           });
@@ -178,14 +203,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
                 id: job.id,
                 status: IJobPostStatus.OPEN,
                 applicants: null,
-                client_details: {
-                  id: 0,
-                  Name: '',
-                  companyname: '',
-                  Industry: '',
-                  Email: '',
-                  location: '',
-                },
+                client_details: null,
               });
             }
           });
@@ -243,14 +261,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
           salary: response.data.attributes?.salary ?? '0',
           address: response.data.attributes?.address ?? '0',
           postalCode: response.data.attributes?.postalCode ?? '0',
-          client_details: {
-            id: 0,
-            Name: '',
-            companyname: '',
-            Industry: '',
-            Email: '',
-            location: '',
-          },
+          client_details: null,
           applicants: null,
         };
       },
@@ -340,7 +351,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
       transformResponse: (response: IPostedJobsResponse): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
         response.data.forEach(details => {
-          jobs.push(details);
+          jobs.push({...details, client_details: null});
         });
         return jobs;
       },

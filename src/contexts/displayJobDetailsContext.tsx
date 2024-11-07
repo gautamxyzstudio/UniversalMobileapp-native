@@ -81,9 +81,11 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
             };
             if (isSearch) {
               setAppliedJobDetailState(jobDetails);
-              dispatch(applyJobActionSearch(jobDetails));
+              dispatch(
+                applyJobActionSearch({...jobDetails, client_details: null}),
+              );
             } else {
-              dispatch(applyJobAction(jobDetails));
+              dispatch(applyJobAction({...jobDetails, client_details: null}));
             }
           }
         }

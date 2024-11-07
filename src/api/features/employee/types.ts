@@ -31,14 +31,17 @@ export type IJobTypes = {
   requiredEmployee?: number;
   startShift: Date;
   status: IJobPostStatus;
-  client_details: {
-    id: number;
-    Name: string;
-    companyname: string;
-    Industry: string;
-    Email: string;
-    location: string;
-  };
+  client_details:
+    | {
+        id: number;
+        Name: string;
+        companyname: string;
+        Industry: string;
+        Email: string;
+        location: string;
+      }
+    | null
+    | undefined;
   job_applications?: {
     id: number;
     status: IJobPostStatus;

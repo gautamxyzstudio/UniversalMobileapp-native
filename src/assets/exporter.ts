@@ -139,6 +139,8 @@ export const ICONS = {
   edit: require('./icons/png/edit.png'),
   contactList: require('./icons/png/tabaricons/candidateList.png'),
   contactListFilled: require('./icons/png/tabaricons/candidateListFill.png'),
+  search: require('./icons/png/search.png'),
+  searchCross: require('./icons/png/searchCross.png'),
 };
 
 export const ANIMATIONS = {

@@ -37,7 +37,7 @@ import {
   extractEmployeeSecondaryDocumentsFromApiResponse,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
-import {IEmployeeDocsApiKeys} from '@utils/enums';
+import {IClientStatus, IEmployeeDocsApiKeys} from '@utils/enums';
 
 const authApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -237,7 +237,23 @@ const authApi = baseApi.injectEndpoints({
             industry: clientDetails?.Industry ?? '',
             detailsId: clientDetails?.id ?? 0,
             location: clientDetails?.location ?? '',
-            status: clientDetails?.status ?? '',
+            status: clientDetails?.status ?? IClientStatus.PENDING,
+            company: clientDetails?.company_detail
+              ? {
+                  companyname: clientDetails.company_detail.companyname,
+                  companyemail: clientDetails.company_detail.companyemail,
+                  companylogo: {
+                    url: getImageUrl(
+                      clientDetails.company_detail.companylogo?.url ?? '',
+                    ),
+                    id: clientDetails.company_detail.companylogo?.id ?? 0,
+                    name: clientDetails.company_detail.companylogo?.name ?? '',
+                    size: clientDetails.company_detail.companylogo?.size ?? 0,
+                    mime: clientDetails.company_detail.companylogo?.mime ?? '',
+                  },
+                  id: clientDetails.company_detail.id,
+                }
+              : null,
           };
           return client;
         }

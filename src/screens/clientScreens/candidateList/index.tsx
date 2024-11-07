@@ -19,7 +19,7 @@ import {
 import {ICandidateListTypes} from '@api/features/client/types';
 import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {userAdvanceDetailsFromState} from '@api/features/user/userSlice';
 import {useTheme} from '@theme/Theme.context';
 import {ActivityIndicator} from 'react-native-paper';
 import UserDetailsViewSheetCandidateListProvider from '@screens/clientScreens/candidateList/UserDetailsViewCandidateList';
@@ -27,6 +27,7 @@ import CandidateListActionsBottomSheetContextProvider from './CandidateListActio
 import EmptyState from '@screens/common/emptyAndErrorScreen';
 import {IC_NO_CANDIDATES} from '@assets/exporter';
 import {timeOutTimeSheets} from 'src/constants/constants';
+import {IClientDetails} from '@api/features/user/types';
 
 type ICandidateListProps = {
   route: {
@@ -41,7 +42,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   let selectedJobId = route.params?.jobId;
   const styles = useThemeAwareObject(getStyles);
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
-  const user = useSelector(userBasicDetailsFromState);
+  const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
   const candidateJobs = useSelector(candidateListFromState);
   const [localCandidatesLength, setLocalCandidatesLength] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -60,7 +61,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
       setIsLoading(true);
       let page = isFirstPage ? 1 : currentPage + 1;
       let perPageRecord = 100;
-      const response = await getJobPosts(user?.details?.detailsId).unwrap();
+      const response = await getJobPosts(user.company?.id).unwrap();
       if (response.data) {
         setIsRefreshing(false);
         setIsLoading(false);

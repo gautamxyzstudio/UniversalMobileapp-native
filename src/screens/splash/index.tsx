@@ -29,6 +29,7 @@ import {ICustomErrorResponse} from '@api/types';
 import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import CustomButton from '@components/molecules/customButton';
 import {STRINGS} from 'src/locales/english';
+import {IClientStatus} from '@utils/enums';
 
 const Splash = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -84,7 +85,7 @@ const Splash = () => {
           let clientDetails = userDetails as IClientDetails;
           if (clientDetails) {
             dispatch(updateClientDetails(clientDetails));
-            if (clientDetails.status === 'approved') {
+            if (clientDetails.status === IClientStatus.ACTIVE) {
               navigation.reset({
                 index: 0,
                 routes: [{name: 'clientTabBar'}],

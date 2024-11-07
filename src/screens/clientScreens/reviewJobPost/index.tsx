@@ -21,7 +21,10 @@ import Spacers from '@components/atoms/Spacers';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import JobDetailsKey from '@components/employee/JobDetailsKeys';
 import {useDispatch, useSelector} from 'react-redux';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {
+  userAdvanceDetailsFromState,
+  userBasicDetailsFromState,
+} from '@api/features/user/userSlice';
 import {IJobPostStatus} from '@utils/enums';
 import {
   convertArrayOfStringsToUlLi,
@@ -40,6 +43,7 @@ import {useToast} from 'react-native-toast-notifications';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {addNewJob} from '@api/features/client/clientSlice';
+import {IClientDetails} from '@api/features/user/types';
 
 type IReviewJobPostProps = {
   route: {
@@ -57,6 +61,9 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const navigation = useNavigation<NavigationProps>();
 
   const user = useSelector(userBasicDetailsFromState);
+  const userDetails = useSelector(
+    userAdvanceDetailsFromState,
+  ) as IClientDetails;
 
   const wage = `${jobDetails?.salary}$ /hr`;
   const shiftTime = `${extractTimeFromDate(
@@ -117,15 +124,16 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
     }
   };
 
-  console.log(jobDetails);
-
   return (
     <OnBoardingBackground
       childrenStyles={styles.children}
       title={STRINGS.review}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Row alignCenter>
-          <UploadProfilePhoto isEditable={false} />
+          <UploadProfilePhoto
+            initialImage={userDetails.company?.companylogo}
+            isEditable={false}
+          />
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{jobDetails?.job_name}</Text>
             {user?.user_type === 'client' &&

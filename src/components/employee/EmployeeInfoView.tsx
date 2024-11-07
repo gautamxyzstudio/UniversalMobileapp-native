@@ -13,6 +13,7 @@ import {ICandidateStatusEnum} from '@utils/enums';
 type IEmployeeInfoViewProps = {
   name: string;
   email: string;
+  cpName?: string;
   profilePicture: IDoc | undefined | null;
   onPressEdit?: () => void;
 };
@@ -21,6 +22,7 @@ const EmployeeInfoView: React.FC<IEmployeeInfoViewProps> = ({
   name,
   email,
   profilePicture,
+  cpName,
   onPressEdit,
 }) => {
   const styles = useThemeAwareObject(getStyles);
@@ -37,6 +39,7 @@ const EmployeeInfoView: React.FC<IEmployeeInfoViewProps> = ({
         />
         <View style={styles.userDetails}>
           <Text style={styles.userName}>{name}</Text>
+          {cpName && <Text style={styles.company}>{cpName}</Text>}
           <Text style={styles.email}>{email}</Text>
         </View>
       </Row>
@@ -71,6 +74,10 @@ const getStyles = ({color}: Theme) => {
     email: {
       color: color.disabled,
       ...fonts.medium,
+    },
+    company: {
+      color: color.textPrimary,
+      ...fonts.mediumBold,
     },
   });
   return styles;

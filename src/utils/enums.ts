@@ -30,6 +30,12 @@ export enum ICandidateStatusEnum {
   declined = 3,
 }
 
+export enum IClientStatus {
+  PENDING = 's0',
+  ACTIVE = 's1',
+  INACTIVE = 's2',
+}
+
 export enum IDocumentNames {
   GOVT_ID = 'd0',
   DIRECT_DEPOSIT_VOID_CHEQUE = 'd1',

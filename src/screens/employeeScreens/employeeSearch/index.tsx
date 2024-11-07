@@ -59,7 +59,6 @@ const EmployeeSearch = () => {
         perPage: perPage,
       }).unwrap();
       setIsLoading(false);
-
       let jobsToShow: IJobPostTypes[] = res.data.filter(job => {
         const isApplied = job.job_applications?.some(
           applicant =>
@@ -112,7 +111,7 @@ const EmployeeSearch = () => {
       if (query) {
         jobSearchQuery(query, true);
       }
-    }, 400),
+    }, 500),
     [],
   );
 

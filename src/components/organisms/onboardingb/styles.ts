@@ -1,6 +1,6 @@
 import {Theme} from '@theme/index';
 import {fonts} from '@utils/common.styles';
-import {verticalScale} from '@utils/metrics';
+import {verticalScale, windowWidth} from '@utils/metrics';
 import {StyleSheet} from 'react-native';
 
 export const getStyles = (theme: Theme) => {
@@ -56,6 +56,31 @@ export const getStyles = (theme: Theme) => {
     },
     inlineTitleContainer: {
       gap: verticalScale(12),
+    },
+    searchRow: {
+      height: verticalScale(40),
+      width: '100%',
+      gap: 8,
+    },
+    input: {
+      flex: 1,
+      height: 40,
+      backgroundColor: 'transparent',
+    },
+    inputText: {
+      color: '#000',
+      textAlignVertical: 'bottom',
+    },
+    animatedView: {
+      position: 'absolute',
+      width: '100%',
+      marginBottom: verticalScale(24),
+    },
+    view: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
   });
   return styles;

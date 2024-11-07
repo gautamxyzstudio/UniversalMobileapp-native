@@ -35,6 +35,7 @@ import {useToast} from 'react-native-toast-notifications';
 import {useAddClientDetailsMutation} from '@api/features/user/userApi';
 import PhoneNumberInput from '@components/molecules/InputTypes/PhoneNumberInput';
 import {timeOutTimeSheets} from 'src/constants/constants';
+import {IClientStatus} from '@utils/enums';
 
 const RecruiterDetails = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -92,7 +93,7 @@ const RecruiterDetails = () => {
               Email: user?.email ?? '',
               contactno: fields.phone,
               companyname: fields.company,
-              status: 'pending',
+              status: IClientStatus.PENDING,
               location: fields.location,
               Industry: fields.industry,
               clien_id: user?.id ?? 0,

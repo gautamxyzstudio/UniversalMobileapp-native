@@ -12,5 +12,6 @@ export interface IOnboardingProps {
   isProfile?: boolean;
   rightIconPressHandler?: () => void;
   rightIcon?: React.FC<SvgProps>;
+  isSearch?: boolean;
   childrenStyles?: StyleProp<ViewStyle>;
 }

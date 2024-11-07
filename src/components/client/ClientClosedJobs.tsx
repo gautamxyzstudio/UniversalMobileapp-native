@@ -6,7 +6,7 @@ import {
   closedJobsFromState,
   saveClosedJobs,
 } from '@api/features/client/clientSlice';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {userAdvanceDetailsFromState} from '@api/features/user/userSlice';
 import {IJobPostTypes} from '@api/features/client/types';
 import JobPostCard from './JobPostCard';
 import JobPostCardLoading from './JobPostCardLoading';
@@ -17,13 +17,14 @@ import CustomList from '@components/molecules/customList';
 import {verticalScale} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
 import {useQuickLinksJobPostContext} from 'src/contexts/quickLinksJobPost';
+import {IClientDetails} from '@api/features/user/types';
 
 const ClientClosedJobs = () => {
   const [getClosedJobs, {error}] = useLazyGetClosedJobsQuery();
   const closedJobs = useSelector(closedJobsFromState);
   const dispatch = useDispatch();
 
-  const user = useSelector(userBasicDetailsFromState);
+  const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const {onPressSheet} = useQuickLinksJobPostContext();
 
@@ -63,7 +64,7 @@ const ClientClosedJobs = () => {
     async (isFirstPage: boolean = false) => {
       let page = isFirstPage ? 1 : currentPage + 1;
       let perPageRecord = 10;
-      const response = await getClosedJobs(user?.details?.detailsId).unwrap();
+      const response = await getClosedJobs(user?.company?.id).unwrap();
       if (response.data) {
         setIsRefreshing(false);
         setCurrentPage(page);

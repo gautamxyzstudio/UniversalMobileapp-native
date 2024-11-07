@@ -122,7 +122,7 @@ const employeeApi = baseApi.injectEndpoints({
       {id: number; type: IJobPostStatus | null}
     >({
       query: ({id, type}) => ({
-        url: apiEndPoints.getAppliedJobs(id, type),
+        url: apiEndPoints.getAppliedJobs(id, type, 1),
         method: apiMethodType.get,
       }),
       transformResponse: (response: IGetScheduledJobs): IJobTypes[] => {

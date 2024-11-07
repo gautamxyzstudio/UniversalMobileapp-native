@@ -33,6 +33,7 @@ import {
   updateEmployeeDetails,
 } from '@api/features/user/userSlice';
 import {IClientDetails, IEmployeeDetails} from '@api/features/user/types';
+import {IClientStatus} from '@utils/enums';
 
 const Login = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -104,8 +105,8 @@ const Login = () => {
             reduxDispatch(saveUserDetails(response));
             let userDetails = await getUser();
             if (response.user_type === 'emp') {
-              if (userDetails) {
-                let empDetails = userDetails as IEmployeeDetails;
+              let empDetails = userDetails as IEmployeeDetails;
+              if (empDetails.detailsId !== 0) {
                 reduxDispatch(updateEmployeeDetails(empDetails));
                 navigation.reset({
                   index: 0,
@@ -119,16 +120,16 @@ const Login = () => {
               }
             }
             if (response.user_type === 'client') {
-              if (userDetails) {
-                let clientDetails = userDetails as IClientDetails;
+              let clientDetails = userDetails as IClientDetails;
+              if (clientDetails.detailsId !== 0) {
                 reduxDispatch(updateClientDetails(clientDetails));
-                if (clientDetails.status === 'approved') {
+                if (clientDetails.status === IClientStatus.ACTIVE) {
                   navigation.reset({
                     index: 0,
                     routes: [{name: 'clientTabBar'}],
                   });
                 }
-                if (clientDetails.status === 'pending') {
+                if (clientDetails.status === IClientStatus.PENDING) {
                   navigation.reset({
                     index: 0,
                     routes: [{name: 'approval'}],

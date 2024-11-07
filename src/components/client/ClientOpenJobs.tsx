@@ -14,15 +14,17 @@ import {
   openJobsFromState,
   saveOpenJobs,
 } from '@api/features/client/clientSlice';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {userAdvanceDetailsFromState} from '@api/features/user/userSlice';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {useQuickLinksJobPostContext} from 'src/contexts/quickLinksJobPost';
+import {IClientDetails} from '@api/features/user/types';
 
 const ClientOpenJobs = () => {
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
   const openJobs = useSelector(openJobsFromState);
   const dispatch = useDispatch();
-  const user = useSelector(userBasicDetailsFromState);
+
+  const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
   const [jobPosts, updateJobPosts] = useState<IJobPostTypes[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +45,7 @@ const ClientOpenJobs = () => {
   const renderItem = useCallback(
     ({item}: {item: IJobPostTypes}) => (
       <JobPostCard
+        logo={user.company?.companylogo}
         onPress={() => onPressSheet('show', 'open', item)}
         {...item}
       />
@@ -64,7 +67,7 @@ const ClientOpenJobs = () => {
       let page = isFirstPage ? 1 : currentPage + 1;
       let perPageRecord = 100;
 
-      const response = await getJobPosts(user?.details?.detailsId).unwrap();
+      const response = await getJobPosts(user.company?.id).unwrap();
       if (response.data) {
         setIsRefreshing(false);
         setCurrentPage(page);

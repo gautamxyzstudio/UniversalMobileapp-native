@@ -1,4 +1,4 @@
-import {IEmployeeDocsApiKeys, IWorkStatus} from '@utils/enums';
+import {IClientStatus, IEmployeeDocsApiKeys, IWorkStatus} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
@@ -26,7 +26,13 @@ export interface IClientDetails {
   industry: string;
   detailsId: number | null;
   location: string;
-  status: string;
+  status: IClientStatus;
+  company: {
+    id: number;
+    companyname: string;
+    companyemail: string;
+    companylogo: IDoc | null;
+  } | null;
 }
 
 export interface IEmployeeDetails {
@@ -146,7 +152,13 @@ export type IClientApiResponse = {
   location: string;
   Industry: string;
   Email: string;
-  status: string;
+  status: IClientStatus;
+  company_detail: {
+    id: number;
+    companyname: string;
+    companyemail: string;
+    companylogo: IDoc | null;
+  } | null;
 };
 
 export type IVerifyOtpResponse = {
@@ -164,7 +176,7 @@ export type IUpdateClientDetailsRequest = {
     location: string;
     jobs: [];
     clien_id: number;
-    status: string;
+    status: IClientStatus;
   };
 };
 
@@ -253,7 +265,7 @@ export interface IEmployeeDetailsApiResponse {
   address: string;
   sinNo: string;
   directDepositVoidCheque?: IDoc;
-  workStatus: string;
+  workStatus: IWorkStatus;
   supportingDocument?: IDoc;
   bankAcNo?: string;
   institutionNumber?: string;

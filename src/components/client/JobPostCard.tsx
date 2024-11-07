@@ -1,5 +1,4 @@
 import {
-  Image,
   Platform,
   Pressable,
   StyleSheet,
@@ -42,6 +41,7 @@ import {
 } from '@utils/constants';
 import JobTypeChip from '@components/employee/JobStatusChip';
 import JobStatusChip from './JobStatusChip';
+import CustomImageComponent from '@components/atoms/customImage';
 
 export interface IJobDetailsPropTypes extends IJobPostTypes {
   onPress?: () => void;
@@ -62,30 +62,26 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     publishedAt,
     location,
     job_type,
+    logo,
     client_details,
     eventDate,
     notAccepting,
     status,
     startShift,
+
     endShift,
     city,
-
     salary,
   } = cardProps;
 
   return (
     <Pressable onPress={onPress} style={styles.container}>
-      {/* <CustomImageComponent
-            defaultSource={ICONS.imagePlaceholder}
-            image={banner}
-            resizeMode="cover"
-            customStyle={styles.image}
-          /> */}
       <Row alignCenter style={styles.topView}>
-        <Image
+        <CustomImageComponent
+          defaultSource={ICONS.imagePlaceholder}
+          image={logo?.url}
           resizeMode="cover"
-          style={styles.image}
-          source={ICONS.imagePlaceholder}
+          customStyle={styles.image}
         />
         <View style={styles.jobDetails}>
           <Row spaceBetween>
@@ -196,7 +192,9 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
             {user?.user_type === 'client' &&
             user.details &&
             isClientDetails(user.details) ? (
-              <Text style={styles.postedDate}>Posted by Yash</Text>
+              <Text style={styles.postedDate}>
+                {`Posted by ${client_details?.Name ?? ''}`}
+              </Text>
             ) : (
               <TouchableOpacity onPress={onPress}>
                 <Row style={styles.viewCont}>
