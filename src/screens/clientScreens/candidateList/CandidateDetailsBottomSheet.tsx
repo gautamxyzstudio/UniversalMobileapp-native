@@ -18,10 +18,10 @@ import CandidatesGeneralDetailsView from '@components/client/CandidatesGeneralDe
 import PreUploadedDocCardWithView from '@components/doucment/PreUploadedDocCardWithView';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
-import {ICandidateStatusEnum} from '@utils/enums';
+import {ICandidateStatusEnum, IEmployeeDocsApiKeys} from '@utils/enums';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import {ICandidateTypes} from '@api/features/client/types';
-import {IDocumentStatus, IEmployeeDocsApiKeys} from '@api/features/user/types';
+import {IDocumentStatus} from '@api/features/user/types';
 import {LOCATION_TERNARY} from '@assets/exporter';
 
 interface ICandidateDetailsBottomSheet {

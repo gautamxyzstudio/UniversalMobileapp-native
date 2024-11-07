@@ -7,8 +7,8 @@ import BottomButtonView from '@components/organisms/bottomButtonView';
 import {STRINGS} from 'src/locales/english';
 
 type ICheckinCheckoutBottomSheetProps = {
-  type: 'checkin' | 'checkout';
-  onPressButton: (date: Date, type: 'checkin' | 'checkout') => void;
+  type: 'checkIn' | 'checkOut';
+  onPressButton: (date: Date, type: 'checkIn' | 'checkOut') => void;
 };
 
 const CheckinCheckoutBottomSheet = React.forwardRef<
@@ -16,7 +16,7 @@ const CheckinCheckoutBottomSheet = React.forwardRef<
   ICheckinCheckoutBottomSheetProps
 >(({type, onPressButton}, ref) => {
   const snapPoints = [0.1, 400];
-  const [date, setDate] = useState<Date>(new Date());
+  const [currentDate, setDate] = useState<Date>(new Date());
   const onClose = () => {
     //@ts-ignore
     ref.current?.snapToIndex(0);
@@ -24,17 +24,22 @@ const CheckinCheckoutBottomSheet = React.forwardRef<
 
   const onPressConfirm = () => {
     onClose;
-    onPressButton(date, 'checkin');
+    onPressButton(currentDate, type);
+    setDate(new Date());
   };
 
   return (
     <BaseBottomSheet
-      headerTitle={type === 'checkin' ? 'CheckIn' : 'Checkout'}
+      headerTitle={type === 'checkIn' ? 'CheckIn' : 'Checkout'}
       ref={ref}
       snapPoints={snapPoints}
       onClose={onClose}>
       <View style={styles.container}>
-        <DatePicker date={new Date()} onDateChange={setDate} mode={'time'} />
+        <DatePicker
+          date={currentDate}
+          onDateChange={d => setDate(d)}
+          mode={'time'}
+        />
       </View>
       <BottomButtonView
         disabled={false}

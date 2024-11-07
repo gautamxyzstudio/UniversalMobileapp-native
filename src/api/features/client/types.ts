@@ -77,6 +77,8 @@ export interface ICandidateTypes {
   status: IJobPostStatus;
   jobId: number;
   jobLocation: string;
+  CheckIn?: null | Date;
+  CheckOut?: null | Date;
   employeeDetails: ICandidateListEmployeeDetailsTypes;
 }
 
@@ -97,6 +99,8 @@ export type IGetCandidateListResponse = {
         id: number;
         applicationDate: Date;
         status: IJobPostStatus;
+        CheckIn: null | Date;
+        CheckOut: null | Date;
         jobs: {
           id: number;
           location: string;
@@ -244,4 +248,9 @@ export type INewPostedJobResponse = {
 
 export type IPatchADraft = {
   data: IJobPostInterface;
+};
+
+export type ICheckInOutEmployeesArgs = {
+  CheckIn?: Date;
+  CheckOut?: Date;
 };

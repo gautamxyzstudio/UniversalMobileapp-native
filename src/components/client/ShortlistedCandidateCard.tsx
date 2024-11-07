@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import CardOuter from '@components/atoms/CardOuter';
 import CandidateProfilePictureView from './CandidateProfilePictureView';
 import {ICandidateStatusEnum} from '@utils/enums';
@@ -9,13 +9,29 @@ import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import Spacers from '@components/atoms/Spacers';
 import CustomButton from '@components/molecules/customButton';
 import {useTheme} from '@theme/Theme.context';
-import CheckinCheckoutBottomSheet from './CheckinCheckoutBottomSheet';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {IC_CHECKIN_GREEN, IC_CHECKOUT} from '@assets/exporter';
 
-const ShortlistedCandidateCard = () => {
+type IShortlistedCandidateCardProps = {
+  onPressCard: () => void;
+  name: string;
+  checkInTime?: null | Date;
+  checkOutTime?: null | Date;
+  profilePic: string | null;
+  onPressCheckIn: (type: 'checkIn') => void;
+  onPressCheckOut: (type: 'checkOut') => void;
+};
+
+const ShortlistedCandidateCard: React.FC<IShortlistedCandidateCardProps> = ({
+  onPressCard,
+  name,
+  profilePic,
+  checkInTime,
+  checkOutTime,
+  onPressCheckIn,
+  onPressCheckOut,
+}) => {
   const {theme} = useTheme();
-  const sheetRef = useRef<BottomSheetModal | null>(null);
+
   const [attendance, setAttendance] = useState<{
     checkin: null | Date;
     checkout: null | Date;
@@ -24,29 +40,36 @@ const ShortlistedCandidateCard = () => {
     checkout: null,
   });
 
-  const onPressConfirm = (date: Date, type: 'checkin' | 'checkout') => {
-    setAttendance(prev => ({...prev, type: type}));
-    sheetRef.current?.snapToIndex(0);
-  };
+  useEffect(() => {
+    if (checkInTime) {
+      setAttendance(prev => ({...prev, checkin: new Date(checkInTime)}));
+    }
+    if (checkOutTime) {
+      setAttendance(prev => ({...prev, checkout: new Date(checkOutTime)}));
+    }
+    if (checkInTime && checkOutTime) {
+      setAttendance(prev => ({
+        ...prev,
+        checkin: new Date(checkInTime),
+        checkout: new Date(checkOutTime),
+      }));
+    }
+  }, [checkInTime, checkOutTime]);
+
   return (
-    <CardOuter>
+    <CardOuter onPress={onPressCard}>
       <>
         <Row alignCenter>
           <CandidateProfilePictureView
-            name={'NONE'}
-            url={null}
+            name={name}
+            url={profilePic}
             textSize="small"
             size={verticalScale(32)}
             status={ICandidateStatusEnum.selected}
           />
           <Spacers size={12} scalable type={'horizontal'} />
           <View>
-            <CustomText value={'Ashwani kaur'} size={textSizeEnum.mediumBold} />
-            <CustomText
-              color="disabled"
-              value={'12 May 2024'}
-              size={textSizeEnum.small}
-            />
+            <CustomText value={name} size={textSizeEnum.mediumBold} />
           </View>
         </Row>
         <Spacers type={'vertical'} size={16} scalable />
@@ -79,7 +102,13 @@ const ShortlistedCandidateCard = () => {
                   size={textSizeEnum.small}
                 />
                 <CustomText
-                  value={attendance.checkin?.toLocaleTimeString() ?? '7:00 pm'}
+                  value={
+                    attendance.checkin?.toLocaleTimeString([], {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    }) ?? ''
+                  }
                   size={textSizeEnum.mediumBold}
                 />
               </View>
@@ -89,7 +118,7 @@ const ShortlistedCandidateCard = () => {
               backgroundColor={theme.color.green}
               title="Checkin"
               buttonStyle={styles.button}
-              onButtonPress={() => sheetRef.current?.snapToIndex(1)}
+              onButtonPress={() => onPressCheckIn('checkIn')}
               disabled={false}
             />
           )}
@@ -103,7 +132,13 @@ const ShortlistedCandidateCard = () => {
                   size={textSizeEnum.small}
                 />
                 <CustomText
-                  value={attendance.checkin?.toLocaleTimeString() ?? '7:00 pm'}
+                  value={
+                    attendance.checkin?.toLocaleTimeString([], {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    }) ?? ''
+                  }
                   size={textSizeEnum.mediumBold}
                 />
               </View>
@@ -112,16 +147,12 @@ const ShortlistedCandidateCard = () => {
             <CustomButton
               backgroundColor={theme.color.red}
               title="Checkout"
+              onButtonPress={() => onPressCheckOut('checkOut')}
               buttonStyle={styles.button}
               disabled={false}
             />
           )}
         </Row>
-        <CheckinCheckoutBottomSheet
-          ref={sheetRef}
-          type={'checkin'}
-          onPressButton={onPressConfirm}
-        />
       </>
     </CardOuter>
   );

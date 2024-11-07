@@ -36,6 +36,7 @@ import TextEditorView from '@screens/common/textEditorView';
 import JobPostDrafts from '@screens/clientScreens/jobPostDrafts';
 import ShortListedCandidates from '@screens/clientScreens/shortlistedCandidiates';
 import JobDetailsContextProvider from 'src/contexts/displayJobDetailsContext';
+import ShortlistedCandidateWithContextWrapper from '@components/client/ShortlistedCandidateWithContextWrapper';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -169,7 +170,9 @@ const RootNavigator = () => {
           />
           <Stack.Screen
             name={routNames.shortlistedCandidates}
-            component={ShortListedCandidates as React.ComponentType<any>}
+            component={
+              ShortlistedCandidateWithContextWrapper as React.ComponentType<any>
+            }
           />
         </Stack.Navigator>
       </NavigationContainer>

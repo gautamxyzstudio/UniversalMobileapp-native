@@ -50,4 +50,6 @@ export const apiEndPoints = {
   employeeJobsSearch: (character: string, page: number, pageSize: number) =>
     `${process.env.BASE_URL}/api/jobs?search=${character}&page=${page}&pageSize=${pageSize}`,
   updatePrimaryDocuments: `${process.env.BASE_URL}/api/document-requests`,
+  checkInOutEmployee: (applicationId: number) =>
+    `${process.env.BASE_URL}/api/job-applications/${applicationId}/checkin-checkout`,
 };

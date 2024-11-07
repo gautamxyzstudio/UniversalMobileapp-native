@@ -4,6 +4,7 @@ import {apiEndPoints} from '@api/endpoints';
 import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {
   ICandidateTypes,
+  ICheckInOutEmployeesArgs,
   IDraftResponse,
   IGetCandidateListResponse,
   IJobPostCustomizedResponse,
@@ -297,13 +298,26 @@ const clientApi = baseApiWithTag.injectEndpoints({
               status: candidate.status,
               jobId: candidate.jobs[0]?.id ?? 0,
               jobLocation: candidate.jobs[0]?.location ?? '',
+              CheckIn: candidate?.CheckIn ?? null,
+              CheckOut: candidate?.CheckOut ?? null,
               employeeDetails: {
                 id: candidate?.employee_details[0]?.id ?? 0,
                 name: candidate?.employee_details[0]?.name ?? '',
-                selfie:
-                  (candidate?.employee_details[0]?.selfie &&
-                    candidate?.employee_details[0]?.selfie[0]) ??
-                  null,
+                selfie: candidate?.employee_details[0]?.selfie
+                  ? {
+                      url:
+                        getImageUrl(
+                          candidate?.employee_details[0]?.selfie[0]?.url,
+                        ) ?? '',
+                      mime:
+                        candidate?.employee_details[0]?.selfie[0]?.mime ?? '',
+                      id: candidate?.employee_details[0]?.selfie[0]?.id ?? 0,
+                      name:
+                        candidate?.employee_details[0]?.selfie[0]?.name ?? '',
+                      size:
+                        candidate?.employee_details[0]?.selfie[0]?.size ?? 0,
+                    }
+                  : null,
                 dob: candidate?.employee_details[0]?.dob ?? null,
                 gender: candidate?.employee_details[0]?.dob ?? '',
                 email: candidate?.employee_details[0]?.email ?? '',
@@ -356,6 +370,27 @@ const clientApi = baseApiWithTag.injectEndpoints({
         return jobs;
       },
     }),
+    checkInOutEmployees: builder.mutation<
+      any,
+      {args: ICheckInOutEmployeesArgs; applicationId: number}
+    >({
+      query: (body: {
+        args: ICheckInOutEmployeesArgs;
+        applicationId: number;
+      }) => ({
+        url: apiEndPoints.checkInOutEmployee(body.applicationId),
+        method: apiMethodType.patch,
+        body: body.args,
+      }),
+      transformErrorResponse: (
+        response: IErrorResponse,
+      ): ICustomErrorResponse => {
+        return {
+          statusCode: response.status,
+          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
+        };
+      },
+    }),
   }),
 });
 
@@ -371,5 +406,6 @@ export const {
   useGetPostedJobQuery,
   useSaveAsDraftMutation,
   useLazyGetClosedJobsQuery,
+  useCheckInOutEmployeesMutation,
   useLazyGetDraftsQuery,
 } = clientApi;

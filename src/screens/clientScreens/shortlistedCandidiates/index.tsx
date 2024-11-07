@@ -1,11 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import {useNavigation} from '@react-navigation/native';
 import ShortlistedCandidateCard from '@components/client/ShortlistedCandidateCard';
-import {useLazyGetCandidatesListQuery} from '@api/features/client/clientApi';
+import {
+  useCheckInOutEmployeesMutation,
+  useLazyGetCandidatesListQuery,
+} from '@api/features/client/clientApi';
 import {IGetShortlistedCandidatesParams} from './types';
 import {useDispatch} from 'react-redux';
 import {IC_NO_SHORTLISTED, SEARCH} from '@assets/exporter';
@@ -16,6 +19,14 @@ import ShortlistedCandidateLoadingCard from '@components/client/ShortlistedCandi
 import {mockJobPostsLoading} from '@api/mockData';
 import {ICandidateTypes} from '@api/features/client/types';
 import CustomList from '@components/molecules/customList';
+import CheckinCheckoutBottomSheet from '@components/client/CheckinCheckoutBottomSheet';
+import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import {useUserDetailsViewCandidateListContext} from '../candidateList/UserDetailsViewCandidateList';
+import {timeOutTimeSheets} from 'src/constants/constants';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {ICustomErrorResponse} from '@api/types';
+import {showToast} from '@components/organisms/customToast';
+import {useToast} from 'react-native-toast-notifications';
 
 const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
   route,
@@ -23,13 +34,20 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
   const navigation = useNavigation();
   const styles = useThemeAwareObject(createStyles);
   const dispatch = useDispatch();
+  const [checkInOut] = useCheckInOutEmployeesMutation();
+  const [inputType, setInputType] = useState<'checkIn' | 'checkOut'>('checkIn');
+  const {toast} = useToast();
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedApplication, setSelectedApplication] =
+    useState<ICandidateTypes | null>(null);
+  const {onPressSheet} = useUserDetailsViewCandidateListContext();
   const [shortlistedCandidates, updateShortlistedCandidates] = useState<
     ICandidateTypes[]
   >([]);
   const jobId = route?.params?.jobId;
   const jobName = route?.params?.name;
   const createdAt = route?.params?.createdAt;
+  const sheetRef = useRef<BottomSheetModal | null>(null);
 
   const [getShortlistedCandidates, {isFetching, error}] =
     useLazyGetCandidatesListQuery();
@@ -52,6 +70,17 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
     }
   };
 
+  const onPressButton = (
+    type: 'checkIn' | 'checkOut',
+    item: ICandidateTypes,
+  ) => {
+    setInputType(type);
+    setSelectedApplication(item);
+    setTimeout(() => {
+      sheetRef.current?.snapToIndex(1);
+    }, timeOutTimeSheets);
+  };
+
   const onRefresh = () => {
     setRefreshing(true);
     getApplications(jobId);
@@ -61,9 +90,68 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
     getApplications(jobId);
   }, [jobId]);
 
-  const renderItem = useCallback(() => {
-    return <ShortlistedCandidateCard />;
-  }, [shortlistedCandidates]);
+  const CheckInOutHandler = async (
+    date: Date,
+    type: 'checkIn' | 'checkOut',
+  ) => {
+    if (selectedApplication) {
+      let args: {
+        CheckIn?: Date;
+        CheckOut?: Date;
+      } = {};
+      args[type === 'checkIn' ? 'CheckIn' : 'CheckOut'] = date;
+      setTimeout(async () => {
+        try {
+          dispatch(setLoading(true));
+          const checkInOutRes = await checkInOut({
+            args: args,
+            applicationId: selectedApplication.id,
+          }).unwrap();
+          if (checkInOutRes) {
+            updateShortlistedCandidates(prev => {
+              let prevCandidate = [...prev];
+              let index = prevCandidate.findIndex(
+                c => c.id === selectedApplication.id,
+              );
+              if (index !== -1) {
+                prevCandidate[index] = {
+                  ...prevCandidate[index],
+                  [type === 'checkIn' ? 'CheckIn' : 'CheckOut']: new Date(date),
+                };
+              }
+              return prevCandidate;
+            });
+            console.log(checkInOutRes, 'RESPONSE');
+          }
+        } catch (e) {
+          let err = e as ICustomErrorResponse;
+          showToast(toast, err.message, 'error');
+          console.log(e);
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }, timeOutTimeSheets);
+    }
+  };
+
+  const renderItem = useCallback(
+    ({item}: {item: ICandidateTypes}) => {
+      return (
+        <ShortlistedCandidateCard
+          onPressCard={() =>
+            onPressSheet('show', 'shortlisted', item, item.jobId)
+          }
+          checkInTime={item.CheckIn}
+          checkOutTime={item.CheckOut}
+          name={item.employeeDetails.name}
+          profilePic={item.employeeDetails.selfie?.url ?? ''}
+          onPressCheckIn={type => onPressButton(type, item)}
+          onPressCheckOut={type => onPressButton(type, item)}
+        />
+      );
+    },
+    [shortlistedCandidates],
+  );
   const renderItemLoading = useCallback(() => {
     return <ShortlistedCandidateLoadingCard />;
   }, [shortlistedCandidates]);
@@ -75,7 +163,6 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
       childrenStyles={styles.container}
       rightIcon={SEARCH}
       isSearch
-      // rightIconPressHandler={}
       title={STRINGS.check_in}>
       <CandidateListTopView
         jobName={jobName}
@@ -99,6 +186,11 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
           isLastPage={true}
         />
       </View>
+      <CheckinCheckoutBottomSheet
+        ref={sheetRef}
+        type={inputType}
+        onPressButton={CheckInOutHandler}
+      />
     </OnBoardingBackground>
   );
 };
