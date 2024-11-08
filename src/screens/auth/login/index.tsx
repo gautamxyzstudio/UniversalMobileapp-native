@@ -106,7 +106,7 @@ const Login = () => {
             let userDetails = await getUser();
             if (response.user_type === 'emp') {
               let empDetails = userDetails as IEmployeeDetails;
-              if (empDetails.detailsId !== 0) {
+              if (empDetails?.detailsId) {
                 reduxDispatch(updateEmployeeDetails(empDetails));
                 navigation.reset({
                   index: 0,
@@ -121,7 +121,7 @@ const Login = () => {
             }
             if (response.user_type === 'client') {
               let clientDetails = userDetails as IClientDetails;
-              if (clientDetails.detailsId !== 0) {
+              if (clientDetails?.detailsId) {
                 reduxDispatch(updateClientDetails(clientDetails));
                 if (clientDetails.status === IClientStatus.ACTIVE) {
                   navigation.reset({
