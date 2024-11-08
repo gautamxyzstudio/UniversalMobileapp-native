@@ -3,17 +3,19 @@ import {baseApi} from '@api/baseApi';
 import {apiEndPoints} from '@api/endpoints';
 import {
   IApplyForJobRequest,
+  ICompany,
   ICustomizedJobsResponse,
   ICustomJobPostTypesResponse,
   IGetAppliedJobsResponse,
   IGetJobPostResponse,
-  IGetScheduledJobs,
+  IGetScheduledJobResponse,
   IJobTypes,
   IUpdateEmployeePrimaryDocumentRequest,
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus} from '@utils/enums';
+import {getImageUrl} from '@utils/constants';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -31,6 +33,19 @@ const employeeApi = baseApi.injectEndpoints({
             job.status !== IJobPostStatus.CLOSED &&
             job.notAccepting !== true
           ) {
+            let company: ICompany = {
+              name: job.client_details[0].company_detail.companyname,
+              id: job.client_details[0].company_detail.id,
+              logo: {
+                url: getImageUrl(
+                  job.client_details[0].company_detail.companylogo.url,
+                ),
+                id: job.client_details[0].company_detail.companylogo.id,
+                name: job.client_details[0].company_detail.companylogo.name,
+                size: job.client_details[0].company_detail.companylogo.size,
+                mime: job.client_details[0].company_detail.companylogo.mime,
+              },
+            };
             let details: IJobTypes = {
               job_name: job.job_name,
               endShift: job.endShift,
@@ -50,7 +65,7 @@ const employeeApi = baseApi.injectEndpoints({
               postalCode: job.postalCode,
               gender: job.gender,
               salary: job.salary,
-              client_details: job.client_details[0],
+              company: company,
               required_certificates: job.required_certificates,
               postID: job.postID,
             };
@@ -100,7 +115,7 @@ const employeeApi = baseApi.injectEndpoints({
             id: details.id,
             ...details.jobs[0],
             status: details.status,
-            client_details: details.jobs[0].client_details[0],
+            company: null,
           });
         });
         return {
@@ -121,13 +136,13 @@ const employeeApi = baseApi.injectEndpoints({
       IJobTypes[],
       {id: number; type: IJobPostStatus | null}
     >({
-      query: ({id, type}) => ({
-        url: apiEndPoints.getAppliedJobs(id, type, 1),
+      query: ({id}) => ({
+        url: apiEndPoints.getScheduledJobs(id),
         method: apiMethodType.get,
       }),
-      transformResponse: (response: IGetScheduledJobs): IJobTypes[] => {
+      transformResponse: (response: IGetScheduledJobResponse): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
-        response.forEach(details => {
+        response.data.forEach(details => {
           if (
             details.status === IJobPostStatus.CONFIRMED ||
             details.status === IJobPostStatus.COMPLETED
@@ -136,7 +151,7 @@ const employeeApi = baseApi.injectEndpoints({
               id: details.id,
               ...details.jobs[0],
               status: details.status,
-              client_details: details.jobs[0].client_details[0],
+              company: null,
             });
           }
         });
@@ -176,11 +191,26 @@ const employeeApi = baseApi.injectEndpoints({
         response: IGetJobPostResponse,
       ): ICustomizedJobsResponse => {
         let customizedJobs: IJobTypes[] = [];
+
         response.data.forEach(job => {
           if (
             job.status !== IJobPostStatus.CLOSED &&
+            job.status !== IJobPostStatus.APPLIED &&
             job.notAccepting !== true
           ) {
+            let company: ICompany = {
+              name: job.client_details[0].company_detail.companyname,
+              id: job.client_details[0].company_detail.id,
+              logo: {
+                url: getImageUrl(
+                  job.client_details[0].company_detail.companylogo.url,
+                ),
+                id: job.client_details[0].company_detail.companylogo.id,
+                name: job.client_details[0].company_detail.companylogo.name,
+                size: job.client_details[0].company_detail.companylogo.size,
+                mime: job.client_details[0].company_detail.companylogo.mime,
+              },
+            };
             let details: IJobTypes = {
               job_name: job.job_name,
               endShift: job.endShift,
@@ -200,7 +230,7 @@ const employeeApi = baseApi.injectEndpoints({
               postalCode: job.postalCode,
               gender: job.gender,
               salary: job.salary,
-              client_details: job.client_details[0],
+              company: company,
               required_certificates: job.required_certificates,
               postID: job.postID,
             };

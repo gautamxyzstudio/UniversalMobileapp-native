@@ -1,6 +1,7 @@
 import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
 import {IDoc} from '../user/types';
+import {ICompany} from '../employee/types';
 
 export type IClientSliceInitialState = {
   jobs: {
@@ -43,32 +44,16 @@ export interface IJobPostTypes {
   description: string;
   eventDate: Date;
   endShift: Date;
-  logo?: IDoc | null;
   requiredEmployee?: number;
   status: IJobPostStatus;
   startShift: Date;
   client_details?: {
     id: number;
     Name: string;
-    companyname: string;
-    Industry: string;
     Email: string;
     location: string;
-    company_detail?: {
-      companyname: string;
-      id: number;
-      companylogo:
-        | {
-            url: string | null;
-            mime: string | null;
-            id: number;
-            name: string;
-            size: number | null;
-          }
-        | null
-        | undefined;
-    } | null;
   } | null;
+  company: ICompany | null;
 }
 
 export interface ICandidateTypes {

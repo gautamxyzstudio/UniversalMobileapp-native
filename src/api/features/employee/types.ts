@@ -1,5 +1,5 @@
 import {IDocumentNames, IJobPostStatus, IJobTypesEnum} from '@utils/enums';
-import {IDocumentStatus} from '../user/types';
+import {IDoc, IDocumentStatus} from '../user/types';
 
 export type IEmployeeSliceInitialState = {
   jobs: IJobTypes[];
@@ -31,17 +31,7 @@ export type IJobTypes = {
   requiredEmployee?: number;
   startShift: Date;
   status: IJobPostStatus;
-  client_details:
-    | {
-        id: number;
-        Name: string;
-        companyname: string;
-        Industry: string;
-        Email: string;
-        location: string;
-      }
-    | null
-    | undefined;
+  company: ICompany | null;
   job_applications?: {
     id: number;
     status: IJobPostStatus;
@@ -49,6 +39,12 @@ export type IJobTypes = {
       id: number;
     }[];
   }[];
+};
+
+export type ICompany = {
+  id: number;
+  logo: IDoc | null;
+  name: string | null;
 };
 
 export type ICustomizedJobsResponse = {
@@ -152,6 +148,57 @@ export type IGetAppliedJobsResponse = {
         id: number;
         Name: string;
         companyname: string;
+        Industry: string;
+        Email: string;
+        location: string;
+        company_detail: {
+          companyname: string;
+          id: number;
+          companylogo: {
+            url: string | null;
+            mime?: string;
+            id: number;
+            name: string;
+            size?: number;
+          };
+        };
+      }[];
+    }[];
+  }[];
+  pagination: IPagination;
+};
+
+export type IGetScheduledJobResponse = {
+  data: {
+    id: number;
+    status: IJobPostStatus;
+    jobs: {
+      job_name: string;
+      required_certificates: string[];
+      city: string;
+      state: string;
+      address: string;
+      postalCode: string;
+      postID: number | null;
+      gender: string;
+      salary: string;
+      Event: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+      publishedAt: Date;
+      jobDuties: string;
+      job_type: IJobTypesEnum;
+      location: string;
+      description: string;
+      delete: boolean;
+      status: IJobPostStatus;
+      eventDate: Date;
+      endShift: Date;
+      startShift: Date;
+      client_details: {
+        id: number;
+        Name: string;
+        companyname: string;
         contactno: string;
         Industry: string;
         Email: string;
@@ -159,45 +206,7 @@ export type IGetAppliedJobsResponse = {
       }[];
     }[];
   }[];
-  pagination: IPagination;
 };
-export type IGetScheduledJobs = {
-  id: number;
-  status: IJobPostStatus;
-  jobs: {
-    job_name: string;
-    required_certificates: string[];
-    city: string;
-    state: string;
-    address: string;
-    postalCode: string;
-    postID: number | null;
-    gender: string;
-    salary: string;
-    Event: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    publishedAt: Date;
-    jobDuties: string;
-    job_type: IJobTypesEnum;
-    location: string;
-    description: string;
-    delete: boolean;
-    status: IJobPostStatus;
-    eventDate: Date;
-    endShift: Date;
-    startShift: Date;
-    client_details: {
-      id: number;
-      Name: string;
-      companyname: string;
-      contactno: string;
-      Industry: string;
-      Email: string;
-      location: string;
-    }[];
-  }[];
-}[];
 
 export type IGetJobPostResponse = {
   data: {
@@ -211,6 +220,17 @@ export type IGetJobPostResponse = {
       Industry: string;
       Email: string;
       location: string;
+      company_detail: {
+        companyname: string;
+        id: number;
+        companylogo: {
+          url: string | null;
+          mime?: string;
+          id: number;
+          name: string;
+          size?: number;
+        };
+      };
     }[];
     createdAt: Date;
     delete: null;

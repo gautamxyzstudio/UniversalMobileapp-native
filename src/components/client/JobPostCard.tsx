@@ -62,14 +62,13 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     publishedAt,
     location,
     job_type,
-    logo,
     id,
     client_details,
     eventDate,
     notAccepting,
     status,
     startShift,
-
+    company,
     endShift,
     city,
     salary,
@@ -80,7 +79,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
       <Row alignCenter style={styles.topView}>
         <CustomImageComponent
           defaultSource={ICONS.imagePlaceholder}
-          image={logo?.url}
+          image={company?.logo?.url ?? null}
           resizeMode="cover"
           customStyle={styles.image}
         />
@@ -112,9 +111,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
                   )}
                 </>
               ) : (
-                <Text style={styles.postedDate}>
-                  {client_details?.companyname}
-                </Text>
+                <Text style={styles.postedDate}>{company?.name}</Text>
               )}
             </View>
             <Row alignCenter style={styles.statusRow}>

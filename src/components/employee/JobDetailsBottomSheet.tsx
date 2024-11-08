@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useMemo, useState} from 'react';
 import {BaseBottomSheet} from '@components/molecules/bottomsheet';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
@@ -42,6 +42,7 @@ import JobDetailsKey from './JobDetailsKeys';
 import {useTheme} from '@theme/Theme.context';
 import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';
 import {ActivityIndicator} from 'react-native-paper';
+import CustomImageComponent from '@components/atoms/customImage';
 
 type IJobDetailsBottomSheetProps = {
   jobDetails: IJobPostTypes | null;
@@ -65,8 +66,6 @@ const JobDetailsBottomSheet = React.forwardRef<
   const user = useSelector(userBasicDetailsFromState);
   const snapPoints = useMemo(() => [0.01, modalHeight], [modalHeight]);
 
-  console.log(isLoading, jobDetails);
-
   useEffect(() => {
     if (jobDetails) {
       setIsLoading(true);
@@ -86,9 +85,9 @@ const JobDetailsBottomSheet = React.forwardRef<
 
   const companyName = useMemo(() => {
     return user?.user_type === 'emp'
-      ? details?.client_details?.companyname
+      ? details?.company?.name
       : companyDetails?.companyName;
-  }, [user?.user_type, details?.client_details, companyDetails?.companyName]);
+  }, [details?.company]);
 
   const shiftTime = useMemo(() => {
     return `${extractTimeFromDate(
@@ -168,17 +167,13 @@ const JobDetailsBottomSheet = React.forwardRef<
               showsVerticalScrollIndicator={false}
               stickyHeaderIndices={[4]}
               contentContainerStyle={styles.scrollView}>
-              {/* <CustomImageComponent
-      defaultSource={ICONS.imagePlaceholder}
-      image={details.banner}
-      resizeMode="cover"
-      customStyle={styles.profilePicture}
-    /> */}
-              <Image
-                style={styles.profilePicture}
+              <CustomImageComponent
+                defaultSource={ICONS.imagePlaceholder}
+                image={details?.company?.logo?.url ?? ''}
                 resizeMode="cover"
-                source={ICONS.imagePlaceholder}
+                customStyle={styles.profilePicture}
               />
+
               <Text style={styles.title}>{details?.job_name}</Text>
               <Text style={styles.jobName}>{companyName}</Text>
               <Row style={styles.location} alignCenter>

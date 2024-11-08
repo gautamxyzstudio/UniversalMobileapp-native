@@ -52,4 +52,6 @@ export const apiEndPoints = {
   updatePrimaryDocuments: `${process.env.BASE_URL}/api/document-requests`,
   checkInOutEmployee: (applicationId: number) =>
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/checkin-checkout`,
+  getScheduledJobs: (emplyeeId: number) =>
+    `${process.env.BASE_URL}/api/job-applications/scheduled/${emplyeeId}`,
 };
