@@ -245,6 +245,7 @@ export const STRINGS = {
   post: 'Post',
   draft: 'Draft',
   check_in: 'Check In',
+  check_out: 'Check Out',
   applicants: 'Applicants',
   view_details: 'View Details',
   stop: 'Stop',

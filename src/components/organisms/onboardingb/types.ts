@@ -12,6 +12,9 @@ export interface IOnboardingProps {
   isProfile?: boolean;
   rightIconPressHandler?: () => void;
   rightIcon?: React.FC<SvgProps>;
+  searchValue?: string;
+  onChangeSearchValue?: (e: string | undefined) => void;
+  onPressSearchCross?: () => void;
   isSearch?: boolean;
   childrenStyles?: StyleProp<ViewStyle>;
 }

@@ -63,6 +63,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
     location,
     job_type,
     logo,
+    id,
     client_details,
     eventDate,
     notAccepting,
@@ -137,7 +138,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
             {!isDraft && (
               <Row alignCenter>
                 <JOB_ID width={verticalScale(20)} height={verticalScale(20)} />
-                <Text style={styles.locationText}>S2</Text>
+                <Text style={styles.locationText}>{id}</Text>
               </Row>
             )}
           </>

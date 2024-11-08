@@ -34,8 +34,6 @@ const EmployeeProfile = () => {
     userAdvanceDetailsFromState,
   ) as IEmployeeDetails;
 
-  console.log(JSON.stringify(userAdvDetails), 'ASD');
-
   const popupRef = useRef<customModalRef>(null);
 
   const onPressLogoutTab = useCallback(() => {

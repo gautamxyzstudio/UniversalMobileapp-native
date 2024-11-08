@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet, View} from 'react-native';
+import {View} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
-import {useNavigation} from '@react-navigation/native';
 import ShortlistedCandidateCard from '@components/client/ShortlistedCandidateCard';
 import {
   useCheckInOutEmployeesMutation,
@@ -31,13 +30,16 @@ import {useToast} from 'react-native-toast-notifications';
 const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
   route,
 }) => {
-  const navigation = useNavigation();
   const styles = useThemeAwareObject(createStyles);
   const dispatch = useDispatch();
+  const [search, updateSearch] = useState<string | undefined>('');
   const [checkInOut] = useCheckInOutEmployeesMutation();
   const [inputType, setInputType] = useState<'checkIn' | 'checkOut'>('checkIn');
-  const {toast} = useToast();
+  const toast = useToast();
   const [refreshing, setRefreshing] = useState(false);
+  const [filteredApplications, setFilteredApplications] = useState<
+    ICandidateTypes[] | null
+  >(null);
   const [selectedApplication, setSelectedApplication] =
     useState<ICandidateTypes | null>(null);
   const {onPressSheet} = useUserDetailsViewCandidateListContext();
@@ -60,6 +62,7 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
           jobId: jId,
         }).unwrap();
         if (applicants) {
+          setFilteredApplications(applicants);
           updateShortlistedCandidates(applicants);
         }
       } catch (err) {
@@ -89,6 +92,23 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
   useEffect(() => {
     getApplications(jobId);
   }, [jobId]);
+
+  useEffect(() => {
+    if (search && search?.length > 0) {
+      let filtered = shortlistedCandidates?.filter(candidate =>
+        candidate.employeeDetails.name
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      );
+      setFilteredApplications(filtered);
+    } else {
+      setFilteredApplications(shortlistedCandidates);
+    }
+  }, [search]);
+
+  console.log('===================================---========------=-=-=-=');
+  console.log(filteredApplications);
+  console.log('===================================---========------=-=-=-=');
 
   const CheckInOutHandler = async (
     date: Date,
@@ -121,7 +141,11 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
               }
               return prevCandidate;
             });
-            console.log(checkInOutRes, 'RESPONSE');
+            showToast(
+              toast,
+              `${type === 'checkIn' ? 'Check-in' : 'Check-out'} successful`,
+              'success',
+            );
           }
         } catch (e) {
           let err = e as ICustomErrorResponse;
@@ -150,16 +174,20 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
         />
       );
     },
-    [shortlistedCandidates],
+    [ShortListedCandidates],
   );
+
   const renderItemLoading = useCallback(() => {
     return <ShortlistedCandidateLoadingCard />;
-  }, [shortlistedCandidates]);
+  }, []);
 
   return (
     <OnBoardingBackground
       isInlineTitle
       displayRightIcon
+      searchValue={search}
+      onChangeSearchValue={e => updateSearch(e)}
+      onPressSearchCross={() => updateSearch('')}
       childrenStyles={styles.container}
       rightIcon={SEARCH}
       isSearch
@@ -176,8 +204,9 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
           contentContainerStyle={styles.list}
           estimatedItemSize={196}
           onRefresh={onRefresh}
-          refreshing
-          data={isFetching ? mockJobPostsLoading : shortlistedCandidates}
+          getItemType={(item: any) => `${item?.id}`}
+          refreshing={refreshing}
+          data={isFetching ? mockJobPostsLoading : filteredApplications}
           renderItem={isFetching ? renderItemLoading : renderItem}
           emptyListMessage={STRINGS.no_shortlisted}
           emptyListIllustration={IC_NO_SHORTLISTED}
@@ -196,5 +225,3 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
 };
 
 export default ShortListedCandidates;
-
-const styles = StyleSheet.create({});

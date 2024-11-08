@@ -21,6 +21,7 @@ type ICandidateListTopViewProps = {
   onPressFilter?: () => void;
   jobName: string;
   index?: number;
+
   jobId: number;
   creationDate?: Date;
   withSwitch?: boolean;
@@ -32,6 +33,7 @@ const CandidateListTopView: React.FC<ICandidateListTopViewProps> = ({
   index,
   jobName,
   onPressTab,
+
   creationDate,
   withSwitch = true,
   withSegmentView = true,

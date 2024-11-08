@@ -25,6 +25,9 @@ import Animated, {
 const OnBoardingBackground: React.FC<IOnboardingProps> = ({
   children,
   title,
+  searchValue,
+  onChangeSearchValue,
+  onPressSearchCross,
   subTitle,
   isInlineTitle,
   rightIcon,
@@ -76,6 +79,7 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
   };
 
   const onPressBackSearch = () => {
+    onPressSearchCross && onPressSearchCross();
     searchAnimatedValue.value = withSpring(0, {
       damping: 10,
     });
@@ -125,10 +129,18 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
               <TextInput
                 style={styles.input}
                 left={<TextInput.Icon color={'#000'} icon={ICONS.search} />}
-                // right={
-                //   <TextInput.Icon color={'#000'} icon={ICONS.searchCross} />
-                // }
+                right={
+                  searchValue && (
+                    <TextInput.Icon
+                      onPress={onPressSearchCross}
+                      color={'#000'}
+                      icon={ICONS.searchCross}
+                    />
+                  )
+                }
                 mode="flat"
+                value={searchValue}
+                onChangeText={onChangeSearchValue}
                 cursorColor="#000"
                 underlineColor="#FFC094"
                 activeUnderlineColor="#FFC094"

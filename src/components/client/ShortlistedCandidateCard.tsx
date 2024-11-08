@@ -41,17 +41,21 @@ const ShortlistedCandidateCard: React.FC<IShortlistedCandidateCardProps> = ({
   });
 
   useEffect(() => {
-    if (checkInTime) {
-      setAttendance(prev => ({...prev, checkin: new Date(checkInTime)}));
-    }
-    if (checkOutTime) {
-      setAttendance(prev => ({...prev, checkout: new Date(checkOutTime)}));
-    }
     if (checkInTime && checkOutTime) {
       setAttendance(prev => ({
         ...prev,
         checkin: new Date(checkInTime),
         checkout: new Date(checkOutTime),
+      }));
+    } else if (checkOutTime) {
+      setAttendance(prev => ({...prev, checkout: new Date(checkOutTime)}));
+    } else if (checkInTime) {
+      setAttendance(prev => ({...prev, checkin: new Date(checkInTime)}));
+    } else {
+      setAttendance(prev => ({
+        ...prev,
+        checkin: null,
+        checkout: null,
       }));
     }
   }, [checkInTime, checkOutTime]);
@@ -127,13 +131,13 @@ const ShortlistedCandidateCard: React.FC<IShortlistedCandidateCardProps> = ({
               <IC_CHECKOUT />
               <View style={styles.view}>
                 <CustomText
-                  value={'Checkin'}
+                  value={'Checkout'}
                   color="disabled"
                   size={textSizeEnum.small}
                 />
                 <CustomText
                   value={
-                    attendance.checkin?.toLocaleTimeString([], {
+                    attendance.checkout?.toLocaleTimeString([], {
                       hour: 'numeric',
                       minute: '2-digit',
                       hour12: true,

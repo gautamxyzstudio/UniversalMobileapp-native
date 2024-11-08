@@ -23,9 +23,11 @@ const CheckinCheckoutBottomSheet = React.forwardRef<
   };
 
   const onPressConfirm = () => {
-    onClose;
-    onPressButton(currentDate, type);
-    setDate(new Date());
+    onClose();
+    setTimeout(() => {
+      onPressButton(currentDate, type);
+      setDate(new Date());
+    }, 200);
   };
 
   return (
@@ -44,7 +46,7 @@ const CheckinCheckoutBottomSheet = React.forwardRef<
       <BottomButtonView
         disabled={false}
         secondaryButtonTitles={STRINGS.cancel}
-        title={STRINGS.check_in}
+        title={type === 'checkIn' ? STRINGS.check_in : STRINGS.check_out}
         isMultiple
         onPressSecondaryButton={onClose}
         onButtonPress={onPressConfirm}
