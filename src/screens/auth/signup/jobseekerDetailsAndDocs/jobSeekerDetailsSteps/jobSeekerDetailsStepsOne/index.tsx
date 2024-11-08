@@ -2,6 +2,7 @@ import {StyleSheet, TextInput, View, findNodeHandle} from 'react-native';
 import React, {
   forwardRef,
   memo,
+  useCallback,
   useImperativeHandle,
   useReducer,
   useRef,
@@ -16,12 +17,16 @@ import CustomTextInput from '@components/atoms/customtextInput';
 import Spacers from '@components/atoms/Spacers';
 import PhoneNumberInput from '@components/molecules/InputTypes/PhoneNumberInput';
 import DatePickerInput from '@components/molecules/datepickerInput';
-import {mockGenders, mockWorkStatus} from '@api/mockData';
+import {mockGenders, mockWorkStatus, provincesAndCities} from '@api/mockData';
 import {userDetailsStep1Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {getWorkStatusCodeFromText} from '@utils/constants';
+import LocationInput from '@components/molecules/InputTypes/locationInput';
+import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
+import {verticalScale} from '@utils/metrics';
 
 const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
@@ -33,6 +38,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
   const genderRef = useRef<TextInput>(null);
   const workStatusRef = useRef<TextInput>(null);
   const userDetails = useSelector(userBasicDetailsFromState);
+  const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const [state, setState] = useReducer(
     (
       prev: IJobSeekerDetailsStepsOneState,
@@ -62,6 +68,11 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
       phoneError: '',
       cityError: '',
     },
+  );
+
+  const displayModal = useCallback(
+    () => bottomSheetRef.current?.snapToIndex(1),
+    [],
   );
 
   useImperativeHandle(ref, () => ({
@@ -211,13 +222,19 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           onChangeText={e => setState({...state, address: e, addressError: ''})}
         />
         <Spacers type={'vertical'} size={16} />
-        <CustomTextInput
+        <LocationInput
+          onPress={displayModal}
+          value={state.city}
+          errorMessage={state.cityError}
+        />
+        {/* <CustomTextInput
           value={state.city}
           ref={cityRef}
           title={STRINGS.city}
           errorMessage={state.cityError}
           onChangeText={e => setState({...state, city: e, cityError: ''})}
-        />
+        /> */}
+
         <Spacers type={'vertical'} size={16} />
         <DropdownComponent
           title={STRINGS.gender}
@@ -245,6 +262,17 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           data={mockWorkStatus}
         />
         <Spacers type={'vertical'} size={48} />
+        <FilterListBottomSheet
+          ref={bottomSheetRef}
+          buttonTitle={STRINGS.select}
+          filters={provincesAndCities}
+          snapPoints={[0.01, verticalScale(698)]}
+          title={STRINGS.select_location}
+          isMultiSelect={false}
+          getAppliedFilters={value =>
+            setState({...state, city: value[0], cityError: ''})
+          }
+        />
       </KeyboardAwareScrollView>
     </View>
   );
