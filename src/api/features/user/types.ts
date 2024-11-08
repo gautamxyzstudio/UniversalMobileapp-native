@@ -190,7 +190,7 @@ export type IUpdateClientDetailsResponse = {
       Industry: string;
       location: string;
       Email: string;
-      status: string;
+      status: IClientStatus;
     } | null;
   };
 };

@@ -69,6 +69,7 @@ const HomeTopView = ({
       <Animated.View style={[styles.container, withSearch && containerStyles]}>
         <View>
           <Text
+            numberOfLines={1}
             style={[
               fonts.heading,
               styles.heading,

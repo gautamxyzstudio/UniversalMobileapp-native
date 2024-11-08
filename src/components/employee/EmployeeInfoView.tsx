@@ -38,7 +38,9 @@ const EmployeeInfoView: React.FC<IEmployeeInfoViewProps> = ({
           status={ICandidateStatusEnum.pending}
         />
         <View style={styles.userDetails}>
-          <Text style={styles.userName}>{name}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userName}>
+            {name}
+          </Text>
           {cpName && <Text style={styles.company}>{cpName}</Text>}
           <Text style={styles.email}>{email}</Text>
         </View>
@@ -69,6 +71,7 @@ const getStyles = ({color}: Theme) => {
     userName: {
       color: color.textPrimary,
       ...fonts.headingSmall,
+      width: '90%',
       fontFamily: fontFamily.regular,
     },
     email: {

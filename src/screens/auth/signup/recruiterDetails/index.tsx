@@ -108,7 +108,8 @@ const RecruiterDetails = () => {
               detailsId: response.data.id ?? 0,
               location: response.data.attributes?.location ?? '',
               contactNo: response.data.attributes?.contactno ?? '',
-              status: response.data.attributes?.status ?? '',
+              status: response.data.attributes?.status ?? IClientStatus.PENDING,
+              company: null,
             };
             reduxDispatch(updateClientDetails(details));
             navigation.reset({
