@@ -106,10 +106,6 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
     }
   }, [search]);
 
-  console.log('===================================---========------=-=-=-=');
-  console.log(filteredApplications);
-  console.log('===================================---========------=-=-=-=');
-
   const CheckInOutHandler = async (
     date: Date,
     type: 'checkIn' | 'checkOut',
@@ -128,17 +124,22 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
             applicationId: selectedApplication.id,
           }).unwrap();
           if (checkInOutRes) {
-            updateShortlistedCandidates(prev => {
-              let prevCandidate = [...prev];
-              let index = prevCandidate.findIndex(
-                c => c.id === selectedApplication.id,
-              );
-              if (index !== -1) {
-                prevCandidate[index] = {
-                  ...prevCandidate[index],
-                  [type === 'checkIn' ? 'CheckIn' : 'CheckOut']: new Date(date),
-                };
+            setFilteredApplications(prev => {
+              let prevCandidate: ICandidateTypes[] | null = prev;
+              if (prevCandidate) {
+                let index = prevCandidate.findIndex(
+                  c => c.id === selectedApplication.id,
+                );
+                if (index !== -1) {
+                  prevCandidate[index] = {
+                    ...prevCandidate[index],
+                    [type === 'checkIn' ? 'CheckIn' : 'CheckOut']: new Date(
+                      date,
+                    ),
+                  };
+                }
               }
+
               return prevCandidate;
             });
             showToast(

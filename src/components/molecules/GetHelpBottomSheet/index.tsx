@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import {BaseBottomSheet} from '../bottomsheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {verticalScale} from '@utils/metrics';
@@ -12,11 +12,15 @@ import Spacers from '@components/atoms/Spacers';
 import {useKeyboardHeight} from 'src/hooks/useKeyboardHeight';
 import CustomButton from '../customButton';
 import {Row} from '@components/atoms/Row';
+import {useToast} from 'react-native-toast-notifications';
+import {showToast} from '@components/organisms/customToast';
 
 const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
   ({}, ref) => {
     const modalHeight = verticalScale(336);
+    const [searchVal, setSearchVal] = useState('');
     const styles = useThemeAwareObject(createStyles);
+    const toast = useToast();
     const keyboardHeight = useKeyboardHeight();
     const snapPoints = useMemo(
       () => [0.01, modalHeight, modalHeight + keyboardHeight],
@@ -28,9 +32,10 @@ const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
       ref.current?.snapToIndex(0);
     };
 
-    const onFocus = () => {
-      // @ts-ignore
-      ref.current.snapToIndex(2);
+    const onPressSubmit = () => {
+      onClose();
+      setSearchVal('');
+      showToast(toast, 'Issue submitted successfully', 'success');
     };
 
     return (
@@ -42,11 +47,10 @@ const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
             <CustomTextInput
               placeholder={STRINGS.type_your_issue}
               title={''}
-              isMultiline
+              value={searchVal}
+              onTextChange={e => setSearchVal(e)}
               hideTitle
-              onFocus={onFocus}
               numberOfLines={5}
-              multiline={true}
               textAlignVertical="top"
               errorMessage={''}
             />
@@ -55,11 +59,13 @@ const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
             <CustomButton
               type="outline"
               buttonStyle={styles.button}
+              onButtonPress={onClose}
               title={STRINGS.cancel}
               disabled={false}
             />
             <CustomButton
               buttonStyle={styles.button}
+              onButtonPress={onPressSubmit}
               title={STRINGS.send}
               disabled={false}
             />
