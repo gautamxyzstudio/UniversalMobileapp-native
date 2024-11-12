@@ -98,6 +98,28 @@ export const getHistoryEndDate = () => {
   return endDate;
 };
 
+export const dateFormatterToMonthDate = (
+  startDateStr: string | null,
+  endDateStr: string | null,
+) => {
+  if (startDateStr && endDateStr) {
+    const startDate = moment(startDateStr, 'YYYY-MM-DD');
+    const endDate = moment(endDateStr, 'YYYY-MM-DD');
+
+    let formattedRange;
+    if (startDate.isSame(endDate, 'month')) {
+      formattedRange = `${startDate.format('MMM D')} - ${endDate.format('D')}`;
+    } else {
+      formattedRange = `${startDate.format('MMM D')} - ${endDate.format(
+        'MMM D',
+      )}`;
+    }
+    return formattedRange;
+  } else {
+    return null;
+  }
+};
+
 export const getFileExtension = (
   fileName: string | undefined,
 ): string | 'pdf' | 'docx' | undefined => {

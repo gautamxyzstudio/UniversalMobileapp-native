@@ -1,4 +1,4 @@
-import {LogBox, Platform, StatusBar, StyleSheet, View} from 'react-native';
+import {LogBox, StatusBar, StyleSheet, View} from 'react-native';
 import React, {useEffect} from 'react';
 
 import {Provider} from 'react-redux';
@@ -73,24 +73,24 @@ const App = () => {
       <SafeAreaProvider>
         <View style={styles.container}>
           <Provider store={store}>
-            <PortalProvider>
-              <KeyboardProvider>
-                <PersistGate loading={null} persistor={persistor}>
-                  <ToastProvider
-                    placement="bottom"
-                    duration={3000}
-                    animationType="zoom-in"
-                    renderToast={toast => <CustomToast toast={toast} />}
-                    swipeEnabled>
-                    <PaperProvider theme={paperTheme}>
+            <PaperProvider theme={paperTheme}>
+              <PortalProvider>
+                <KeyboardProvider>
+                  <PersistGate loading={null} persistor={persistor}>
+                    <ToastProvider
+                      placement="bottom"
+                      duration={3000}
+                      animationType="zoom-in"
+                      renderToast={toast => <CustomToast toast={toast} />}
+                      swipeEnabled>
                       <LoaderWrapper>
                         <RootNavigator />
                       </LoaderWrapper>
-                    </PaperProvider>
-                  </ToastProvider>
-                </PersistGate>
-              </KeyboardProvider>
-            </PortalProvider>
+                    </ToastProvider>
+                  </PersistGate>
+                </KeyboardProvider>
+              </PortalProvider>
+            </PaperProvider>
           </Provider>
         </View>
         <StatusBar translucent={true} backgroundColor="transparent" />

@@ -5,22 +5,42 @@ import {Row} from '@components/atoms/Row';
 import {IC_CROSS} from '@assets/exporter';
 import {verticalScale} from '@utils/metrics';
 import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
+import {STRINGS} from 'src/locales/english';
+import {dateFormatterToMonthDate} from '@utils/utils.common';
 
 const EmployeeHomeChip = ({
   title,
   onPressCross,
+  startDate,
+  endDate,
 }: {
   title: string;
   onPressCross: (text: string) => void;
+  startDate: string | null;
+  endDate: string | null;
 }) => {
   const styles = useThemeAwareObject(createStyles);
+  let dateRange = dateFormatterToMonthDate(startDate, endDate);
+
   return (
-    <Row alignCenter style={styles.container}>
-      <CustomText value={title} size={textSizeEnum.regular} />
-      <TouchableOpacity onPress={() => onPressCross(title)}>
-        <IC_CROSS width={verticalScale(20)} height={verticalScale(20)} />
-      </TouchableOpacity>
-    </Row>
+    <>
+      {title === STRINGS.customDate && (
+        <Row alignCenter style={styles.container}>
+          <CustomText value={dateRange ?? ''} size={textSizeEnum.regular} />
+          <TouchableOpacity onPress={() => onPressCross(title)}>
+            <IC_CROSS width={verticalScale(20)} height={verticalScale(20)} />
+          </TouchableOpacity>
+        </Row>
+      )}
+      {title !== STRINGS.customDate && (
+        <Row alignCenter style={styles.container}>
+          <CustomText value={title} size={textSizeEnum.regular} />
+          <TouchableOpacity onPress={() => onPressCross(title)}>
+            <IC_CROSS width={verticalScale(20)} height={verticalScale(20)} />
+          </TouchableOpacity>
+        </Row>
+      )}
+    </>
   );
 };
 

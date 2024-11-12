@@ -44,3 +44,26 @@ export interface ICompanyDetails {
   industry: string;
   poster: string;
 }
+
+export const getJobsEmployeeUrl = (
+  pageNumber: number,
+  event_type: null | 'static' | 'event',
+  startDate: null | string,
+  endDate: null | string,
+  location: null | string,
+) => {
+  const baseUrl = `${process.env.BASE_URL}/api/Jobs`;
+  const queryParams = new URLSearchParams();
+
+  if (startDate) queryParams.append('startDate', startDate);
+  if (endDate) queryParams.append('endDate', endDate);
+  if (event_type) queryParams.append('job_type', event_type);
+  if (location) queryParams.append('city', location);
+
+  // Add fixed parameters
+  queryParams.append('sort', 'createdAt:desc');
+  queryParams.append('[page]', pageNumber.toString());
+  queryParams.append('[pageSize]', '10');
+
+  return `${baseUrl}?${queryParams.toString()}`;
+};

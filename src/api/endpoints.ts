@@ -27,8 +27,15 @@ export const apiEndPoints = {
     event_type: null | 'static' | 'event',
     startDate: null | string,
     endDate: null | string,
+    location: null | string,
   ) => {
-    if (startDate && endDate && event_type) {
+    if (startDate && endDate && event_type && location) {
+      return `${
+        process.env.BASE_URL
+      }/api/Jobs?startDate=${startDate}&endDate=${endDate}&job_type=${event_type}&city=${location}&sort=createdAt:desc&[page]=${
+        pageNumber ?? 1
+      }&[pageSize]=10`;
+    } else if (startDate && endDate && event_type) {
       return `${
         process.env.BASE_URL
       }/api/Jobs?startDate=${startDate}&endDate=${endDate}&job_type=${event_type}&sort=createdAt:desc&[page]=${
@@ -42,6 +49,8 @@ export const apiEndPoints = {
       }&[pageSize]=10`;
     } else if (event_type) {
       return `${process.env.BASE_URL}/api/jobs?job_type=${event_type}&sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
+    } else if (location) {
+      return `${process.env.BASE_URL}/api/jobs?city=${location}&sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
     } else {
       return `${process.env.BASE_URL}/api/jobs?sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
     }

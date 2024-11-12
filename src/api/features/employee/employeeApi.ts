@@ -26,6 +26,7 @@ const employeeApi = baseApi.injectEndpoints({
         event: 'event' | 'static' | null;
         startDate: string | null;
         endDate: string | null;
+        location: string | null;
       }
     >({
       query: (body: {
@@ -33,12 +34,14 @@ const employeeApi = baseApi.injectEndpoints({
         event: 'event' | 'static' | null;
         startDate: string | null;
         endDate: string | null;
+        location: string | null;
       }) => ({
         url: apiEndPoints.getJobsEmployee(
           body.pageNumber,
           body.event,
           body.startDate,
           body.endDate,
+          body.location,
         ),
         method: apiMethodType.get,
       }),

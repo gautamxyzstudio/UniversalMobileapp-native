@@ -45,6 +45,7 @@ const EmployeeHome = () => {
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
+  const [locations, setLocations] = useState<string[]>([]);
   const scrollY = useSharedValue(0);
   const [getJobs, {isLoading, error}] = useLazyFetchJobsQuery();
   const jobsInState = useSelector(jobsFromState);
@@ -71,7 +72,7 @@ const EmployeeHome = () => {
     dispatch(setLoading(true));
     setIsLastPage(true);
     getJobsPosts(true);
-  }, [jobType, filterDate.startDate, filterDate.endDate]);
+  }, [jobType, filterDate.startDate, filterDate.endDate, locations]);
 
   // to set the data after from redux after  api call
   useEffect(() => {
@@ -105,6 +106,7 @@ const EmployeeHome = () => {
         event: jobType,
         startDate: filterDate.startDate,
         endDate: filterDate.endDate,
+        location: locations.join(','),
       }).unwrap();
       if (usersJobsResponse) {
         dispatch(
@@ -264,6 +266,8 @@ const EmployeeHome = () => {
               key={index}
               title={filter}
               onPressCross={onPressCrossFilter}
+              startDate={filterDate.startDate}
+              endDate={filterDate.endDate}
             />
           ))}
       </Row>
@@ -307,7 +311,7 @@ const EmployeeHome = () => {
         selectionType="multiSelect"
         filters={provincesAndCities}
         snapPoints={[0.01, verticalScale(698)]}
-        getAppliedFilters={() => console.log('Applied filters')}
+        getAppliedFilters={value => setLocations(value)}
       />
       <FilterListBottomSheet
         ref={homeFilterSheetRef}
