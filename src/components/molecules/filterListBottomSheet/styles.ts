@@ -45,6 +45,12 @@ export const getStyles = (theme: Theme) => {
       alignItems: 'flex-start',
       gap: verticalScale(16),
     },
+    secondaryButton: {
+      borderWidth: 0,
+    },
+    secondaryButtonTitleStyles: {
+      ...fonts.mediumBold,
+    },
   });
   return styles;
 };

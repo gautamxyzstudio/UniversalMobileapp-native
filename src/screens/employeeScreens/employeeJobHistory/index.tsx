@@ -1,4 +1,4 @@
-import {StatusBar, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
@@ -10,8 +10,6 @@ import JobHistorySelectedRange from '@components/employee/JobHistorySelectedRang
 import {verticalScale} from '@utils/metrics';
 import Spacers from '@components/atoms/Spacers';
 import {CalendarDate} from 'react-native-paper-dates/lib/typescript/Date/Calendar';
-import {userMockJobs} from '@api/mockData';
-import CustomList from '@components/molecules/customList';
 import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
 import {useTheme} from '@theme/Theme.context';
 const EmployeeJobHistory = () => {

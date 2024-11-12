@@ -133,7 +133,7 @@ const RegisterNewCompany = () => {
         filters={provincesAndCities}
         snapPoints={[0.01, verticalScale(698)]}
         title={STRINGS.select_location}
-        isMultiSelect={false}
+        selectionType="singleOptionSelect"
         getAppliedFilters={() => console.log('hello world')}
       />
     </SafeAreaView>

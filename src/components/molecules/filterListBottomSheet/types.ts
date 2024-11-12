@@ -2,9 +2,15 @@ export type IFilterListBottomSheetProps = {
   filters: IFilterSheet[];
   snapPoints: number[];
   title?: string;
-  isMultiSelect?: boolean;
-  getAppliedFilters: (values: string[]) => void;
+  selectionType: 'multiSelect' | 'singleSelect' | 'singleOptionSelect';
+  initialSelectedOptions?: string[];
+  getAppliedFilters: (
+    values: string[],
+    dateRange?: {startDate: Date; endDate: Date},
+  ) => void;
   buttonTitle?: string;
+  onPressClear?: () => void;
+  filterDate?: {startDate: Date; endDate: Date};
 };
 
 export type IFilterSheet = {
@@ -17,4 +23,7 @@ export type filterValue = {
   id: number;
   subTitle: string;
   isSelected?: boolean;
+  rowId: number;
 };
+
+export type ISelectedOption = Map<string, filterValue>;

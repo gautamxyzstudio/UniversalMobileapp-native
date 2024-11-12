@@ -33,6 +33,10 @@ export const dateFormatter = (date: Date) => {
   const UtcDate = moment(date);
   return UtcDate.format('DD-MM-YYYY');
 };
+export const dateFormatterRev = (date: Date) => {
+  const UtcDate = moment(date);
+  return UtcDate.format('YYYY-MM-DD');
+};
 
 export const timeFormatter = (date: Date) => {
   const UtcDate = moment(date);
@@ -84,7 +88,7 @@ export const convertBytesToMB = (bytes: number) => {
 
 export const getHistoryStartDate = () => {
   const startDate = new Date(new Date().getFullYear() - 1, 0, 1);
-  console.log(startDate, 'start Date');
+
   return startDate;
 };
 

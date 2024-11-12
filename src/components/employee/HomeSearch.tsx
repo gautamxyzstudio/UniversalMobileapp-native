@@ -11,21 +11,40 @@ import IconWithBackground from '@components/atoms/IconWithbackground';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 
-const HomeSearch = () => {
+type IHomeSearchProps = {
+  onPressFilters: () => void;
+  isFilterApplied?: boolean;
+};
+
+const HomeSearch: React.FC<IHomeSearchProps> = ({
+  onPressFilters,
+  isFilterApplied,
+}) => {
   const styles = useThemeAwareObject(createStyles);
   const navigation = useNavigation<NavigationProps>();
+
+  const onPressSearch = () => {
+    navigation.navigate('employeeSearch');
+  };
   return (
-    <Pressable
-      onPress={() => navigation.navigate('employeeSearch')}
-      style={styles.container}>
-      <Row alignCenter>
-        <View style={styles.searchContainer}>
-          <SEARCH_HOME width={verticalScale(24)} height={verticalScale(24)} />
-        </View>
-        <Text style={styles.search}>{STRINGS.search}</Text>
-      </Row>
-      <IconWithBackground customStyles={styles.filters} icon={FILTER_SEARCH} />
-    </Pressable>
+    <View style={styles.container}>
+      <Pressable onPress={onPressSearch}>
+        <Row alignCenter>
+          <View style={styles.searchContainer}>
+            <SEARCH_HOME width={verticalScale(24)} height={verticalScale(24)} />
+          </View>
+          <Text style={styles.search}>{STRINGS.search}</Text>
+        </Row>
+      </Pressable>
+      <>
+        <IconWithBackground
+          onPress={onPressFilters}
+          customStyles={styles.filters}
+          icon={FILTER_SEARCH}
+        />
+        {isFilterApplied && <View style={styles.redDot} />}
+      </>
+    </View>
   );
 };
 
@@ -52,6 +71,15 @@ const createStyles = ({color}: Theme) => {
     },
     filters: {
       marginRight: verticalScale(2),
+    },
+    redDot: {
+      position: 'absolute',
+      width: verticalScale(12),
+      height: verticalScale(12),
+      borderRadius: 100,
+      backgroundColor: color.red,
+      right: verticalScale(8),
+      top: verticalScale(6),
     },
   });
   return styles;

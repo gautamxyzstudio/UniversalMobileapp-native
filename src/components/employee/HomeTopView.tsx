@@ -27,10 +27,14 @@ const HomeTopView = ({
   height,
   onPress,
   withSearch = true,
+  onPressFilters,
+  isFilterApplied,
 }: {
   height?: SharedValue<number>;
   onPress?: () => void;
   withSearch?: boolean;
+  isFilterApplied?: boolean;
+  onPressFilters: () => void;
 }) => {
   const insetTop = useSafeAreaInsets().top;
   const top = verticalScale(insetTop) + verticalScale(8);
@@ -83,7 +87,10 @@ const HomeTopView = ({
       </Animated.View>
       {withSearch && (
         <Row alignCenter style={styles.search}>
-          <HomeSearch />
+          <HomeSearch
+            isFilterApplied={isFilterApplied}
+            onPressFilters={onPressFilters}
+          />
           <IconWithBackground onPress={onPress} icon={LOCATION_SECONDARY} />
         </Row>
       )}

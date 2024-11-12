@@ -6,6 +6,7 @@ import {horizontalScale, verticalScale, windowWidth} from '@utils/metrics';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Row} from '@components/atoms/Row';
+import {useTheme} from '@theme/Theme.context';
 
 const BottomButtonView: React.FC<IButtonButtonView> = ({
   title,
@@ -25,7 +26,7 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
   rippleColor,
 }) => {
   const styles = useThemeAwareObject(getStyles);
-
+  const {theme} = useTheme();
   return (
     <View>
       <Row alignCenter style={[styles.mainView]}>
@@ -37,7 +38,10 @@ const BottomButtonView: React.FC<IButtonButtonView> = ({
             buttonStyle={[styles.button, secondaryButtonStyles]}
             rippleColor={rippleColor}
             title={secondaryButtonTitles}
-            titleStyles={[secondaryButtonTitleStyles]}
+            titleStyles={[
+              isSecondaryDisabled && {color: theme.color.disabled},
+              secondaryButtonTitleStyles,
+            ]}
             backgroundColor={backgroundColor}
           />
         )}

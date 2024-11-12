@@ -222,7 +222,7 @@ const RecruiterDetails = () => {
       />
       <FilterListBottomSheet
         ref={bottomSheetRef}
-        isMultiSelect={false}
+        selectionType="singleOptionSelect"
         filters={provincesAndCities}
         snapPoints={[0.01, verticalScale(698)]}
         getAppliedFilters={filters =>

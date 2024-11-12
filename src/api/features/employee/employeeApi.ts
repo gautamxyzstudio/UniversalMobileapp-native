@@ -19,9 +19,27 @@ import {getImageUrl} from '@utils/constants';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
-    fetchJobs: builder.query({
-      query: (pageNumber: number) => ({
-        url: apiEndPoints.getJobsEmployee(pageNumber),
+    fetchJobs: builder.query<
+      any,
+      {
+        pageNumber: number;
+        event: 'event' | 'static' | null;
+        startDate: string | null;
+        endDate: string | null;
+      }
+    >({
+      query: (body: {
+        pageNumber: number;
+        event: 'event' | 'static' | null;
+        startDate: string | null;
+        endDate: string | null;
+      }) => ({
+        url: apiEndPoints.getJobsEmployee(
+          body.pageNumber,
+          body.event,
+          body.startDate,
+          body.endDate,
+        ),
         method: apiMethodType.get,
       }),
       transformResponse: (

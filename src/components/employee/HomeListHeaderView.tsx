@@ -57,7 +57,6 @@ const getStyles = ({color}: Theme) => {
     container: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginTop: verticalScale(24),
       marginBottom: verticalScale(16),
       alignItems: 'center',
     },

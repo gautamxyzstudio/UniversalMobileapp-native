@@ -268,7 +268,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           filters={provincesAndCities}
           snapPoints={[0.01, verticalScale(698)]}
           title={STRINGS.select_location}
-          isMultiSelect={false}
+          selectionType="singleOptionSelect"
           getAppliedFilters={value =>
             setState({...state, city: value[0], cityError: ''})
           }

@@ -100,7 +100,7 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
 
   const contextValue: IJobDetailsContextProviderProps = {
     onPressSheet: sheetPressHandler,
-    jobDetails: null,
+    jobDetails: selectedJobDetails,
     appliedJobDetails: appliedJobDetailState,
   };
 

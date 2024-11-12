@@ -22,10 +22,31 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/jobs/find-Openjob/${detailsId}`,
   getClosedJobPost: (detailsId: number) =>
     `${process.env.BASE_URL}/api/jobs/find-Closejob/${detailsId}`,
-  getJobsEmployee: (pageNumber: number) =>
-    `${process.env.BASE_URL}/api/Jobs?sort=createdAt:desc&[page]=${
-      pageNumber ?? 1
-    }&[pageSize]=10`,
+  getJobsEmployee: (
+    pageNumber: number,
+    event_type: null | 'static' | 'event',
+    startDate: null | string,
+    endDate: null | string,
+  ) => {
+    if (startDate && endDate && event_type) {
+      return `${
+        process.env.BASE_URL
+      }/api/Jobs?startDate=${startDate}&endDate=${endDate}&job_type=${event_type}&sort=createdAt:desc&[page]=${
+        pageNumber ?? 1
+      }&[pageSize]=10`;
+    } else if (startDate && endDate) {
+      return `${
+        process.env.BASE_URL
+      }/api/Jobs?startDate=${startDate}&endDate=${endDate}&sort=createdAt:desc&[page]=${
+        pageNumber ?? 1
+      }&[pageSize]=10`;
+    } else if (event_type) {
+      return `${process.env.BASE_URL}/api/jobs?job_type=${event_type}&sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
+    } else {
+      return `${process.env.BASE_URL}/api/jobs?sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
+    }
+  },
+
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
   applyForJob: `${process.env.BASE_URL}/api/job-applications`,
