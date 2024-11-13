@@ -28,11 +28,13 @@ const HomeTopView = ({
   onPress,
   withSearch = true,
   onPressFilters,
+  isLocationApplied,
   isFilterApplied,
 }: {
   height?: SharedValue<number>;
   onPress?: () => void;
   withSearch?: boolean;
+  isLocationApplied: boolean;
   isFilterApplied?: boolean;
   onPressFilters: () => void;
 }) => {
@@ -91,7 +93,10 @@ const HomeTopView = ({
             isFilterApplied={isFilterApplied}
             onPressFilters={onPressFilters}
           />
-          <IconWithBackground onPress={onPress} icon={LOCATION_SECONDARY} />
+          <View>
+            <IconWithBackground onPress={onPress} icon={LOCATION_SECONDARY} />
+            {isLocationApplied && <View style={styles.redDotSec} />}
+          </View>
         </Row>
       )}
     </LinearGradient>
@@ -132,6 +137,15 @@ const createStyles = ({color}: Theme) => {
       backgroundColor: color.red,
       right: verticalScale(2),
       top: verticalScale(2),
+    },
+    redDotSec: {
+      position: 'absolute',
+      width: verticalScale(12),
+      height: verticalScale(12),
+      borderRadius: 100,
+      backgroundColor: color.red,
+      right: verticalScale(4),
+      top: verticalScale(4),
     },
   });
   return styles;

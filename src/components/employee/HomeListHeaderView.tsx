@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
 import React from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale} from '@utils/metrics';
@@ -22,7 +22,7 @@ const HomeListHeaderView: React.FC<IHomeListHeaderViewProps> = ({
   const styles = useThemeAwareObject(getStyles);
   const {theme} = useTheme();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <Text
         style={[
           styles.heading,

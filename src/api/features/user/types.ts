@@ -2,7 +2,7 @@ import {IClientStatus, IEmployeeDocsApiKeys, IWorkStatus} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
-  isEmailVerified: boolean;
+  preferredLocations: string[];
   recentSearchesEmployee: string[];
 };
 

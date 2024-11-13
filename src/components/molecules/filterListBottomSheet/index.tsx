@@ -172,9 +172,9 @@ const FilterListBottomSheet = forwardRef<
       selectedOptionsMap.forEach((value, key) => {
         if (value) {
           selectedFilters.push(key);
-          onClose();
         }
       });
+      onClose();
       getAppliedFilters(
         selectedFilters,
         range.startDate && range.endDate

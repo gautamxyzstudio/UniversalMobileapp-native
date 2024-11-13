@@ -1,4 +1,10 @@
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Row} from '@components/atoms/Row';
@@ -12,10 +18,12 @@ const EmployeeHomeChip = ({
   title,
   onPressCross,
   startDate,
+  customStyles,
   endDate,
 }: {
   title: string;
   onPressCross: (text: string) => void;
+  customStyles?: StyleProp<ViewStyle>;
   startDate: string | null;
   endDate: string | null;
 }) => {
@@ -23,7 +31,7 @@ const EmployeeHomeChip = ({
   let dateRange = dateFormatterToMonthDate(startDate, endDate);
 
   return (
-    <>
+    <View style={customStyles}>
       {title === STRINGS.customDate && (
         <Row alignCenter style={styles.container}>
           <CustomText value={dateRange ?? ''} size={textSizeEnum.regular} />
@@ -40,7 +48,7 @@ const EmployeeHomeChip = ({
           </TouchableOpacity>
         </Row>
       )}
-    </>
+    </View>
   );
 };
 

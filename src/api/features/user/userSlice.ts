@@ -10,7 +10,7 @@ import {RootState} from '@api/store';
 
 const initialState: IUserSliceInitialState = {
   user: null,
-  isEmailVerified: false,
+  preferredLocations: [],
   recentSearchesEmployee: [],
 };
 
@@ -72,6 +72,18 @@ const userSlice = createSlice({
         state.recentSearchesEmployee.splice(index, 1);
       }
     },
+    addPreferredLocation: (state, action: PayloadAction<string[]>) => {
+      state.preferredLocations = action.payload;
+    },
+    clearPreferredLocations: state => {
+      state.preferredLocations = [];
+    },
+    removeLocation: (state, action: PayloadAction<string>) => {
+      const index = state.preferredLocations.indexOf(action.payload);
+      if (index !== -1) {
+        state.preferredLocations.splice(index, 1);
+      }
+    },
   },
 });
 
@@ -81,16 +93,20 @@ export const {
   updateEmployeeResume,
   addNewSearchEmployee,
   deleteRecentSearch,
+  addPreferredLocation,
   updateClientDetails,
+  clearPreferredLocations,
+  removeLocation,
   addNewDocumentEmployee,
 } = userSlice.actions;
 export default userSlice.reducer;
 export const userBasicDetailsFromState = (state: RootState) => state.user.user;
 export const userAdvanceDetailsFromState = (state: RootState) =>
   state.user.user?.details;
-export const isEmailVerifiedFromState = (state: RootState) =>
-  state.user.isEmailVerified;
+
 export const getUserTypeFromState = (state: RootState) =>
   state.user.user?.user_type;
 export const getRecentSearchesFromStateEmployee = (state: RootState) =>
   state.user.recentSearchesEmployee;
+export const getPreferredLocationsFromState = (state: RootState) =>
+  state.user.preferredLocations;

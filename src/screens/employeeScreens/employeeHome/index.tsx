@@ -2,6 +2,7 @@
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -9,13 +10,19 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
 import HomeTopView from '@components/employee/HomeTopView';
-import {verticalScale} from '@utils/metrics';
+import {verticalScale, windowWidth} from '@utils/metrics';
 import {useSharedValue} from 'react-native-reanimated';
 import CustomList from '@components/molecules/customList';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {
+  addPreferredLocation,
+  clearPreferredLocations,
+  getPreferredLocationsFromState,
+  removeLocation,
+  userBasicDetailsFromState,
+} from '@api/features/user/userSlice';
 import {
   HomeFilters,
   mockJobPostsLoading,
@@ -35,17 +42,19 @@ import {setLoading} from '@api/features/loading/loadingSlice';
 import {dateFormatterRev} from '@utils/utils.common';
 import {Row} from '@components/atoms/Row';
 import EmployeeHomeChip from '@components/employee/EmployeeHomeChip';
+import Spacers from '@components/atoms/Spacers';
 
 const EmployeeHome = () => {
   //States initializations
   const styles = useThemeAwareObject(getStyles);
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLastPage, setIsLastPage] = useState(true);
+  const preferredLocations = useSelector(getPreferredLocationsFromState);
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
-  const [locations, setLocations] = useState<string[]>([]);
+
   const scrollY = useSharedValue(0);
   const [getJobs, {isLoading, error}] = useLazyFetchJobsQuery();
   const jobsInState = useSelector(jobsFromState);
@@ -67,12 +76,14 @@ const EmployeeHome = () => {
     [],
   );
 
+  console.log(preferredLocations);
+
   // to get job posts in case of filter applied
   useEffect(() => {
     dispatch(setLoading(true));
     setIsLastPage(true);
     getJobsPosts(true);
-  }, [jobType, filterDate.startDate, filterDate.endDate, locations]);
+  }, [jobType, filterDate.startDate, filterDate.endDate, preferredLocations]);
 
   // to set the data after from redux after  api call
   useEffect(() => {
@@ -106,7 +117,7 @@ const EmployeeHome = () => {
         event: jobType,
         startDate: filterDate.startDate,
         endDate: filterDate.endDate,
-        location: locations.join(','),
+        location: preferredLocations.join(','),
       }).unwrap();
       if (usersJobsResponse) {
         dispatch(
@@ -251,26 +262,71 @@ const EmployeeHome = () => {
     setSelectedFilters([]);
   };
 
+  //location filter
+  const locationFilterHandler = (loc: string[]) => {
+    dispatch(addPreferredLocation(loc));
+  };
+
+  const clearLocationFilterHandler = () => {
+    if (preferredLocations.length > 0) {
+      dispatch(clearPreferredLocations());
+    }
+  };
+
+  const onPressCrossLocation = (val: string) => {
+    dispatch(removeLocation(val));
+  };
+
   return (
     <View style={styles.container}>
       <HomeTopView
         onPressFilters={onPressFilterSheet}
         height={scrollY}
+        isLocationApplied={preferredLocations.length > 0}
         isFilterApplied={selectedFilters.length > 0}
         onPress={displayModal}
       />
-      <Row style={styles.filterView}>
-        {selectedFilters &&
-          selectedFilters.map((filter, index) => (
-            <EmployeeHomeChip
-              key={index}
-              title={filter}
-              onPressCross={onPressCrossFilter}
-              startDate={filterDate.startDate}
-              endDate={filterDate.endDate}
-            />
-          ))}
-      </Row>
+      <View
+        style={[
+          {
+            height:
+              selectedFilters.length === 0 && preferredLocations.length === 0
+                ? 0
+                : verticalScale(58),
+          },
+          styles.rowView,
+        ]}>
+        <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+          <Spacers type="horizontal" scalable size={24} />
+          <Row style={styles.filterView}>
+            {selectedFilters &&
+              selectedFilters.map((filter, index) => (
+                <EmployeeHomeChip
+                  key={index}
+                  customStyles={styles.chip}
+                  title={filter}
+                  onPressCross={onPressCrossFilter}
+                  startDate={filterDate.startDate}
+                  endDate={filterDate.endDate}
+                />
+              ))}
+          </Row>
+          <Row>
+            {preferredLocations &&
+              preferredLocations.map((filter, index) => (
+                <EmployeeHomeChip
+                  key={index}
+                  customStyles={styles.chip}
+                  title={filter}
+                  onPressCross={onPressCrossLocation}
+                  startDate={filterDate.startDate}
+                  endDate={filterDate.endDate}
+                />
+              ))}
+          </Row>
+          <Spacers type="horizontal" scalable size={16} />
+        </ScrollView>
+      </View>
       <View style={styles.containerList}>
         <CustomList
           data={isLoading ? mockJobPostsLoading : jobs}
@@ -280,7 +336,7 @@ const EmployeeHome = () => {
             <View
               style={[
                 styles.headingView,
-                selectedFilters.length === 0
+                selectedFilters.length === 0 && preferredLocations.length === 0
                   ? {marginTop: verticalScale(24)}
                   : {marginTop: 0},
               ]}>
@@ -309,9 +365,11 @@ const EmployeeHome = () => {
       <FilterListBottomSheet
         ref={bottomSheetRef}
         selectionType="multiSelect"
+        onPressClear={clearLocationFilterHandler}
         filters={provincesAndCities}
+        initialSelectedOptions={preferredLocations}
         snapPoints={[0.01, verticalScale(698)]}
-        getAppliedFilters={value => setLocations(value)}
+        getAppliedFilters={value => locationFilterHandler(value)}
       />
       <FilterListBottomSheet
         ref={homeFilterSheetRef}
@@ -370,8 +428,14 @@ const getStyles = ({color}: Theme) => {
       height: verticalScale(150),
     },
     filterView: {
-      marginHorizontal: verticalScale(24),
+      marginRight: verticalScale(8),
       gap: verticalScale(8),
+    },
+    rowView: {
+      gap: verticalScale(8),
+    },
+    chip: {
+      marginRight: verticalScale(8),
     },
   });
   return styles;
