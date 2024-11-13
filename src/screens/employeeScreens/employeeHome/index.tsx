@@ -10,7 +10,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
 import HomeTopView from '@components/employee/HomeTopView';
-import {verticalScale, windowWidth} from '@utils/metrics';
+import {verticalScale} from '@utils/metrics';
 import {useSharedValue} from 'react-native-reanimated';
 import CustomList from '@components/molecules/customList';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
