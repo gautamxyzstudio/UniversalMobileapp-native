@@ -60,19 +60,13 @@ const ClientProfile = () => {
       title={STRINGS.profile}>
       <EmployeeInfoView
         name={userAdvDetails?.name ?? ''}
-        cpName="Xyz studios"
+        cpName={userAdvDetails.company?.companyname}
         email={userBasicDetails?.email ?? ''}
-        onPressEdit={() => navigation.navigate('updateEmployeeDetails')}
+        onPressEdit={() => navigation.navigate('clientDetails')}
         profilePicture={userAdvDetails?.company?.companylogo}
       />
       <ScrollView>
         <View style={styles.container}>
-          <EmployeeProfileTab
-            Icon={IC_COMPANY_DETAIL}
-            title={STRINGS.companyDetail}
-            withArrow={true}
-            onPressTab={() => navigation.navigate('employeeDocuments')}
-          />
           <EmployeeProfileTab
             Icon={IC_LOG_ACTIVITY}
             title={STRINGS.logActivity}

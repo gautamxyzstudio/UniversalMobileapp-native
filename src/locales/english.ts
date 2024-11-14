@@ -317,6 +317,7 @@ export const STRINGS = {
   this_Week: 'This Week',
   this_month: 'This Month',
   customDate: 'Custom Date',
+  details_updated: 'Details Updated!!',
   clear: 'Clear',
   clearAll: 'Clear All',
 };

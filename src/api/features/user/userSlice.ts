@@ -63,7 +63,7 @@ const userSlice = createSlice({
       }
       state.user = employee;
     },
-    updateClientDetails: (state, action: PayloadAction<IClientDetails>) => {
+    updateClientDetails: (state, action: PayloadAction<any>) => {
       let prevData = {...state.user?.details};
       if (state.user) {
         state.user.details = {...prevData, ...action.payload};

@@ -45,7 +45,6 @@ const ClientOpenJobs = () => {
   const renderItem = useCallback(
     ({item}: {item: IJobPostTypes}) => (
       <JobPostCard
-        logo={user.company?.companylogo}
         onPress={() => onPressSheet('show', 'open', item)}
         {...item}
       />

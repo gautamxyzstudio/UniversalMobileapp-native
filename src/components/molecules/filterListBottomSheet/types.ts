@@ -8,6 +8,7 @@ export type IFilterListBottomSheetProps = {
     values: string[],
     dateRange?: {startDate: Date; endDate: Date},
   ) => void;
+  withClearButton: boolean;
   buttonTitle?: string;
   onPressClear?: () => void;
   filterDate?: {startDate: Date; endDate: Date};

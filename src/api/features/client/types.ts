@@ -47,12 +47,7 @@ export interface IJobPostTypes {
   requiredEmployee?: number;
   status: IJobPostStatus;
   startShift: Date;
-  client_details?: {
-    id: number;
-    Name: string;
-    Email: string;
-    location: string;
-  } | null;
+  client_details: IClientBasic | null;
   company: ICompany | null;
 }
 
@@ -138,14 +133,14 @@ export type IPostedJobsResponse = {
     startShift: Date;
     endShift: Date;
     description: string;
-    client_details?: {
+    client_details: {
       id: number;
       Name: string;
       companyname: string;
       Industry: string;
       Email: string;
       location: string;
-      company_detail?: {
+      company_detail: {
         companyname: string;
         id: number;
         companylogo:
@@ -205,6 +200,13 @@ export type IDraftResponse = {
   } | null;
 };
 
+export type IClientBasic = {
+  id: number;
+  name: string;
+  email: string;
+  location: string;
+};
+
 export type INewPostedJobResponse = {
   data: {
     id: 21;
@@ -238,4 +240,17 @@ export type IPatchADraft = {
 export type ICheckInOutEmployeesArgs = {
   CheckIn?: Date;
   CheckOut?: Date;
+};
+
+export type IUpdateClientResponse = {
+  data: {
+    Name: string;
+    contactno: string;
+    location: string;
+  };
+};
+export type ICustomizedClientResponse = {
+  Name: string;
+  contactno: string;
+  location: string;
 };

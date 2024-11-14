@@ -69,6 +69,7 @@ export type RootStackParamList = {
     onGoBack: (data: string) => void;
     title: string;
   };
+  clientDetails: undefined;
 };
 
 export type NavigationProps = NavigationProp<RootStackParamList>;
@@ -106,6 +107,7 @@ type IScreenType = {
   reviewJobPost: 'reviewJobPost';
   textEditor: 'textEditor';
   jobPostDrafts: 'jobPostDrafts';
+  clientDetails: 'clientDetails';
 };
 
 //routes name definitions
@@ -141,6 +143,7 @@ export const routNames: IScreenType = {
   reviewJobPost: 'reviewJobPost',
   jobPostDrafts: 'jobPostDrafts',
   textEditor: 'textEditor',
+  clientDetails: 'clientDetails',
 };
 
 export const employeeTabBarRoutes = {

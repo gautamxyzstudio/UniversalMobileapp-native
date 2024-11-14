@@ -20,7 +20,7 @@ const LocationInput: React.FC<ILocationInputPropTypes> = ({
   return (
     <View>
       <CustomTextInput
-        title={STRINGS.location}
+        title={STRINGS.city}
         onTextChange={undefined}
         value={value}
         editable={false}

@@ -31,6 +31,7 @@ const FilterListBottomSheet = forwardRef<
       filters,
       snapPoints,
       title,
+      withClearButton = true,
       onPressClear,
       selectionType,
       buttonTitle,
@@ -273,7 +274,7 @@ const FilterListBottomSheet = forwardRef<
           secondaryButtonStyles={styles.secondaryButton}
           secondaryButtonTitleStyles={styles.secondaryButtonTitleStyles}
           onPressSecondaryButton={onPressClear}
-          isMultiple
+          isMultiple={withClearButton}
           title={buttonTitle ?? STRINGS.apply}
           secondaryButtonTitles={STRINGS.clearAll}
         />

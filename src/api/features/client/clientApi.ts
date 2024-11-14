@@ -5,6 +5,8 @@ import {IJobPostInterface} from '@screens/clientScreens/jobPosting/types';
 import {
   ICandidateTypes,
   ICheckInOutEmployeesArgs,
+  IClientBasic,
+  ICustomizedClientResponse,
   IDraftResponse,
   IGetCandidateListResponse,
   IJobPostCustomizedResponse,
@@ -12,12 +14,14 @@ import {
   INewPostedJobResponse,
   IPatchADraft,
   IPostedJobsResponse,
+  IUpdateClientResponse,
 } from './types';
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
-import {IJobTypes} from '../employee/types';
+import {IClientDetailsResponse, IJobTypes} from '../employee/types';
 import {getImageUrl} from '@utils/constants';
+import {getCompanyFromClientDetails} from '../employee/employeeApi';
 
 const baseApiWithTag = baseApi.enhanceEndpoints({
   addTagTypes: ['ClientSchedule'],
@@ -54,6 +58,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
           salary: response.data.attributes?.salary ?? '0',
           applicants: null,
           client_details: null,
+          company: null,
           address: response.data.attributes?.address ?? '0',
           postalCode: response.data.attributes?.postalCode ?? '0',
         };
@@ -70,7 +75,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
         let data: IJobPostTypes[] = [];
         if (response.data) {
           response.data.forEach(job => {
-            console.log(job, 'JOOBS');
             if (job.id) {
               data.push({
                 ...job,
@@ -78,41 +82,8 @@ const clientApi = baseApiWithTag.injectEndpoints({
                 status: IJobPostStatus.OPEN,
                 notAccepting: job?.notAccepting ?? false,
                 applicants: null,
-                client_details: job.client_details
-                  ? {
-                      id: job.client_details[0].id,
-                      Name: job.client_details[0].Name,
-                      companyname: job.client_details[0].companyname,
-                      Industry: job.client_details[0].Industry,
-                      Email: job.client_details[0].Email,
-                      location: job.client_details[0].location,
-                      company_detail: job.client_details[0].company_detail
-                        ? {
-                            companyname:
-                              job.client_details[0].company_detail
-                                ?.companyname ?? '',
-                            id: job.client_details[0].company_detail?.id ?? 0,
-                            companylogo: job.client_details[0].company_detail
-                              ?.companylogo
-                              ? {
-                                  url: getImageUrl(
-                                    job.client_details[0].company_detail
-                                      ?.companylogo.url,
-                                  ),
-                                  mime: job.client_details[0].company_detail
-                                    ?.companylogo.mime,
-                                  id: job.client_details[0].company_detail
-                                    ?.companylogo.id,
-                                  name: job.client_details[0].company_detail
-                                    ?.companylogo.name,
-                                  size: job.client_details[0].company_detail
-                                    ?.companylogo.size,
-                                }
-                              : null,
-                          }
-                        : null,
-                    }
-                  : null,
+                client_details: populateClientDetails(job.client_details[0]),
+                company: getCompanyFromClientDetails(job?.client_details[0]),
               });
             }
           });
@@ -155,7 +126,8 @@ const clientApi = baseApiWithTag.injectEndpoints({
                 status: IJobPostStatus.CLOSED,
                 notAccepting: job?.notAccepting ?? false,
                 applicants: null,
-                client_details: null,
+                client_details: populateClientDetails(job.client_details[0]),
+                company: getCompanyFromClientDetails(job?.client_details[0]),
               });
             }
           });
@@ -365,7 +337,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
       transformResponse: (response: IPostedJobsResponse): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
         response.data.forEach(details => {
-          jobs.push({...details, client_details: null});
+          jobs.push({...details, company: null});
         });
         return jobs;
       },
@@ -391,6 +363,32 @@ const clientApi = baseApiWithTag.injectEndpoints({
         };
       },
     }),
+    updateClientDetails: builder.mutation<
+      ICustomizedClientResponse,
+      {
+        userId: number;
+        clientDetails: {
+          Name: string;
+          location: string;
+          contactno: string;
+        };
+      }
+    >({
+      query: body => ({
+        url: apiEndPoints.updateClientDetails(body.userId),
+        method: apiMethodType.patch,
+        body: body.clientDetails,
+      }),
+      transformResponse: (
+        response: IUpdateClientResponse,
+      ): ICustomizedClientResponse => {
+        return {
+          Name: response.data.Name,
+          contactno: response.data.contactno,
+          location: response.data.location,
+        };
+      },
+    }),
   }),
 });
 
@@ -398,6 +396,7 @@ export const {
   usePostAJobMutation,
   useGetClientScheduleQuery,
   useStopAJobPostMutation,
+  useUpdateClientDetailsMutation,
   usePatchADraftMutation,
   useLazyGetPostedJobQuery,
   useLazyGetCandidatesListQuery,
@@ -409,3 +408,18 @@ export const {
   useCheckInOutEmployeesMutation,
   useLazyGetDraftsQuery,
 } = clientApi;
+
+//
+const populateClientDetails = (
+  res: IClientDetailsResponse,
+): IClientBasic | null => {
+  if (res) {
+    return {
+      id: res.id ?? 0,
+      name: res.Name ?? '',
+      email: res.Email ?? '',
+      location: res.location ?? '',
+    };
+  }
+  return null;
+};

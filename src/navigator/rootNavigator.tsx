@@ -34,9 +34,9 @@ import EmployeeDocuments from '@screens/employeeScreens/employeeDocument';
 import ReviewJobPost from '@screens/clientScreens/reviewJobPost';
 import TextEditorView from '@screens/common/textEditorView';
 import JobPostDrafts from '@screens/clientScreens/jobPostDrafts';
-import ShortListedCandidates from '@screens/clientScreens/shortlistedCandidiates';
 import JobDetailsContextProvider from 'src/contexts/displayJobDetailsContext';
 import ShortlistedCandidateWithContextWrapper from '@components/client/ShortlistedCandidateWithContextWrapper';
+import ClientDetails from '@screens/clientScreens/clientDetails';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -173,6 +173,13 @@ const RootNavigator = () => {
             component={
               ShortlistedCandidateWithContextWrapper as React.ComponentType<any>
             }
+          />
+          <Stack.Screen
+            name={routNames.clientDetails}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
+            component={ClientDetails}
           />
         </Stack.Navigator>
       </NavigationContainer>

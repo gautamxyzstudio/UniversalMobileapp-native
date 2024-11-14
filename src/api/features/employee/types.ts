@@ -280,6 +280,10 @@ export type IUpdateEmployeePrimaryDocumentRequest = {
 };
 
 export type IClientDetailsResponse = {
+  id: number;
+  Name: string | null | undefined;
+  Email: string | null | undefined;
+  location: string | null | undefined;
   company_detail:
     | {
         companyname: string | null | undefined;

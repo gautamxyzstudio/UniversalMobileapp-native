@@ -75,4 +75,6 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/checkin-checkout`,
   getScheduledJobs: (emplyeeId: number) =>
     `${process.env.BASE_URL}/api/job-applications/scheduled/${emplyeeId}`,
+  updateClientDetails: (userId: number) =>
+    `${process.env.BASE_URL}/api/client-details/${userId}`,
 };

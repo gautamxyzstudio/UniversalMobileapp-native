@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native';
-import React, {useImperativeHandle, useMemo, useReducer} from 'react';
+import React, {useImperativeHandle, useMemo, useReducer, useRef} from 'react';
 import DatePickerInput from '@components/molecules/datepickerInput';
 import {Row} from '@components/atoms/Row';
 import {STRINGS} from 'src/locales/english';
@@ -15,6 +15,10 @@ import {
 } from './types';
 import {jobPostStep2Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
+import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
+import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
+import {provincesAndCities} from '@api/mockData';
+import LocationInput from '@components/molecules/InputTypes/locationInput';
 
 type IJobPostingStepTwoState = {
   eventDate: Date | null;
@@ -35,6 +39,7 @@ type IJobPostingStepTwoState = {
 
 const JobPostingStepTwo = React.forwardRef<any, IJobPostStepTwoRef>(
   ({}, ref) => {
+    const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
     const [state, setState] = useReducer(
       (prev: IJobPostingStepTwoState, next: IJobPostingStepTwoState) => {
         return {
@@ -72,6 +77,10 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostStepTwoRef>(
       validate: validate,
       setData: setData,
     }));
+
+    const locationInputPressHandler = () => {
+      bottomSheetRef.current?.snapToIndex(1);
+    };
 
     const setData = (data: IJobPostingStepTwoFields) => {
       setState({
@@ -203,10 +212,9 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostStepTwoRef>(
             errorMessage={state.addressError}
           />
           <Spacers type={'vertical'} size={16} />
-          <CustomTextInput
+          <LocationInput
+            onPress={locationInputPressHandler}
             value={state.city}
-            onTextChange={e => handleValueChange(Object.keys(state)[5], e)}
-            title={STRINGS.city}
             errorMessage={state.cityError}
           />
           <Spacers type={'vertical'} size={16} />
@@ -216,6 +224,15 @@ const JobPostingStepTwo = React.forwardRef<any, IJobPostStepTwoRef>(
             onTextChange={e => handleValueChange(Object.keys(state)[6], e)}
             value={state.postalCode}
             errorMessage={state.postalCodeError}
+          />
+          <FilterListBottomSheet
+            ref={bottomSheetRef}
+            selectionType="singleOptionSelect"
+            filters={provincesAndCities}
+            snapPoints={[0.01, verticalScale(698)]}
+            getAppliedFilters={filters =>
+              handleValueChange(Object.keys(state)[5], filters[0])
+            }
           />
         </KeyboardAwareScrollView>
       </View>

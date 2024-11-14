@@ -191,7 +191,11 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
             user.details &&
             isClientDetails(user.details) ? (
               <Text style={styles.postedDate}>
-                {`Posted by ${client_details?.Name ?? ''}`}
+                {`Posted by ${
+                  client_details?.id === user?.details?.detailsId
+                    ? 'you'
+                    : client_details?.name
+                }`}
               </Text>
             ) : (
               <TouchableOpacity onPress={onPress}>

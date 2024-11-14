@@ -64,7 +64,7 @@ const clientSlice = createSlice({
       }
     },
     addNewJob: (state, action: PayloadAction<IJobPostTypes>) => {
-      state.jobs.open.unshift(action.payload);
+      state.jobs.open.unshift({...action.payload});
       const candidateItem: ICandidateListTypes = {
         details: {
           jobId: action.payload?.id ?? 0,

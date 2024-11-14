@@ -30,7 +30,14 @@ const ClientHome = () => {
   return (
     <PaperProvider>
       <View style={styles.container}>
-        <HomeTopView withSearch={false} height={undefined} />
+        <HomeTopView
+          withSearch={false}
+          height={undefined}
+          isLocationApplied={false}
+          onPressFilters={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
         <Spacers size={24} scalable type="vertical" />
         <SegmentView
           ref={segmentRef}

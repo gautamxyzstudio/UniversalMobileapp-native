@@ -93,7 +93,22 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
           },
         }).unwrap();
         if (response) {
-          dispatch(addNewJob(response));
+          dispatch(
+            addNewJob({
+              ...response,
+              client_details: {
+                id: user?.details?.detailsId ?? 0,
+                name: userDetails.name ?? '',
+                email: user?.email ?? '',
+                location: userDetails.location ?? '',
+              },
+              company: {
+                name: userDetails.company?.companyname ?? '',
+                logo: userDetails.company?.companylogo ?? null,
+                id: userDetails.company?.id ?? 0,
+              },
+            }),
+          );
           showToast(toast, 'job posted successfully', 'success');
           navigation.navigate('clientTabBar');
         }
