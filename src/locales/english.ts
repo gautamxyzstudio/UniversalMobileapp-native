@@ -113,7 +113,7 @@ export const STRINGS = {
   my_Accounts: 'My Accounts',
   address: 'Address',
   save: 'Save',
-  search_by_job_title: 'Search by Job Title',
+  search_by_job_title: 'Search by Job title, City',
   recent_Search: 'Recent search',
   notifications: 'Notifications',
   jobDescription: 'Job Description',

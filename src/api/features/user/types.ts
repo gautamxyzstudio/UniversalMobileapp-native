@@ -3,7 +3,13 @@ import {IClientStatus, IEmployeeDocsApiKeys, IWorkStatus} from '@utils/enums';
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
   preferredLocations: string[];
+  selectedFilters: string[];
+  filtersDate: {
+    startDate: string | null;
+    endDate: string | null;
+  };
   recentSearchesEmployee: string[];
+  jobTypeFilter: 'event' | 'static' | null;
 };
 
 type UserDetailsMap = {

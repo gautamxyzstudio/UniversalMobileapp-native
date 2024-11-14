@@ -33,7 +33,10 @@ export const dateFormatter = (date: Date) => {
   const UtcDate = moment(date);
   return UtcDate.format('DD-MM-YYYY');
 };
-export const dateFormatterRev = (date: Date) => {
+export const dateFormatterRev = (date: Date | null) => {
+  if (!date) {
+    return null;
+  }
   const UtcDate = moment(date);
   return UtcDate.format('YYYY-MM-DD');
 };

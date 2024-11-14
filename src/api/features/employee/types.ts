@@ -278,3 +278,23 @@ export type IUpdateEmployeePrimaryDocumentRequest = {
     employee_detail: number;
   };
 };
+
+export type IClientDetailsResponse = {
+  company_detail:
+    | {
+        companyname: string | null | undefined;
+        id: number | null | undefined;
+        companylogo:
+          | {
+              url: string | null | undefined;
+              mime?: string | null | undefined;
+              id: number | null | undefined;
+              name: string | null | undefined;
+              size?: number | null | undefined;
+            }
+          | null
+          | undefined;
+      }
+    | null
+    | undefined;
+};

@@ -3,12 +3,10 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
-  StyleSheet,
   View,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {Theme} from '@theme/Theme.type';
 import HomeTopView from '@components/employee/HomeTopView';
 import {verticalScale} from '@utils/metrics';
 import {useSharedValue} from 'react-native-reanimated';
@@ -19,8 +17,15 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   addPreferredLocation,
   clearPreferredLocations,
+  getFiltersDateFromState,
+  getJobTypeFilterFromState,
   getPreferredLocationsFromState,
+  getSelectedFiltersFromState,
+  removeFilter,
   removeLocation,
+  setJobType,
+  updateFilters,
+  updateFiltersDate,
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {
@@ -43,13 +48,14 @@ import {dateFormatterRev} from '@utils/utils.common';
 import {Row} from '@components/atoms/Row';
 import EmployeeHomeChip from '@components/employee/EmployeeHomeChip';
 import Spacers from '@components/atoms/Spacers';
+import {getStyles} from './styles';
 
 const EmployeeHome = () => {
   //States initializations
   const styles = useThemeAwareObject(getStyles);
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLastPage, setIsLastPage] = useState(true);
-  const preferredLocations = useSelector(getPreferredLocationsFromState);
+
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -58,16 +64,10 @@ const EmployeeHome = () => {
   const scrollY = useSharedValue(0);
   const [getJobs, {isLoading, error}] = useLazyFetchJobsQuery();
   const jobsInState = useSelector(jobsFromState);
-  const [jobType, setJobType] = useState<'event' | 'static' | null>(null);
+
   const {onPressSheet} = useJobDetailsContext();
-  const [filterDate, setFilterDate] = useState<{
-    startDate: string | null;
-    endDate: string | null;
-  }>({
-    startDate: null,
-    endDate: null,
-  });
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  const selectedFilters = useSelector(getSelectedFiltersFromState);
   const [totalPages, setTotalPages] = useState<number>(0);
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const homeFilterSheetRef = useRef<BottomSheetModal | null>(null);
@@ -75,8 +75,10 @@ const EmployeeHome = () => {
     () => bottomSheetRef.current?.snapToIndex(1),
     [],
   );
-
-  console.log(preferredLocations);
+  //selectors
+  const preferredLocations = useSelector(getPreferredLocationsFromState);
+  const jobType = useSelector(getJobTypeFilterFromState);
+  const filterDate = useSelector(getFiltersDateFromState);
 
   // to get job posts in case of filter applied
   useEffect(() => {
@@ -90,7 +92,7 @@ const EmployeeHome = () => {
     if (jobsInState) {
       setJobs(jobsInState);
     }
-  }, [jobsInState, filterDate]);
+  }, [jobsInState, filterDate, jobType]);
 
   // handling last page in case redux data was zero
   useEffect(() => {
@@ -159,34 +161,40 @@ const EmployeeHome = () => {
       endDate: Date;
     },
   ) => {
-    setSelectedFilters(values);
+    dispatch(updateFilters(values));
     values.forEach(value => {
       if (value === STRINGS.event) {
-        setJobType('event');
+        dispatch(setJobType('event'));
       } else if (value === STRINGS.static) {
-        setJobType('static');
+        dispatch(setJobType('static'));
       } else if (value === STRINGS.today) {
-        setFilterDate({
-          startDate: dateFormatterRev(new Date()),
-          endDate: dateFormatterRev(new Date()),
-        });
+        dispatch(
+          updateFiltersDate({
+            startDate: dateFormatterRev(new Date()),
+            endDate: dateFormatterRev(new Date()),
+          }),
+        );
       } else if (value === STRINGS.tomorrow) {
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
-        setFilterDate({
-          startDate: dateFormatterRev(tomorrow),
-          endDate: dateFormatterRev(tomorrow),
-        });
+        dispatch(
+          updateFiltersDate({
+            startDate: dateFormatterRev(tomorrow),
+            endDate: dateFormatterRev(tomorrow),
+          }),
+        );
       } else if (value === STRINGS.this_Week) {
         const today = new Date();
         const endOfWeek = new Date(today);
         const daysUntilEndOfWeek = 6 - today.getDay();
         endOfWeek.setDate(today.getDate() + daysUntilEndOfWeek);
-        setFilterDate({
-          startDate: dateFormatterRev(today),
-          endDate: dateFormatterRev(endOfWeek),
-        });
+        dispatch(
+          updateFiltersDate({
+            startDate: dateFormatterRev(today),
+            endDate: dateFormatterRev(endOfWeek),
+          }),
+        );
       } else if (value === STRINGS.this_month) {
         const today = new Date();
         const endOfMonth = new Date(
@@ -194,16 +202,20 @@ const EmployeeHome = () => {
           today.getMonth() + 1,
           0,
         );
-        setFilterDate({
-          startDate: dateFormatterRev(today),
-          endDate: dateFormatterRev(endOfMonth),
-        });
+        dispatch(
+          updateFiltersDate({
+            startDate: dateFormatterRev(today),
+            endDate: dateFormatterRev(endOfMonth),
+          }),
+        );
       } else if (value === STRINGS.customDate) {
         if (dateRange) {
-          setFilterDate({
-            startDate: dateFormatterRev(dateRange.startDate),
-            endDate: dateFormatterRev(dateRange.endDate),
-          });
+          dispatch(
+            updateFiltersDate({
+              startDate: dateFormatterRev(dateRange.startDate),
+              endDate: dateFormatterRev(dateRange.endDate),
+            }),
+          );
         }
       }
     });
@@ -245,21 +257,17 @@ const EmployeeHome = () => {
   // handles cross press on button
   const onPressCrossFilter = (e: string) => {
     if (e === STRINGS.event || e === STRINGS.static) {
-      setJobType(null);
+      dispatch(setJobType(null));
     } else {
-      setFilterDate({startDate: null, endDate: null});
+      dispatch(updateFiltersDate({startDate: null, endDate: null}));
     }
-    setSelectedFilters(prev => {
-      const prevFilters = [...prev];
-      let updatedFilters = prevFilters.filter(filter => filter !== e);
-      return updatedFilters;
-    });
+    dispatch(removeFilter(e));
   };
 
   const onPressClearHomeFilter = () => {
-    setJobType(null);
-    setFilterDate({startDate: null, endDate: null});
-    setSelectedFilters([]);
+    dispatch(setJobType(null));
+    dispatch(updateFiltersDate({startDate: null, endDate: null}));
+    dispatch(updateFilters([]));
   };
 
   //location filter
@@ -385,58 +393,3 @@ const EmployeeHome = () => {
 };
 
 export default EmployeeHome;
-const getStyles = ({color}: Theme) => {
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: color.backgroundWhite,
-    },
-    containerList: {
-      paddingHorizontal: verticalScale(24),
-      flex: 1,
-    },
-    mainView: {marginTop: verticalScale(24)},
-
-    scrollView: {},
-    content: {
-      flexGrow: 1,
-    },
-    marginLeft: {
-      marginLeft: verticalScale(10),
-      marginVertical: 1,
-    },
-    spacer: {
-      width: verticalScale(24),
-    },
-    list: {
-      marginHorizontal: verticalScale(24),
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    header: {
-      width: verticalScale(24),
-    },
-    headerSeparator: {
-      width: verticalScale(12),
-    },
-    headingView: {
-      // paddingTop: verticalScale(16),
-      // paddingBottom: verticalScale(16),
-      backgroundColor: color.backgroundWhite,
-    },
-    footer: {
-      height: verticalScale(150),
-    },
-    filterView: {
-      marginRight: verticalScale(8),
-      gap: verticalScale(8),
-    },
-    rowView: {
-      gap: verticalScale(8),
-    },
-    chip: {
-      marginRight: verticalScale(8),
-    },
-  });
-  return styles;
-};

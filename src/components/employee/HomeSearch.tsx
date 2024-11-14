@@ -28,7 +28,7 @@ const HomeSearch: React.FC<IHomeSearchProps> = ({
   };
   return (
     <View style={styles.container}>
-      <Pressable onPress={onPressSearch}>
+      <Pressable style={styles.flex} onPress={onPressSearch}>
         <Row alignCenter>
           <View style={styles.searchContainer}>
             <SEARCH_HOME width={verticalScale(24)} height={verticalScale(24)} />
@@ -80,6 +80,9 @@ const createStyles = ({color}: Theme) => {
       backgroundColor: color.red,
       right: verticalScale(8),
       top: verticalScale(6),
+    },
+    flex: {
+      flex: 1,
     },
   });
   return styles;

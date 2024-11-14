@@ -12,6 +12,12 @@ const initialState: IUserSliceInitialState = {
   user: null,
   preferredLocations: [],
   recentSearchesEmployee: [],
+  selectedFilters: [],
+  filtersDate: {
+    startDate: null,
+    endDate: null,
+  },
+  jobTypeFilter: null,
 };
 
 const userSlice = createSlice({
@@ -84,12 +90,46 @@ const userSlice = createSlice({
         state.preferredLocations.splice(index, 1);
       }
     },
+    updateFilters: (state, action: PayloadAction<string[]>) => {
+      state.selectedFilters = action.payload;
+    },
+    clearFilters: state => {
+      state.selectedFilters = [];
+    },
+    removeFilter: (state, action: PayloadAction<string>) => {
+      const index = state.selectedFilters.indexOf(action.payload);
+      if (index !== -1) {
+        state.selectedFilters.splice(index, 1);
+      }
+    },
+    updateFiltersDate: (
+      state,
+      action: PayloadAction<{startDate: string | null; endDate: string | null}>,
+    ) => {
+      state.filtersDate = {
+        startDate: action.payload.startDate,
+        endDate: action.payload.endDate,
+      };
+    },
+    setJobType: (state, action: PayloadAction<'event' | 'static' | null>) => {
+      state.jobTypeFilter = action.payload;
+    },
+    clearDateFilters: state => {
+      state.jobTypeFilter = null;
+      state.filtersDate = {startDate: null, endDate: null};
+    },
   },
 });
 
 export const {
+  updateFilters,
+  updateFiltersDate,
+  removeFilter,
+  clearFilters,
   saveUserDetails,
+  setJobType,
   updateEmployeeDetails,
+  clearDateFilters,
   updateEmployeeResume,
   addNewSearchEmployee,
   deleteRecentSearch,
@@ -110,3 +150,12 @@ export const getRecentSearchesFromStateEmployee = (state: RootState) =>
   state.user.recentSearchesEmployee;
 export const getPreferredLocationsFromState = (state: RootState) =>
   state.user.preferredLocations;
+
+export const getSelectedFiltersFromState = (state: RootState) =>
+  state.user.selectedFilters;
+
+export const getFiltersDateFromState = (state: RootState) =>
+  state.user.filtersDate;
+
+export const getJobTypeFilterFromState = (state: RootState) =>
+  state.user.jobTypeFilter;

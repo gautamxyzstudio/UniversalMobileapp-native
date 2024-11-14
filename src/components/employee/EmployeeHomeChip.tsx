@@ -13,18 +13,21 @@ import {verticalScale} from '@utils/metrics';
 import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import {STRINGS} from 'src/locales/english';
 import {dateFormatterToMonthDate} from '@utils/utils.common';
+import {Theme} from '@theme/Theme.type';
 
 const EmployeeHomeChip = ({
   title,
   onPressCross,
   startDate,
   customStyles,
+  type = 'home',
   endDate,
 }: {
   title: string;
   onPressCross: (text: string) => void;
   customStyles?: StyleProp<ViewStyle>;
   startDate: string | null;
+  type?: 'search' | 'home';
   endDate: string | null;
 }) => {
   const styles = useThemeAwareObject(createStyles);
@@ -33,16 +36,28 @@ const EmployeeHomeChip = ({
   return (
     <View style={customStyles}>
       {title === STRINGS.customDate && (
-        <Row alignCenter style={styles.container}>
-          <CustomText value={dateRange ?? ''} size={textSizeEnum.regular} />
+        <Row
+          alignCenter
+          style={type === 'home' ? styles.container : styles.containerSearch}>
+          <CustomText
+            color={type === 'home' ? 'textPrimary' : 'darkBlue'}
+            value={dateRange ?? ''}
+            size={textSizeEnum.regular}
+          />
           <TouchableOpacity onPress={() => onPressCross(title)}>
             <IC_CROSS width={verticalScale(20)} height={verticalScale(20)} />
           </TouchableOpacity>
         </Row>
       )}
       {title !== STRINGS.customDate && (
-        <Row alignCenter style={styles.container}>
-          <CustomText value={title} size={textSizeEnum.regular} />
+        <Row
+          alignCenter
+          style={type === 'home' ? styles.container : styles.containerSearch}>
+          <CustomText
+            color={type === 'home' ? 'textPrimary' : 'darkBlue'}
+            value={title}
+            size={textSizeEnum.regular}
+          />
           <TouchableOpacity onPress={() => onPressCross(title)}>
             <IC_CROSS width={verticalScale(20)} height={verticalScale(20)} />
           </TouchableOpacity>
@@ -54,7 +69,7 @@ const EmployeeHomeChip = ({
 
 export default EmployeeHomeChip;
 
-const createStyles = () => {
+const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     container: {
       marginVertical: verticalScale(12),
@@ -63,6 +78,16 @@ const createStyles = () => {
       gap: verticalScale(4),
       paddingHorizontal: verticalScale(12),
       paddingVertical: verticalScale(7),
+    },
+    containerSearch: {
+      marginVertical: verticalScale(12),
+      borderWidth: 1,
+      borderRadius: 20,
+      backgroundColor: '#FFF2EA',
+      paddingHorizontal: 12,
+      gap: verticalScale(4),
+      paddingVertical: 9,
+      borderColor: theme.color.strokeLight,
     },
   });
   return styles;

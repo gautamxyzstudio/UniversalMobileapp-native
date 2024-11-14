@@ -1,4 +1,5 @@
 import {IJobPostStatus} from '@utils/enums';
+import {getJobsEmployeeSearchUrl, getJobsEmployeeUrl} from './types';
 export const apiEndPoints = {
   login: `${process.env.BASE_URL}/api/auth/local?populate=*`,
   register: `${process.env.BASE_URL}/api/auth/local/register`,
@@ -28,33 +29,7 @@ export const apiEndPoints = {
     startDate: null | string,
     endDate: null | string,
     location: null | string,
-  ) => {
-    if (startDate && endDate && event_type && location) {
-      return `${
-        process.env.BASE_URL
-      }/api/Jobs?startDate=${startDate}&endDate=${endDate}&job_type=${event_type}&city=${location}&sort=createdAt:desc&[page]=${
-        pageNumber ?? 1
-      }&[pageSize]=10`;
-    } else if (startDate && endDate && event_type) {
-      return `${
-        process.env.BASE_URL
-      }/api/Jobs?startDate=${startDate}&endDate=${endDate}&job_type=${event_type}&sort=createdAt:desc&[page]=${
-        pageNumber ?? 1
-      }&[pageSize]=10`;
-    } else if (startDate && endDate) {
-      return `${
-        process.env.BASE_URL
-      }/api/Jobs?startDate=${startDate}&endDate=${endDate}&sort=createdAt:desc&[page]=${
-        pageNumber ?? 1
-      }&[pageSize]=10`;
-    } else if (event_type) {
-      return `${process.env.BASE_URL}/api/jobs?job_type=${event_type}&sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
-    } else if (location) {
-      return `${process.env.BASE_URL}/api/jobs?city=${location}&sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
-    } else {
-      return `${process.env.BASE_URL}/api/jobs?sort=createdAt:desc&[page]=${pageNumber}&[pageSize]=10`;
-    }
-  },
+  ) => getJobsEmployeeUrl(pageNumber, event_type, startDate, endDate, location),
 
   saveAsDraft: `${process.env.BASE_URL}/api/jobs-drafts`,
   patchADraft: (id: number) => `${process.env.BASE_URL}/api/jobs-drafts/${id}`,
@@ -77,8 +52,24 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/jobs/${jobId}/not-accepting`,
   getScheduleClient: (clientId: number) =>
     `${process.env.BASE_URL}/api/jobs/client/${clientId}`,
-  employeeJobsSearch: (character: string, page: number, pageSize: number) =>
-    `${process.env.BASE_URL}/api/jobs?search=${character}&page=${page}&pageSize=${pageSize}`,
+  employeeJobsSearch: (
+    character: string,
+    page: number,
+    pageSize: number,
+    event_type: null | 'static' | 'event',
+    startDate: null | string,
+    endDate: null | string,
+    location: null | string,
+  ) =>
+    getJobsEmployeeSearchUrl(
+      character,
+      page,
+      pageSize,
+      event_type,
+      startDate,
+      endDate,
+      location,
+    ),
   updatePrimaryDocuments: `${process.env.BASE_URL}/api/document-requests`,
   checkInOutEmployee: (applicationId: number) =>
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/checkin-checkout`,

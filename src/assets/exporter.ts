@@ -118,6 +118,7 @@ import IC_EMPTY_JOBS_LIST from './icons/svg/noJobs.svg';
 import IC_EMPTY_APPLIED from './icons/svg/noApplied.svg';
 import IC_NO_RECENT from './icons/svg/ic_no_recent.svg';
 import IC_PLUS_DISABLED from './icons/svg/plusDisabled.svg';
+import IC_ARROW_DOWN from './icons/svg/arrowDown.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -191,6 +192,7 @@ export {
   MEAT_BALL_WHiTE,
   IC_NO_APPLICATIONS,
   IC_NO_CANDIDATES,
+  IC_ARROW_DOWN,
   IC_NO_CLOSED,
   IC_NO_DENIED,
   IC_NO_SHORTLISTED,

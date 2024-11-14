@@ -3,6 +3,7 @@ import {baseApi} from '@api/baseApi';
 import {apiEndPoints} from '@api/endpoints';
 import {
   IApplyForJobRequest,
+  IClientDetailsResponse,
   ICompany,
   ICustomizedJobsResponse,
   ICustomJobPostTypesResponse,
@@ -16,6 +17,7 @@ import {IErrorResponse, ICustomErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus} from '@utils/enums';
 import {getImageUrl} from '@utils/constants';
+import {IDoc} from '../user/types';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -54,19 +56,6 @@ const employeeApi = baseApi.injectEndpoints({
             job.status !== IJobPostStatus.CLOSED &&
             job.notAccepting !== true
           ) {
-            let company: ICompany = {
-              name: job.client_details[0].company_detail.companyname,
-              id: job.client_details[0].company_detail.id,
-              logo: {
-                url: getImageUrl(
-                  job.client_details[0].company_detail.companylogo.url,
-                ),
-                id: job.client_details[0].company_detail.companylogo.id,
-                name: job.client_details[0].company_detail.companylogo.name,
-                size: job.client_details[0].company_detail.companylogo.size,
-                mime: job.client_details[0].company_detail.companylogo.mime,
-              },
-            };
             let details: IJobTypes = {
               job_name: job.job_name,
               endShift: job.endShift,
@@ -86,7 +75,7 @@ const employeeApi = baseApi.injectEndpoints({
               postalCode: job.postalCode,
               gender: job.gender,
               salary: job.salary,
-              company: company,
+              company: getCompanyFromClientDetails(job.client_details[0]),
               required_certificates: job.required_certificates,
               postID: job.postID,
             };
@@ -136,7 +125,9 @@ const employeeApi = baseApi.injectEndpoints({
             id: details.id,
             ...details.jobs[0],
             status: details.status,
-            company: null,
+            company: getCompanyFromClientDetails(
+              details.jobs[0].client_details[0],
+            ),
           });
         });
         return {
@@ -201,11 +192,23 @@ const employeeApi = baseApi.injectEndpoints({
       }),
     }),
     getJobPostsViaSearch: builder.query({
-      query: (body: {character: string; page: number; perPage: number}) => ({
+      query: (body: {
+        character: string;
+        page: number;
+        perPage: number;
+        event: 'event' | 'static' | null;
+        startDate: string | null;
+        endDate: string | null;
+        location: string | null;
+      }) => ({
         url: apiEndPoints.employeeJobsSearch(
           body.character,
           body.page,
           body.perPage,
+          body.event,
+          body.startDate,
+          body.endDate,
+          body.location,
         ),
       }),
       transformResponse: (
@@ -219,19 +222,6 @@ const employeeApi = baseApi.injectEndpoints({
             job.status !== IJobPostStatus.APPLIED &&
             job.notAccepting !== true
           ) {
-            let company: ICompany = {
-              name: job.client_details[0].company_detail.companyname,
-              id: job.client_details[0].company_detail.id,
-              logo: {
-                url: getImageUrl(
-                  job.client_details[0].company_detail.companylogo.url,
-                ),
-                id: job.client_details[0].company_detail.companylogo.id,
-                name: job.client_details[0].company_detail.companylogo.name,
-                size: job.client_details[0].company_detail.companylogo.size,
-                mime: job.client_details[0].company_detail.companylogo.mime,
-              },
-            };
             let details: IJobTypes = {
               job_name: job.job_name,
               endShift: job.endShift,
@@ -251,7 +241,7 @@ const employeeApi = baseApi.injectEndpoints({
               postalCode: job.postalCode,
               gender: job.gender,
               salary: job.salary,
-              company: company,
+              company: getCompanyFromClientDetails(job.client_details[0]),
               required_certificates: job.required_certificates,
               postID: job.postID,
             };
@@ -280,3 +270,28 @@ export const {
   useLazyFetchAppliedJobsQuery,
   useUpdateUserPrimaryDocumentsMutation,
 } = employeeApi;
+
+//extract company details from response
+export const getCompanyFromClientDetails = (
+  res: IClientDetailsResponse | null | undefined,
+): ICompany | null => {
+  if (res && res.company_detail) {
+    let logo: IDoc | null = null;
+    if (res.company_detail.companylogo) {
+      logo = {
+        url: getImageUrl(res.company_detail.companylogo?.url ?? ''),
+        id: res.company_detail.companylogo?.id ?? 0,
+        name: res.company_detail.companylogo?.name ?? '',
+        size: res.company_detail.companylogo?.size ?? 0,
+        mime: res.company_detail.companylogo?.mime ?? '',
+      };
+    }
+    let company: ICompany = {
+      name: res?.company_detail.companyname ?? '',
+      id: res.company_detail.id ?? 0,
+      logo: logo,
+    };
+    return company;
+  }
+  return null;
+};
