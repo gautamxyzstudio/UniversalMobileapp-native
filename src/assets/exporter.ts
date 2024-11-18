@@ -119,6 +119,7 @@ import IC_EMPTY_APPLIED from './icons/svg/noApplied.svg';
 import IC_NO_RECENT from './icons/svg/ic_no_recent.svg';
 import IC_PLUS_DISABLED from './icons/svg/plusDisabled.svg';
 import IC_ARROW_DOWN from './icons/svg/arrowDown.svg';
+import IC_CSV from './icons/svg/csv.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -170,6 +171,7 @@ export {
   DRAFT,
   DOCUMENTS_SECONDARY,
   NOTIFICATION_READ,
+  IC_CSV,
   IC_SEARCH_EMPTY,
   IC_MAIL,
   IC_PHONE,

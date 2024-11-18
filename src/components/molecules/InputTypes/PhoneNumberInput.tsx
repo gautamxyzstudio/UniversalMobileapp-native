@@ -84,7 +84,7 @@ const PhoneNumberInput: React.FC<IPhoneNumberInputProps> = ({
           </TouchableOpacity>
         }
         left={
-          countryCode && (
+          countryCode ? (
             <View style={styles.pickerOuter}>
               <Text
                 style={[
@@ -92,6 +92,16 @@ const PhoneNumberInput: React.FC<IPhoneNumberInputProps> = ({
                   isDisabled && {color: theme.theme.color.disabled},
                 ]}>
                 +{countryCode} -
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.pickerOuter}>
+              <Text
+                style={[
+                  styles.code,
+                  isDisabled && {color: theme.theme.color.disabled},
+                ]}>
+                +1 -
               </Text>
             </View>
           )

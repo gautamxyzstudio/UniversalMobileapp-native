@@ -142,14 +142,11 @@ const EmployeeSearch = () => {
     }
   };
 
-  const handleSearch = useCallback(
-    _.debounce(query => {
-      if (query) {
-        jobSearchQuery(query, true);
-      }
-    }, 500),
-    [],
-  );
+  const handleSearch = _.debounce(query => {
+    if (query) {
+      jobSearchQuery(query, true);
+    }
+  }, 500);
 
   useEffect(() => {
     if (search.length > 0) {

@@ -187,6 +187,73 @@ export type IDraftResponse = {
       startShift: Date;
       endShift: Date;
       description: string;
+      client_details: {
+        data: {
+          id: number;
+          attributes:
+            | {
+                Name: string | null | undefined;
+                Email: string | null | undefined;
+                location: string | null | undefined;
+                company_detail:
+                  | {
+                      data: {
+                        attributes:
+                          | {
+                              data:
+                                | {
+                                    id: number | null | undefined;
+                                    attributes:
+                                      | {
+                                          companyname:
+                                            | string
+                                            | null
+                                            | undefined;
+                                          companyemail:
+                                            | string
+                                            | null
+                                            | undefined;
+                                          location: string | null | undefined;
+                                          contactno: string | null | undefined;
+                                          address: string | null | undefined;
+                                          Industry: string | null | undefined;
+                                          companylogo:
+                                            | {
+                                                data:
+                                                  | {
+                                                      attributes:
+                                                        | {
+                                                            url: string;
+                                                            mime: string;
+                                                            size: number;
+                                                            name: string;
+                                                          }
+                                                        | null
+                                                        | undefined;
+                                                    }
+                                                  | null
+                                                  | undefined;
+                                              }
+                                            | null
+                                            | undefined;
+                                        }
+                                      | null
+                                      | undefined;
+                                  }
+                                | null
+                                | undefined;
+                            }
+                          | null
+                          | undefined;
+                      };
+                    }
+                  | null
+                  | undefined;
+              }
+            | null
+            | undefined;
+        }[];
+      } | null;
     } | null;
   }[];
 

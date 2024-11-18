@@ -19,7 +19,7 @@ import {
 import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
-import {IClientDetailsResponse, IJobTypes} from '../employee/types';
+import {IClientDetailsResponse, ICompany, IJobTypes} from '../employee/types';
 import {getImageUrl} from '@utils/constants';
 import {getCompanyFromClientDetails} from '../employee/employeeApi';
 
@@ -171,12 +171,60 @@ const clientApi = baseApiWithTag.injectEndpoints({
         if (response.data) {
           response.data.forEach(job => {
             if (job.id && job.attributes) {
+              const clientDetails: IClientBasic | null = {
+                id: job.attributes.client_details?.data[0]?.id ?? 0,
+                name:
+                  job.attributes.client_details?.data[0]?.attributes?.Name ??
+                  '',
+                email:
+                  job.attributes.client_details?.data[0]?.attributes?.Email ??
+                  '',
+                location:
+                  job.attributes.client_details?.data[0]?.attributes
+                    ?.location ?? '',
+              };
+
+              const company: ICompany = {
+                id:
+                  job.attributes.client_details?.data[0].attributes
+                    ?.company_detail?.data.attributes?.data?.id ?? 0,
+                logo: {
+                  id: 0,
+                  name:
+                    job.attributes.client_details?.data[0].attributes
+                      ?.company_detail?.data.attributes?.data?.attributes
+                      ?.companylogo?.data?.attributes?.name ?? '',
+                  url: job.attributes.client_details?.data[0].attributes
+                    ?.company_detail?.data.attributes?.data?.attributes
+                    ?.companylogo?.data?.attributes?.url
+                    ? getImageUrl(
+                        job.attributes.client_details?.data[0].attributes
+                          ?.company_detail?.data.attributes?.data?.attributes
+                          ?.companylogo?.data?.attributes?.url,
+                      )
+                    : null,
+                  mime:
+                    job.attributes.client_details?.data[0].attributes
+                      ?.company_detail?.data.attributes?.data?.attributes
+                      ?.companylogo?.data?.attributes?.mime ?? '',
+                  size:
+                    job.attributes.client_details?.data[0].attributes
+                      ?.company_detail?.data.attributes?.data?.attributes
+                      ?.companylogo?.data?.attributes?.size ?? 0,
+                },
+                name:
+                  job.attributes.client_details?.data[0].attributes
+                    ?.company_detail?.data.attributes?.data?.attributes
+                    ?.companyname ?? '',
+              };
+
               data.push({
                 ...job.attributes,
                 id: job.id,
                 status: IJobPostStatus.OPEN,
                 applicants: null,
-                client_details: null,
+                client_details: clientDetails,
+                company: company,
               });
             }
           });
@@ -236,6 +284,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
           postalCode: response.data.attributes?.postalCode ?? '0',
           client_details: null,
           applicants: null,
+          company: null,
         };
       },
       transformErrorResponse: (

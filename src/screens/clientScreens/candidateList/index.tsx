@@ -25,9 +25,11 @@ import {ActivityIndicator} from 'react-native-paper';
 import UserDetailsViewSheetCandidateListProvider from '@screens/clientScreens/candidateList/UserDetailsViewCandidateList';
 import CandidateListActionsBottomSheetContextProvider from './CandidateListActionsBottomSheetContext';
 import EmptyState from '@screens/common/emptyAndErrorScreen';
-import {IC_NO_CANDIDATES} from '@assets/exporter';
+import {IC_CSV, IC_NO_CANDIDATES} from '@assets/exporter';
 import {timeOutTimeSheets} from 'src/constants/constants';
 import {IClientDetails} from '@api/features/user/types';
+import {writeDataAndDownloadExcelFile} from '@utils/generatecsv';
+import {useToast} from 'react-native-toast-notifications';
 
 type ICandidateListProps = {
   route: {
@@ -40,6 +42,7 @@ type ICandidateListProps = {
 const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   // console.log(route.params?.jobId, 'JOB ID');
   let selectedJobId = route.params?.jobId;
+
   const styles = useThemeAwareObject(getStyles);
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
   const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
@@ -50,7 +53,9 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const dispatch = useDispatch();
   const scrollViewRef = useRef<ScrollView | null>(null);
   const {theme} = useTheme();
+  const toast = useToast();
   const [currentPage, setCurrentPage] = useState(0);
+  const [isJobsUpdated, setIsJobsUpdated] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState(true);
   const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
   const [currentSelectedJob, setCurrentSelectedJob] =
@@ -70,6 +75,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
           response.data.length === 0 || response.data.length !== perPageRecord,
         );
         dispatch(saveOpenJobs({pageNo: page, jobs: response.data}));
+        setIsJobsUpdated(true);
       }
     },
     () => {
@@ -83,15 +89,12 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
       let jobIndex = candidateJobs.findIndex(
         j => j.details.jobId === selectedJobId,
       );
+
       if (jobIndex !== -1) {
         setCurrentSelectedJob(candidateJobs[jobIndex]);
       }
     }
-  }, [selectedJobId]);
-  console.log('===============');
-
-  console.log(candidateJobs);
-  console.log('===============');
+  }, [selectedJobId, isJobsUpdated]);
 
   useEffect(() => {
     if (candidateJobs) {
@@ -137,12 +140,28 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
     getJobPostsHandler(true);
   }, []);
 
+  const downloadExcelHandler = () => {
+    let sample_data_to_export = [
+      {id: '1', name: 'first'},
+      {id: '2', name: 'second'},
+    ];
+    writeDataAndDownloadExcelFile(
+      sample_data_to_export,
+      'sample',
+      dispatch,
+      toast,
+    );
+  };
+
   return (
     <UserDetailsViewSheetCandidateListProvider>
       <CandidateListActionsBottomSheetContextProvider>
         <OnBoardingBackground
           childrenStyles={styles.mainView}
           hideBack
+          displayRightIcon
+          rightIcon={IC_CSV}
+          rightIconPressHandler={downloadExcelHandler}
           title={STRINGS.candidateList}>
           {isLoading && (
             <View style={styles.main}>
