@@ -271,3 +271,5 @@ export const getWorkStatusTextFromText = (code: IWorkStatus) => {
       return STRINGS.fullTime;
   }
 };
+
+export const companyEmail = 'help@universalworkforce.com';

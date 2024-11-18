@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Linking, StyleSheet, Text, View} from 'react-native';
 import React, {useRef} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {
@@ -24,6 +24,9 @@ import store from '@api/store';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {timeOutTimeSheets} from 'src/constants/constants';
+import {companyEmail} from '@utils/constants';
+import {showToast} from '@components/organisms/customToast';
+import {useToast} from 'react-native-toast-notifications';
 
 const Approval = () => {
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
@@ -31,6 +34,7 @@ const Approval = () => {
   const bottomSheetRefContactUs = useRef<BottomSheetModal | null>(null);
   const client = useSelector(userAdvanceDetailsFromState);
   const popupRef = useRef<customModalRef>(null);
+  const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
 
   console.log(client, 'client');
@@ -38,6 +42,16 @@ const Approval = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
       bottomSheetRefContactUs.current?.snapToIndex(1);
+    }, timeOutTimeSheets);
+  };
+
+  const launchEmailHandler = () => {
+    bottomSheetRefContactUs.current?.snapToIndex(0);
+    setTimeout(() => {
+      const mailto = `mailto:${companyEmail}`;
+      Linking.openURL(mailto).catch(err =>
+        showToast(toast, 'Error opening mail app:', 'error'),
+      );
     }, timeOutTimeSheets);
   };
 
@@ -99,7 +113,10 @@ const Approval = () => {
           },
         ]}
       />
-      <ContactUsBottomSheet ref={bottomSheetRefContactUs} />
+      <ContactUsBottomSheet
+        ref={bottomSheetRefContactUs}
+        onPressEmail={launchEmailHandler}
+      />
       <FaqBottomSheet ref={bottomSheetRefFaqs} />
       <ActionPopup
         ref={popupRef}

@@ -57,7 +57,7 @@ const SegmentView = React.forwardRef<ISegmentViewRefMethods, ISegmentProps>(
     const styles = useThemeAwareObject(getStyles);
 
     const width = segmentWidth ?? (windowWidth * 90) / 100;
-    const height = segmentHeight ?? 45;
+    const height = segmentHeight ?? verticalScale(45);
     const [currentI, setCurrentIndex] = useState(0);
     const translateValue = (width - marginHorizontal * 2) / tabs.length;
     const {theme} = useTheme();

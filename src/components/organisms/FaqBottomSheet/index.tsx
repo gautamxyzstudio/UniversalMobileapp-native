@@ -21,7 +21,12 @@ const FaqBottomSheet = React.forwardRef<BottomSheetModal>(({}, ref) => {
       onClose={onClose}>
       <View style={styles.container}>
         <BottomSheetScrollView>
-          <FaqCard />
+          <FaqCard
+            title={'How do i get answer?'}
+            description={
+              "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+            }
+          />
         </BottomSheetScrollView>
       </View>
     </BaseBottomSheet>

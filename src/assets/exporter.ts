@@ -55,7 +55,7 @@ import BRIEF_CASE from './icons/svg/briefcase.svg';
 import DOLLAR_SMALL from './icons/svg/dollarSec.svg';
 import CLOCK_SEC from './icons/svg/clockSec.svg';
 import MEAT_BALL from './icons/svg/meatball.svg';
-import DROPDOWN_SECONDARY from './icons/svg/dropdwonIcon.svg';
+
 import GALLERY from './icons/svg/gallery.svg';
 import ADD_ICON from './icons/svg/add.svg';
 import EDIT_PROFILE from './icons/svg/editPorfile.svg';
@@ -184,7 +184,6 @@ export {
   LOGOUT_WHITE,
   MEAT_BALL,
   ERROR,
-  DROPDOWN_SECONDARY,
   IC_CHECKIN_GREEN,
   IC_CHECKOUT,
   CLOCK_SEC,

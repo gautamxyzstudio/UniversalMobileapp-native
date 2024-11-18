@@ -25,10 +25,9 @@ import {ActivityIndicator} from 'react-native-paper';
 import UserDetailsViewSheetCandidateListProvider from '@screens/clientScreens/candidateList/UserDetailsViewCandidateList';
 import CandidateListActionsBottomSheetContextProvider from './CandidateListActionsBottomSheetContext';
 import EmptyState from '@screens/common/emptyAndErrorScreen';
-import {IC_CSV, IC_NO_CANDIDATES} from '@assets/exporter';
+import {IC_NO_CANDIDATES} from '@assets/exporter';
 import {timeOutTimeSheets} from 'src/constants/constants';
 import {IClientDetails} from '@api/features/user/types';
-import {writeDataAndDownloadExcelFile} from '@utils/generatecsv';
 import {useToast} from 'react-native-toast-notifications';
 
 type ICandidateListProps = {
@@ -53,7 +52,6 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const dispatch = useDispatch();
   const scrollViewRef = useRef<ScrollView | null>(null);
   const {theme} = useTheme();
-  const toast = useToast();
   const [currentPage, setCurrentPage] = useState(0);
   const [isJobsUpdated, setIsJobsUpdated] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState(true);

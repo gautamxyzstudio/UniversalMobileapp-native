@@ -7,10 +7,20 @@ import {STRINGS} from 'src/locales/english';
 import {fonts} from '@utils/common.styles';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
+import {companyEmail} from '@utils/constants';
+import {useScreenInsets} from 'src/hooks/useScreenInsets';
 
-const ContactUsBottomSheet = React.forwardRef<BottomSheetModal>(({}, ref) => {
+type IContactUsBottomSheetProps = {
+  onPressEmail: () => void;
+};
+
+const ContactUsBottomSheet = React.forwardRef<
+  BottomSheetModal,
+  IContactUsBottomSheetProps
+>(({onPressEmail}, ref) => {
+  const {insetsBottom} = useScreenInsets();
   const styles = useThemeAwareObject(createStyes);
-  const modalHeight = verticalScale(186);
+  const modalHeight = verticalScale(186) + insetsBottom;
   const snapPoints = useMemo(() => [0.01, modalHeight], [modalHeight]);
 
   console.log(modalHeight);
@@ -27,7 +37,9 @@ const ContactUsBottomSheet = React.forwardRef<BottomSheetModal>(({}, ref) => {
       onClose={onClose}>
       <View style={styles.container}>
         <Text style={styles.heading}>{STRINGS.email}</Text>
-        <Text style={styles.subheading}>{'xyz@thexyzstudio.com'}</Text>
+        <Text onPress={onPressEmail} style={styles.subheading}>
+          {companyEmail}
+        </Text>
       </View>
     </BaseBottomSheet>
   );
@@ -49,6 +61,7 @@ const createStyes = (theme: Theme) =>
     subheading: {
       ...fonts.regular,
       color: theme.color.textPrimary,
+      textDecorationLine: 'underline',
       lineHeight: moderateScale(20),
     },
   });

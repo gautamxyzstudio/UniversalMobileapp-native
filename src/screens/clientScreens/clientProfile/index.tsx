@@ -4,7 +4,6 @@ import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import EmployeeProfileTab from '@components/employee/EmployeeProfileTab';
 import {
-  IC_COMPANY_DETAIL,
   IC_DOWNLOAD_SHEET,
   IC_LOG_ACTIVITY,
   LOGOUT,
@@ -60,7 +59,7 @@ const ClientProfile = () => {
       title={STRINGS.profile}>
       <EmployeeInfoView
         name={userAdvDetails?.name ?? ''}
-        cpName={userAdvDetails.company?.companyname}
+        cpName={userAdvDetails?.company?.companyname}
         email={userBasicDetails?.email ?? ''}
         onPressEdit={() => navigation.navigate('clientDetails')}
         profilePicture={userAdvDetails?.company?.companylogo}

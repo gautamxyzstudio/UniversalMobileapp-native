@@ -110,73 +110,61 @@ const ShortListedCandidates: React.FC<IGetShortlistedCandidatesParams> = ({
     date: Date,
     type: 'checkIn' | 'checkOut',
   ) => {
-    if (selectedApplication) {
-      let args: {
-        CheckIn?: Date;
-        CheckOut?: Date;
-      } = {};
-      args[type === 'checkIn' ? 'CheckIn' : 'CheckOut'] = date;
-      setTimeout(async () => {
-        try {
-          dispatch(setLoading(true));
-          const checkInOutRes = await checkInOut({
-            args: args,
-            applicationId: selectedApplication.id,
-          }).unwrap();
-          if (checkInOutRes) {
-            setFilteredApplications(prev => {
-              let prevCandidate: ICandidateTypes[] | null = prev;
-              if (prevCandidate) {
-                let index = prevCandidate.findIndex(
-                  c => c.id === selectedApplication.id,
-                );
-                if (index !== -1) {
-                  prevCandidate[index] = {
-                    ...prevCandidate[index],
-                    [type === 'checkIn' ? 'CheckIn' : 'CheckOut']: new Date(
-                      date,
-                    ),
-                  };
-                }
-              }
+    if (!selectedApplication) return;
 
-              return prevCandidate;
-            });
-            showToast(
-              toast,
-              `${type === 'checkIn' ? 'Check-in' : 'Check-out'} successful`,
-              'success',
+    const field = type === 'checkIn' ? 'CheckIn' : 'CheckOut';
+    const args = {[field]: date};
+
+    setTimeout(async () => {
+      try {
+        dispatch(setLoading(true));
+
+        const checkInOutRes = await checkInOut({
+          args,
+          applicationId: selectedApplication.id,
+        }).unwrap();
+
+        if (checkInOutRes) {
+          setFilteredApplications(prev => {
+            if (!prev) return null;
+            return prev?.map(candidate =>
+              candidate.id === selectedApplication.id
+                ? {...candidate, [field]: new Date(date)}
+                : candidate,
             );
-          }
-        } catch (e) {
-          let err = e as ICustomErrorResponse;
-          showToast(toast, err.message, 'error');
-          console.log(e);
-        } finally {
-          dispatch(setLoading(false));
+          });
+
+          showToast(
+            toast,
+            `${type === 'checkIn' ? 'Check-in' : 'Check-out'} successful`,
+            'success',
+          );
         }
-      }, timeOutTimeSheets);
-    }
+      } catch (er) {
+        const err = er as ICustomErrorResponse;
+        showToast(toast, err.message, 'error');
+        console.error(err);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    }, timeOutTimeSheets);
   };
 
-  const renderItem = useCallback(
-    ({item}: {item: ICandidateTypes}) => {
-      return (
-        <ShortlistedCandidateCard
-          onPressCard={() =>
-            onPressSheet('show', 'shortlisted', item, item.jobId)
-          }
-          checkInTime={item.CheckIn}
-          checkOutTime={item.CheckOut}
-          name={item.employeeDetails.name}
-          profilePic={item.employeeDetails.selfie?.url ?? ''}
-          onPressCheckIn={type => onPressButton(type, item)}
-          onPressCheckOut={type => onPressButton(type, item)}
-        />
-      );
-    },
-    [ShortListedCandidates],
-  );
+  const renderItem = ({item}: {item: ICandidateTypes}) => {
+    return (
+      <ShortlistedCandidateCard
+        onPressCard={() =>
+          onPressSheet('show', 'shortlisted', item, item.jobId)
+        }
+        checkInTime={item.CheckIn}
+        checkOutTime={item.CheckOut}
+        name={item.employeeDetails.name}
+        profilePic={item.employeeDetails.selfie?.url ?? ''}
+        onPressCheckIn={type => onPressButton(type, item)}
+        onPressCheckOut={type => onPressButton(type, item)}
+      />
+    );
+  };
 
   const renderItemLoading = useCallback(() => {
     return <ShortlistedCandidateLoadingCard />;
