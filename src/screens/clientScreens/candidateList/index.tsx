@@ -140,19 +140,6 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
     getJobPostsHandler(true);
   }, []);
 
-  const downloadExcelHandler = () => {
-    let sample_data_to_export = [
-      {id: '1', name: 'first'},
-      {id: '2', name: 'second'},
-    ];
-    writeDataAndDownloadExcelFile(
-      sample_data_to_export,
-      'sample',
-      dispatch,
-      toast,
-    );
-  };
-
   return (
     <UserDetailsViewSheetCandidateListProvider>
       <CandidateListActionsBottomSheetContextProvider>
@@ -160,8 +147,6 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
           childrenStyles={styles.mainView}
           hideBack
           displayRightIcon
-          rightIcon={IC_CSV}
-          rightIconPressHandler={downloadExcelHandler}
           title={STRINGS.candidateList}>
           {isLoading && (
             <View style={styles.main}>

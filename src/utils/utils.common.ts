@@ -59,6 +59,19 @@ export const fromNowOn = (date: Date) => {
   return parsedDate.format('D MMMM'); // This will return "8 May" or similar
 };
 
+export const timeToLocalString = (date: Date | null) => {
+  if (date) {
+    let newDate = new Date(date);
+    return newDate?.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  } else {
+    return '';
+  }
+};
+
 export const formatDateFromNow = (date: string | Date) => {
   return moment(date).fromNow();
 };

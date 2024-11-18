@@ -10,6 +10,7 @@ import Spacers from '@components/atoms/Spacers';
 import CustomButton from '@components/molecules/customButton';
 import {useTheme} from '@theme/Theme.context';
 import {IC_CHECKIN_GREEN, IC_CHECKOUT} from '@assets/exporter';
+import {timeToLocalString} from '@utils/utils.common';
 
 type IShortlistedCandidateCardProps = {
   onPressCard: () => void;
@@ -106,13 +107,7 @@ const ShortlistedCandidateCard: React.FC<IShortlistedCandidateCardProps> = ({
                   size={textSizeEnum.small}
                 />
                 <CustomText
-                  value={
-                    attendance.checkin?.toLocaleTimeString([], {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    }) ?? ''
-                  }
+                  value={timeToLocalString(attendance.checkin)}
                   size={textSizeEnum.mediumBold}
                 />
               </View>
@@ -136,13 +131,7 @@ const ShortlistedCandidateCard: React.FC<IShortlistedCandidateCardProps> = ({
                   size={textSizeEnum.small}
                 />
                 <CustomText
-                  value={
-                    attendance.checkout?.toLocaleTimeString([], {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    }) ?? ''
-                  }
+                  value={timeToLocalString(attendance.checkin)}
                   size={textSizeEnum.mediumBold}
                 />
               </View>

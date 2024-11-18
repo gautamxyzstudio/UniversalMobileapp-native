@@ -318,6 +318,7 @@ export const STRINGS = {
   this_month: 'This Month',
   customDate: 'Custom Date',
   details_updated: 'Details Updated!!',
+  unable_to_download_sheet: 'Unable to Download Sheet. Please Try Again Later',
   clear: 'Clear',
   clearAll: 'Clear All',
 };

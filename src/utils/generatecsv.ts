@@ -1,19 +1,27 @@
 import {writeFile, DocumentDirectoryPath} from 'react-native-fs';
 import XLSX from 'xlsx';
 import Share from 'react-native-share';
-import {Dispatch} from '@reduxjs/toolkit';
 import {showToast} from '@components/organisms/customToast';
 import {ToastType} from 'react-native-toast-notifications';
 
 export const writeDataAndDownloadExcelFile = (
   data: {[key: string]: string}[],
   fileName: string,
-  dispatch: Dispatch,
+  columnWidths: {wch: number}[],
+  emptyMessage: string,
   toast: ToastType,
 ) => {
   let wb = XLSX.utils.book_new();
-  let ws = XLSX.utils.json_to_sheet(data);
-  XLSX.utils.book_append_sheet(wb, ws, 'Users');
+  if (data.length === 0) {
+    let ws = XLSX.utils.aoa_to_sheet([[`${emptyMessage}`]]);
+    ws['!cols'] = [{wch: 100}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Users');
+  } else {
+    let ws = XLSX.utils.json_to_sheet(data);
+    ws['!cols'] = columnWidths;
+    XLSX.utils.book_append_sheet(wb, ws, 'Users');
+  }
+
   const writingData = XLSX.write(wb, {type: 'binary', bookType: 'xlsx'});
   writeFile(DocumentDirectoryPath + `/${fileName}.xlsx`, writingData, 'ascii')
     .then(async () => {

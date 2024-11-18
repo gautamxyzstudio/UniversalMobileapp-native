@@ -1,5 +1,11 @@
 import {IJobPostTypes} from '@api/features/client/types';
-import {CHECK_IN, PERSON_SECONDARY, IC_DOCUMENT, PAUSE} from '@assets/exporter';
+import {
+  CHECK_IN,
+  PERSON_SECONDARY,
+  IC_DOCUMENT,
+  PAUSE,
+  IC_DOWNLOAD_SHEET,
+} from '@assets/exporter';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
@@ -10,7 +16,10 @@ import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {STRINGS} from 'src/locales/english';
 import {clientTabBarRoutes} from 'src/navigator/types';
 import {useJobDetailsContext} from './displayJobDetailsContext';
-import {useStopAJobPostMutation} from '@api/features/client/clientApi';
+import {
+  useLazyGetCandidatesListQuery,
+  useStopAJobPostMutation,
+} from '@api/features/client/clientApi';
 import {useDispatch} from 'react-redux';
 import {stopAJobPostReducer} from '@api/features/client/clientSlice';
 import {showToast} from '@components/organisms/customToast';
@@ -18,6 +27,8 @@ import {useToast} from 'react-native-toast-notifications';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {ICustomErrorResponse} from '@api/types';
 import {timeOutTimeSheets} from 'src/constants/constants';
+import {timeToLocalString} from '@utils/utils.common';
+import {writeDataAndDownloadExcelFile} from '@utils/generatecsv';
 
 type IQuickLinksJobPostContextTypes = {
   onPressSheet: (
@@ -26,6 +37,17 @@ type IQuickLinksJobPostContextTypes = {
     JobDetails?: IJobPostTypes | null,
   ) => void;
   jobDetails: IJobPostTypes | null;
+};
+
+type ITableFields = {
+  no: number;
+  name: string;
+  employeeId: number;
+  email: string;
+  certificateNumber: '';
+  checkIn: string | null;
+  checkOut: string | null;
+  remarks: string;
 };
 
 const quickLinksJobPostContext =
@@ -41,6 +63,7 @@ const QuickLinksJobPostContextProvider = ({
   const [jobTypes, setJobTypes] = useState<'open' | 'closed'>('open');
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
   const [stopAJobPost] = useStopAJobPostMutation();
+  const [getCandidates] = useLazyGetCandidatesListQuery();
   const {insetsBottom} = useScreenInsets();
   const navigation = useNavigation<any>();
   const toast = useToast();
@@ -115,6 +138,11 @@ const QuickLinksJobPostContextProvider = ({
             stopAJobHandler(selectedJobPost);
           }
           break;
+        case 4:
+          if (selectedJobPost) {
+            onPressDownloadCheckInSheet(selectedJobPost.id);
+          }
+          break;
         default:
           navigation.navigate('shortlistedCandidates', {
             jobId: selectedJobPost?.id,
@@ -129,6 +157,51 @@ const QuickLinksJobPostContextProvider = ({
     jobDetails: null,
   };
 
+  const onPressDownloadCheckInSheet = async (jobId: number) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await getCandidates({
+        type: 'shortlisted',
+        jobId,
+      }).unwrap();
+      if (response) {
+        const tableFields: ITableFields[] = response.map(
+          (candidate, index) => ({
+            no: index + 1,
+            name: candidate.employeeDetails.name ?? '',
+            employeeId: candidate.id,
+            certificateNumber: '',
+            email: candidate.employeeDetails.email ?? '',
+            checkIn: timeToLocalString(candidate?.CheckIn ?? null),
+            checkOut: timeToLocalString(candidate?.CheckOut ?? null),
+            remarks: '                                         ',
+          }),
+        );
+        writeDataAndDownloadExcelFile(
+          tableFields as any,
+          'shortlistedCandidates',
+          [
+            {wch: 2},
+            {wch: 25},
+            {wch: 10},
+            {wch: 15},
+            {wch: 40},
+            {wch: 10},
+            {wch: 10},
+            {wch: 50},
+          ],
+          'no shortlisted Candidates yet',
+          toast,
+        );
+      }
+    } catch (e) {
+      console.log(e);
+      showToast(toast, STRINGS.unable_to_download_sheet, 'error');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
   return (
     <quickLinksJobPostContext.Provider value={contextValue}>
       {children}
@@ -138,12 +211,17 @@ const QuickLinksJobPostContextProvider = ({
         headerTitle={STRINGS.quick_links}
         modalHeight={
           jobTypes === 'open'
-            ? verticalScale(400) + insetsBottom
+            ? verticalScale(472) + insetsBottom
             : verticalScale(256) + insetsBottom
         }
         options={
           jobTypes === 'open'
             ? [
+                {
+                  icon: IC_DOWNLOAD_SHEET,
+                  title: STRINGS.downloadCheckinSheets,
+                  onPress: () => onPressSheetAction(4),
+                },
                 {
                   icon: CHECK_IN,
                   title: STRINGS.check_in,
