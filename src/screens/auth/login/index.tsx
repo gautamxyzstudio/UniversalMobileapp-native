@@ -34,6 +34,7 @@ import {
 } from '@api/features/user/userSlice';
 import {IClientDetails, IEmployeeDetails} from '@api/features/user/types';
 import {IClientStatus} from '@utils/enums';
+import FocusedText from '@components/atoms/focusedText';
 
 const Login = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -211,13 +212,13 @@ const Login = () => {
             }
             title={STRINGS.password}
           />
-          {/* <View style={styles.forgotPassword}>
+          <View style={styles.forgotPassword}>
             <FocusedText
               onPress={() => navigation.navigate('forgotPassword')}
               textStyle={styles.forgotText}
               text={STRINGS.forgot_password}
             />
-          </View> */}
+          </View>
           <CustomButton
             title={STRINGS.log_in}
             disabled={false}

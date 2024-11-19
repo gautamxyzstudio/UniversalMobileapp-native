@@ -30,6 +30,12 @@ export enum ICandidateStatusEnum {
   declined = 3,
 }
 
+export enum IHelpAndSupportTicketStatus {
+  OPEN = 's0',
+  CLOSED = 's1',
+  RESOLVED = 's2',
+}
+
 export enum IClientStatus {
   PENDING = 's0',
   ACTIVE = 's1',

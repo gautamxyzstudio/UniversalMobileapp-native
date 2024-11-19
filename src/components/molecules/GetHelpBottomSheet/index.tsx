@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useMemo, useState} from 'react';
 import {BaseBottomSheet} from '../bottomsheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
@@ -7,20 +7,22 @@ import {STRINGS} from 'src/locales/english';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {fonts} from '@utils/common.styles';
-import CustomTextInput from '@components/atoms/customtextInput';
 import Spacers from '@components/atoms/Spacers';
 import {useKeyboardHeight} from 'src/hooks/useKeyboardHeight';
 import CustomButton from '../customButton';
 import {Row} from '@components/atoms/Row';
 import {useToast} from 'react-native-toast-notifications';
 import {showToast} from '@components/organisms/customToast';
+import {useTheme} from '@theme/Theme.context';
+import CustomTextInput from '@components/atoms/customtextInput';
 
 const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
   ({}, ref) => {
-    const modalHeight = verticalScale(336);
-    const [searchVal, setSearchVal] = useState('');
+    const modalHeight = verticalScale(560);
     const styles = useThemeAwareObject(createStyles);
     const toast = useToast();
+    const [issueDescription, setIssueDescription] = useState('');
+    const {theme} = useTheme();
     const keyboardHeight = useKeyboardHeight();
     const snapPoints = useMemo(
       () => [0.01, modalHeight, modalHeight + keyboardHeight],
@@ -34,7 +36,6 @@ const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
 
     const onPressSubmit = () => {
       onClose();
-      setSearchVal('');
       showToast(toast, 'Issue submitted successfully', 'success');
     };
 
@@ -45,14 +46,16 @@ const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
             <Text style={styles.title}>{STRINGS.have_an_issue}</Text>
             <Spacers type="vertical" size={16} />
             <CustomTextInput
-              placeholder={STRINGS.type_your_issue}
+              placeholder="Describe"
+              multiline
+              autoCapitalize="none"
+              placeholderTextColor={theme.color.grey}
+              defaultValue={issueDescription}
+              onChangeText={setIssueDescription}
               title={''}
-              value={searchVal}
-              onTextChange={e => setSearchVal(e)}
+              isMultiline
               hideTitle
-              numberOfLines={5}
-              textAlignVertical="top"
-              errorMessage={''}
+              errorMessage={undefined}
             />
           </View>
           <Row spaceBetween>
@@ -94,5 +97,6 @@ const createStyles = ({color}: Theme) => {
     },
     mainView: {flex: 1, justifyContent: 'space-between'},
   });
+
   return styles;
 };

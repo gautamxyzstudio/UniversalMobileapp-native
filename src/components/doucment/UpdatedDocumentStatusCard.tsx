@@ -3,7 +3,6 @@ import React from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/Theme.type';
 import PreUploadedDocCardWithView from './PreUploadedDocCardWithView';
-import {mockAsset} from '@api/mockData';
 import {IImage} from '@utils/photomanager';
 import {IDocument} from '@utils/doumentManager';
 import {fonts} from '@utils/common.styles';
@@ -12,6 +11,8 @@ import {useTheme} from '@theme/Theme.context';
 import {Row} from '@components/atoms/Row';
 import {MEAT_BALL} from '@assets/exporter';
 import {verticalScale} from '@utils/metrics';
+import {useNavigation} from '@react-navigation/native';
+import {NavigationProps} from 'src/navigator/types';
 
 type IUpdatedDocumentStatusCard = {
   status: 'Pending' | 'Updated';
@@ -24,6 +25,7 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
   status,
 }) => {
   const styles = useThemeAwareObject(createStyles);
+  const navigation = useNavigation<NavigationProps>();
 
   const {theme} = useTheme();
 
@@ -58,7 +60,11 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
           <Spacers type="vertical" size={8} />
         </>
       )}
-      <PreUploadedDocCardWithView withTitle={false} asset={mockAsset} />
+      <PreUploadedDocCardWithView
+        withTitle={false}
+        document={null}
+        navigation={navigation}
+      />
     </View>
   );
 };

@@ -15,7 +15,7 @@ import {getFileExtension} from '@utils/utils.common';
 import {NavigationProps} from 'src/navigator/types';
 
 type IPreUploadedDocCardWithView = {
-  document: IEmployeeDocument;
+  document: IEmployeeDocument | null;
   withTitle: boolean;
   hideStatus?: boolean;
   navigation: NavigationProps;
@@ -30,7 +30,7 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
   const styles = useThemeAwareObject(getStyles);
   const [visible, setIsVisible] = useState(false);
   const theme = useTheme();
-  const doc = document.doc;
+  const doc = document?.doc;
   const onPressView = () => {
     const fileExtension = getFileExtension(doc?.url ?? '');
     if (fileExtension === 'pdf' || fileExtension === 'docx') {
@@ -43,7 +43,7 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
   };
 
   const statusAttributes = getStatusAttributesFromStatus(
-    document.docStatus,
+    document?.docStatus,
     theme.theme,
   );
 
@@ -52,7 +52,7 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
       {withTitle && (
         <>
           <Row alignCenter spaceBetween>
-            <Text style={styles.title}>{document.docName}</Text>
+            <Text style={styles.title}>{document?.docName}</Text>
             {!hideStatus && (
               <Text style={[styles.status, {color: statusAttributes.color}]}>
                 {statusAttributes.title}

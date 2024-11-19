@@ -29,6 +29,7 @@ export type RootStackParamList = {
   selectLocation: undefined;
   addLocationManually: undefined;
   otpVerification: {
+    isForgotPassword?: boolean;
     email: string;
     password: string;
     confirmPassword: string;
@@ -47,6 +48,7 @@ export type RootStackParamList = {
   registerNewCompany: undefined;
   schedule: undefined;
   notifications: undefined;
+  helpAndSupport: undefined;
   shortlistedCandidates: {
     jobId: number;
     createdAt: Date;
@@ -100,6 +102,7 @@ type IScreenType = {
   employeeSearch: 'employeeSearch';
   schedule: 'schedule';
   notifications: 'notifications';
+  helpAndSupport: 'helpAndSupport';
   employeeJobHistory: 'employeeJobHistory';
   profileSettings: 'profileSettings';
   updatedDocumentStatus: 'updatedDocumentStatus';
@@ -144,6 +147,7 @@ export const routNames: IScreenType = {
   jobPostDrafts: 'jobPostDrafts',
   textEditor: 'textEditor',
   clientDetails: 'clientDetails',
+  helpAndSupport: 'helpAndSupport',
 };
 
 export const employeeTabBarRoutes = {

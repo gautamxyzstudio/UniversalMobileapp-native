@@ -9,10 +9,18 @@ import {useNavigation} from '@react-navigation/native';
 import {forgotPasswordSchema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {NavigationProps} from 'src/navigator/types';
+import {useSendEmailOtpMutation} from '@api/features/user/userApi';
+import {useDispatch} from 'react-redux';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {showToast} from '@components/organisms/customToast';
+import {useToast} from 'react-native-toast-notifications';
 
 const ForgotPassword = () => {
   const navigation = useNavigation<NavigationProps>();
   const [email, setEmail] = useState<string>('');
+  const dispatch = useDispatch();
+  const toast = useToast();
+  const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const [emailError, setEmailError] = useState('');
 
   const verifyPassword = async () => {
@@ -23,9 +31,9 @@ const ForgotPassword = () => {
           abortEarly: false,
         },
       );
-      // if (validateEmail) {
-      //          navigateToConfirmPassword();
-      //  }
+      if (validateEmail) {
+        navigateToConfirmPassword(validateEmail.email);
+      }
     } catch (error) {
       if (error instanceof ValidationError) {
         const errors: {[key: string]: string} = {};
@@ -41,15 +49,39 @@ const ForgotPassword = () => {
     }
   };
 
-  // const navigateToConfirmPassword = (email:string) => {
-  //   navigation.navigate('otpVerification', {
-
-  //   });
-  // };
+  const navigateToConfirmPassword = async (email: string) => {
+    try {
+      dispatch(setLoading(true));
+      const otpSent = await sendOtp(email);
+      if (otpSent) {
+        navigation.navigate('otpVerification', {
+          email: email,
+          password: '',
+          confirmPassword: '',
+          userType: 'client',
+          isForgotPassword: true,
+        });
+      }
+    } catch (error) {
+      showToast(toast, 'unable to send otp', 'error');
+      console.log(error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   const emailChangeHandler = (e: string) => {
     setEmail(e);
     setEmailError('');
+  };
+
+  const sendOtp = async (email: string): Promise<boolean> => {
+    try {
+      const result = await sendOptVerificationRequest({email}).unwrap();
+      return result?.message ? true : false;
+    } catch (error) {
+      return false;
+    }
   };
 
   return (

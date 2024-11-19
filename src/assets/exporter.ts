@@ -120,6 +120,7 @@ import IC_NO_RECENT from './icons/svg/ic_no_recent.svg';
 import IC_PLUS_DISABLED from './icons/svg/plusDisabled.svg';
 import IC_ARROW_DOWN from './icons/svg/arrowDown.svg';
 import IC_CSV from './icons/svg/csv.svg';
+import IC_HELP from './icons/svg/Help.svg';
 
 export const ICONS = {
   globe: require('./icons/png/globe.png'),
@@ -161,6 +162,7 @@ export {
   EMPTY,
   CROSS_ORANGE,
   EVENT,
+  IC_HELP,
   PENCIL,
   POST,
   IC_EMPTY_APPLIED,

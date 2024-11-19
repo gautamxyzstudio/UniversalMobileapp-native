@@ -4,7 +4,7 @@ import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
 import EmployeeProfileTab from '@components/employee/EmployeeProfileTab';
 import {
-  IC_DOWNLOAD_SHEET,
+  HELP_SECONDARY,
   IC_LOG_ACTIVITY,
   LOGOUT,
   LOGOUT_SECONDARY,
@@ -73,16 +73,16 @@ const ClientProfile = () => {
             onPressTab={() => navigation.navigate('employeeJobHistory')}
           />
           <EmployeeProfileTab
-            Icon={IC_DOWNLOAD_SHEET}
-            title={STRINGS.downloadCheckinSheets}
-            withArrow={true}
-            onPressTab={() => navigation.navigate('employeeJobHistory')}
-          />
-          <EmployeeProfileTab
             Icon={SETTINGS}
             title={STRINGS.settings}
             withArrow={true}
             onPressTab={() => navigation.navigate('profileSettings')}
+          />
+          <EmployeeProfileTab
+            Icon={HELP_SECONDARY}
+            title={STRINGS.helpAndSupport}
+            withArrow={true}
+            onPressTab={() => navigation.navigate('helpAndSupport')}
           />
           <EmployeeProfileTab
             Icon={RATE}

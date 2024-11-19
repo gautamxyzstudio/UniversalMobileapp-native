@@ -127,6 +127,7 @@ const ClientDetails = () => {
         city: user.location,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {

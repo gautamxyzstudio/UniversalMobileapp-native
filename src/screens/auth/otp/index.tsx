@@ -32,6 +32,7 @@ import {IUser} from '@api/features/user/types';
 type IOptVerificationPros = {
   route: {
     params: {
+      isForgotPassword?: boolean;
       email: string;
       password: string;
       confirmPassword: string;
