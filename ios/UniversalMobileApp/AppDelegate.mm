@@ -1,13 +1,11 @@
 #import "AppDelegate.h"
 #import <Firebase.h>
-#import <GoogleMaps/GoogleMaps.h>
 #import <React/RCTBundleURLProvider.h>
 #import "RNSplashScreen.h"  
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [GMSServices provideAPIKey:@"AIzaSyDOjFt-rfkiuxW9E7x1QjVtz2-ZPICg2zA"];
   [FIRApp configure];
   self.moduleName = @"UniversalMobileApp";
   // You can add your custom initial props in the dictionary below.

@@ -4,9 +4,9 @@ import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
 import {STRINGS} from 'src/locales/english';
 import {verticalScale, moderateScale} from '@utils/metrics';
-import MapView from 'react-native-maps';
+
 import SearchInput from '@components/molecules/InputTypes/SearchInput';
-import {IC_GPS, LOCATION_POINTER} from '@assets/exporter';
+import {IC_GPS} from '@assets/exporter';
 import Svg, {Path} from 'react-native-svg';
 import {fontFamily, fonts} from '@utils/common.styles';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -32,8 +32,8 @@ const AddLocationManually = () => {
         <HeaderWithBack isDark headerTitle={STRINGS.add_address} />
       </View>
       <View style={styles.mapView}>
-        <View style={styles.searchContainer}>
-          <SearchInput
+        {/* <View style={styles.searchContainer}> */}
+        {/* <SearchInput
             value={searchValue}
             onChangeText={text => setSearchValue(text)}
             onPressCross={onPressCross}
@@ -52,7 +52,7 @@ const AddLocationManually = () => {
         />
         <View style={styles.marker}>
           <LOCATION_POINTER />
-        </View>
+        </View> */}
         <View style={styles.bottomView}>
           <IC_GPS style={styles.gps} />
           <View style={styles.selectedContainer}>

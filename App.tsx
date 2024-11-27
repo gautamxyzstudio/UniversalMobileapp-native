@@ -1,5 +1,5 @@
-import {LogBox, Platform, StatusBar, StyleSheet, View} from 'react-native';
-import React, {useEffect} from 'react';
+import {LogBox, StatusBar, StyleSheet, View} from 'react-native';
+import React from 'react';
 
 import {Provider} from 'react-redux';
 import store, {persistor} from 'src/api/store';
@@ -7,8 +7,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {DefaultTheme, PaperProvider} from 'react-native-paper';
 import {useTheme} from '@theme/Theme.context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import Geocoder from 'react-native-geocoding';
+
 import RootNavigator from 'src/navigator/rootNavigator';
 import LoaderWrapper from '@wrappers/loaderWrapper';
 import {KeyboardProvider} from 'react-native-keyboard-controller';
@@ -56,13 +55,6 @@ const App = () => {
       level5: '5',
     },
   };
-
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: `${process.env.CLIENT_ID}`,
-    });
-    Geocoder.init(`${process.env.GOOGLE_KEY}`, {language: 'en'});
-  }, []);
 
   LogBox.ignoreLogs([
     'Tried to modify key `reduceMotion` of an object which has been already passed to a worklet.',
