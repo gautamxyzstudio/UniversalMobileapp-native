@@ -255,7 +255,10 @@ export const extractEmployeeDocumentsFromApiResponse = (
     supportingDocument && documents.push(supportingDocument);
   }
 
-  if (employeeDetails.securityDocumentAdv) {
+  if (
+    employeeDetails.securityDocumentAdv &&
+    employeeDetails.securityDocumentAdv?.id
+  ) {
     const securityDocumentAdv = addDocument(
       {
         name: STRINGS.license_advance,
@@ -273,7 +276,10 @@ export const extractEmployeeDocumentsFromApiResponse = (
     );
     securityDocumentAdv && documents.push(securityDocumentAdv);
   }
-  if (employeeDetails.securityDocumentBasic) {
+  if (
+    employeeDetails.securityDocumentBasic &&
+    employeeDetails.securityDocumentBasic?.id
+  ) {
     const securityDocumentBasic = addDocument(
       {
         name: STRINGS.license_basic,

@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {DROPDOWN_SECONDARY} from '@assets/exporter';
+import {ICONS} from '@assets/exporter';
 import {useTheme} from '@theme/Theme.context';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {fontFamily, fonts} from '@utils/common.styles';
 import {verticalScale, moderateScale, windowWidth} from '@utils/metrics';
 import React, {useState, useCallback, LegacyRef, useEffect} from 'react';
-import {View, StyleSheet, Text, Platform, TextInput} from 'react-native';
+import {View, StyleSheet, Text, Platform, TextInput, Image} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import Animated, {
   interpolate,
@@ -113,7 +113,12 @@ const DropdownComponent: React.FC<IDropdownComponentProps> = ({
         labelField="label"
         valueField="value"
         renderRightIcon={() => (
-          <DROPDOWN_SECONDARY
+          // <RIGHT_ARROW_DROPDOWN
+          //   width={verticalScale(24)}
+          //   height={verticalScale(24)}
+          // />
+          <Image
+            source={ICONS.dropDown}
             width={verticalScale(24)}
             height={verticalScale(24)}
           />

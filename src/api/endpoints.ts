@@ -77,4 +77,5 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/job-applications/scheduled/${emplyeeId}`,
   updateClientDetails: (userId: number) =>
     `${process.env.BASE_URL}/api/client-details/${userId}`,
+  getFaqs: `${process.env.BASE_URL}/api/faqs`,
 };

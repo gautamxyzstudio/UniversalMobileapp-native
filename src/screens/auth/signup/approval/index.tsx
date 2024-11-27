@@ -16,8 +16,6 @@ import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import SelectOptionBottomSheet from '@components/organisms/selectOptionBottomSheet';
 import ContactUsBottomSheet from '@components/organisms/contactUsBottomsheet';
 import FaqBottomSheet from '@components/organisms/FaqBottomSheet';
-import {useSelector} from 'react-redux';
-import {userAdvanceDetailsFromState} from '@api/features/user/userSlice';
 import ActionPopup from '@components/molecules/ActionPopup';
 import {customModalRef} from '@components/molecules/customModal/types';
 import store from '@api/store';
@@ -27,17 +25,17 @@ import {timeOutTimeSheets} from 'src/constants/constants';
 import {companyEmail} from '@utils/constants';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
+import {useFetchFaqsQuery} from '@api/features/client/clientApi';
 
 const Approval = () => {
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const bottomSheetRefFaqs = useRef<BottomSheetModal | null>(null);
   const bottomSheetRefContactUs = useRef<BottomSheetModal | null>(null);
-  const client = useSelector(userAdvanceDetailsFromState);
+  const {data} = useFetchFaqsQuery(null);
   const popupRef = useRef<customModalRef>(null);
   const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
 
-  console.log(client, 'client');
   const onPressContactUs = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
@@ -49,7 +47,7 @@ const Approval = () => {
     bottomSheetRefContactUs.current?.snapToIndex(0);
     setTimeout(() => {
       const mailto = `mailto:${companyEmail}`;
-      Linking.openURL(mailto).catch(err =>
+      Linking.openURL(mailto).catch(_err =>
         showToast(toast, 'Error opening mail app:', 'error'),
       );
     }, timeOutTimeSheets);
@@ -117,7 +115,7 @@ const Approval = () => {
         ref={bottomSheetRefContactUs}
         onPressEmail={launchEmailHandler}
       />
-      <FaqBottomSheet ref={bottomSheetRefFaqs} />
+      <FaqBottomSheet ref={bottomSheetRefFaqs} data={data} />
       <ActionPopup
         ref={popupRef}
         title={STRINGS.are_you_sure_you_want_to_logout_this_account}

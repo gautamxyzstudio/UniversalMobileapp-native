@@ -1,12 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {RefreshControl, ScrollView, StatusBar, Text, View} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
@@ -16,7 +9,7 @@ import {getStyles} from './styles';
 import PreUploadedDocCardWithView from '@components/doucment/PreUploadedDocCardWithView';
 import Spacers from '@components/atoms/Spacers';
 import BottomButtonView from '@components/organisms/bottomButtonView';
-import {EDIT_PROFILE, IC_PLUS_DISABLED, STATUS} from '@assets/exporter';
+import {STATUS} from '@assets/exporter';
 import SelectDocumentToUpdatePopup from '@components/doucment/SelectDocumentToUpdatePopup';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
@@ -44,13 +37,11 @@ import {
   useLazyGetUserQuery,
   useSubmitOtherDocumentsMutation,
   useUpdateEmployeeDetailsMutation,
-  useUpdateEmployeeDocumentsMutation,
 } from '@api/features/user/userApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {useToast} from 'react-native-toast-notifications';
 import {showToast} from '@components/organisms/customToast';
 import {Row} from '@components/atoms/Row';
-import {verticalScale} from '@utils/metrics';
 import SelectImagePopup from '@components/molecules/selectimagepopup';
 import useUploadAssets from 'src/hooks/useUploadAsset';
 import {IFile} from '@components/organisms/uploadPopup/types';
@@ -105,8 +96,6 @@ const EmployeeDocuments = () => {
     }
   }, [user.documents]);
 
-  console.log(validUpdateDocument, 'balid');
-
   useEffect(() => {
     setDocuments(prev => {
       const prevDocs = [...prev];
@@ -114,6 +103,11 @@ const EmployeeDocuments = () => {
         label: STRINGS.new_document,
         value: STRINGS.new_document,
       });
+      prevDocs.push({
+        label: STRINGS.resume_simple,
+        value: STRINGS.resume_simple,
+      });
+
       const securityAdvDocIndex = user.documents?.primary?.findIndex(
         doc => doc.docName === STRINGS.license_advance,
       );
@@ -132,18 +126,14 @@ const EmployeeDocuments = () => {
           value: STRINGS.license_basic,
         });
       }
-      if (!user.resume?.doc?.url) {
-        console.log(!user.resume?.doc?.url);
-        prevDocs.push({
-          label: STRINGS.resume_title,
-          value: STRINGS.resume_title,
-        });
-      }
-      return prevDocs;
+      const uniqueOptions = prevDocs.filter(
+        (option, index, self) =>
+          self.findIndex(o => o.label === option.label) === index,
+      );
+
+      return uniqueOptions;
     });
   }, []);
-
-  console.log(user);
 
   // to refresh user details on pull to refresh
   const fetchUserDetailsHandler = useCallback(async () => {
@@ -167,9 +157,9 @@ const EmployeeDocuments = () => {
       const keyMap = {
         [STRINGS.license_advance]: 'securityDocumentAdv',
         [STRINGS.license_basic]: 'securityDocumentBasic',
+        [STRINGS.resume_simple]: 'resume',
       };
       const key = keyMap[doc.docType] || null;
-
       const requestData = key
         ? {
             data: {
@@ -185,17 +175,13 @@ const EmployeeDocuments = () => {
                 name: doc.name,
                 Document: doc.docValue,
                 employee_detail: user.detailsId ?? 0,
-                Docstatus:
-                  doc.name === STRINGS.Resume
-                    ? IDocumentStatus.APPROVED
-                    : IDocumentStatus.PENDING,
+                Docstatus: IDocumentStatus.PENDING,
               },
             ],
           };
-
       const response: ISubmitOtherDocumentsResponse = await (key
-        ? uploadNewDoc(requestData as IEmployeeUploadOtherDocumentsRequest)
-        : uploadPrevDocuments(requestData as IUpdateUserDetailsRequest)
+        ? uploadPrevDocuments(requestData as IUpdateUserDetailsRequest)
+        : uploadNewDoc(requestData as IEmployeeUploadOtherDocumentsRequest)
       ).unwrap();
       if (doc.docType === STRINGS.new_document) {
         if (response.data as unknown as ISubmitOtherDocumentsResponse) {
@@ -220,11 +206,11 @@ const EmployeeDocuments = () => {
         }
       } else {
         if (response.data) {
-          console.log(response.data, 'DATA');
+          showToast(toast, 'Document added successfully', 'success');
         }
       }
     } catch (error) {
-      console.error(error);
+      showToast(toast, 'Failed to add document', 'error');
     } finally {
       dispatch(setLoading(false));
     }
@@ -278,26 +264,11 @@ const EmployeeDocuments = () => {
               onRefresh={fetchUserDetailsHandler}
             />
           }>
-          <>
-            <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
-              <Text style={styles.heading}>{STRINGS.resume_title}</Text>
-              <TouchableOpacity
-                onPress={() => documentSelector.current?.snapToIndex(1)}
-                style={styles.resumeContainer}>
-                {user.resume?.doc?.url ? (
-                  <EDIT_PROFILE
-                    width={verticalScale(24)}
-                    height={verticalScale(24)}
-                  />
-                ) : (
-                  <IC_PLUS_DISABLED
-                    width={verticalScale(20)}
-                    height={verticalScale(20)}
-                  />
-                )}
-              </TouchableOpacity>
-            </Row>
-            {user.resume?.doc?.url && (
+          {user.resume?.doc?.url && (
+            <>
+              <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
+                <Text style={styles.heading}>{STRINGS.resume_title}</Text>
+              </Row>
               <View style={styles.listView}>
                 <PreUploadedDocCardWithView
                   document={user.resume}
@@ -305,12 +276,11 @@ const EmployeeDocuments = () => {
                   navigation={navigation}
                 />
               </View>
-            )}
-          </>
-
-          <Spacers type="vertical" scalable />
+              <Spacers type="vertical" scalable />
+            </>
+          )}
           <View style={styles.docHeadingContainer}>
-            <Text style={styles.heading}>{STRINGS.primary_document}</Text>
+            <Text style={styles.heading}>{STRINGS.mandatoryDocs}</Text>
           </View>
           <View style={styles.listView}>
             {user.documents?.primary?.map(doc => (
@@ -321,6 +291,12 @@ const EmployeeDocuments = () => {
                 navigation={navigation}
               />
             ))}
+          </View>
+          <Spacers type="vertical" scalable />
+          <View style={styles.docHeadingContainer}>
+            <Text style={styles.heading}>{STRINGS.otherDocs}</Text>
+          </View>
+          <View style={styles.listView}>
             {user.documents?.secondary?.map(doc => (
               <PreUploadedDocCardWithView
                 document={doc}

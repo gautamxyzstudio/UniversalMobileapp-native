@@ -140,7 +140,6 @@ export const STRINGS = {
   Resume: 'Resume (optional)',
   resume_title: 'Resume',
   backAccountNumberError: 'Please enter your bank account number',
-
   backAccountNumberValid: 'Please enter a valid bank account number',
   institutionNumberError: 'Please enter your institution number',
   institutionNumberValid: 'Please enter a valid institution number',
@@ -322,4 +321,8 @@ export const STRINGS = {
   clear: 'Clear',
   clearAll: 'Clear All',
   helpAndSupport: 'Help and Support',
+  noFaqs: 'No Faqs Found',
+  mandatoryDocs: 'Mandatory Documents',
+  otherDocs: 'Other Documents',
+  resume_simple: 'Resume',
 };

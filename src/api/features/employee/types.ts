@@ -18,7 +18,7 @@ export type IJobTypes = {
   city: string;
   address: string;
   postalCode: string;
-  postID?: number | null;
+  postID?: string | null;
   gender: string;
   salary: string;
   jobDuties: string;

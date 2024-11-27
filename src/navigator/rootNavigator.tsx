@@ -23,7 +23,7 @@ import Notifications from '@screens/notifications';
 import JobHistory from '@screens/employeeScreens/employeeJobHistory';
 import ProfileSettings from '@screens/common/profileSettings';
 import PdfViewer from '@screens/common/pdfViewer';
-import updatedDocumentStatus from '@screens/employeeScreens/updatedDocumentStatus';
+import updatedDocumentStatus from '@screens/employeeScreens/updateDocumentReqests';
 import ClientTabNavigator from './clientTabNavigator';
 import SignUp from '@screens/auth/signup';
 import RecruiterDetails from '@screens/auth/signup/recruiterDetails';

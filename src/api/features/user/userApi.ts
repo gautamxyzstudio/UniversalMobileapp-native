@@ -39,7 +39,11 @@ import {
 import {STRINGS} from 'src/locales/english';
 import {IClientStatus, IEmployeeDocsApiKeys} from '@utils/enums';
 
-const authApi = baseApi.injectEndpoints({
+const baseApiWithUserTag = baseApi.enhanceEndpoints({
+  addTagTypes: ['user'],
+});
+
+const authApi = baseApiWithUserTag.injectEndpoints({
   endpoints: builder => ({
     register: builder.mutation<IUser<'client' | 'emp'>, IRegisterUserArgs>({
       query: body => ({
@@ -59,7 +63,6 @@ const authApi = baseApi.injectEndpoints({
       transformErrorResponse: (
         response: IErrorResponse,
       ): ICustomErrorResponse => {
-        console.log(response, 'RESPONSE ERROR');
         return {
           statusCode: response.status,
           message: response.data.error?.message ?? STRINGS.someting_went_wrong,
@@ -146,6 +149,7 @@ const authApi = baseApi.injectEndpoints({
         url: apiEndPoints.getUser,
         method: apiMethodType.get,
       }),
+      providesTags: ['user'],
       transformResponse: (
         response: IGetUserResponse,
       ): IEmployeeDetails | IClientDetails | null => {
@@ -296,6 +300,7 @@ const authApi = baseApi.injectEndpoints({
         method: apiMethodType.PUT,
         body: body.data,
       }),
+      invalidatesTags: ['user'],
     }),
     addClientDetails: builder.mutation<
       IUpdateClientDetailsResponse,

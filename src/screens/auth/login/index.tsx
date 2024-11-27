@@ -233,7 +233,7 @@ const Login = () => {
               focusedText={'Sign up'}
             />
           </View>
-          <View style={styles.dividerContainer}>
+          {/* <View style={styles.dividerContainer}>
             <View style={styles.divider} />
             <Text style={styles.signText}>{STRINGS.sign_in_with}</Text>
             <View style={styles.divider} />
@@ -251,14 +251,14 @@ const Login = () => {
                 onPress={appleButtonDitTap}
                 style={[styles.spacerSec]}
               />
-            )}
-            {/*
+            )} */}
+          {/*
           <FACEBOOK
             width={verticalScale(24)}
             height={verticalScale(24)}
             style={[styles.spacerSec]}
           /> */}
-          </View>
+          {/* </View> */}
         </View>
       </Animated.View>
     </OnBoardingBackground>

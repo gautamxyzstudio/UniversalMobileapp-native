@@ -8,7 +8,9 @@ import {
   IClientBasic,
   ICustomizedClientResponse,
   IDraftResponse,
+  IFaq,
   IGetCandidateListResponse,
+  IGetFaqResponse,
   IJobPostCustomizedResponse,
   IJobPostTypes,
   INewPostedJobResponse,
@@ -38,7 +40,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
       invalidatesTags: ['ClientSchedule'],
       transformResponse: (response: INewPostedJobResponse): IJobPostTypes => {
         return {
-          id: response.data.id,
+          id: response.data?.id ?? 0,
           job_name: response.data.attributes?.job_name ?? 'job Name',
           city: response.data.attributes?.city ?? '',
           required_certificates:
@@ -51,6 +53,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
           requiredEmployee: response.data.attributes?.requiredEmployee ?? 0,
           startShift: response.data.attributes?.startShift ?? new Date(),
           endShift: response.data.attributes?.endShift ?? new Date(),
+          postID: response.data.attributes?.postID,
           description: response.data.attributes?.description ?? '',
           gender: response.data.attributes?.gender ?? '',
           eventDate: response.data.attributes?.eventDate ?? new Date(),
@@ -80,6 +83,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
                 ...job,
                 id: job.id,
                 status: IJobPostStatus.OPEN,
+                postID: job.postID,
                 notAccepting: job?.notAccepting ?? false,
                 applicants: null,
                 client_details: populateClientDetails(job.client_details[0]),
@@ -386,7 +390,7 @@ const clientApi = baseApiWithTag.injectEndpoints({
       transformResponse: (response: IPostedJobsResponse): IJobTypes[] => {
         let jobs: IJobTypes[] = [];
         response.data.forEach(details => {
-          jobs.push({...details, company: null});
+          jobs.push({...details, company: null, client_details: null});
         });
         return jobs;
       },
@@ -438,12 +442,34 @@ const clientApi = baseApiWithTag.injectEndpoints({
         };
       },
     }),
+    fetchFaqs: builder.query({
+      query: () => ({
+        url: apiEndPoints.getFaqs,
+        method: apiMethodType.get,
+      }),
+      transformResponse: (response: IGetFaqResponse): IFaq[] => {
+        return response.data.map(
+          (faq: {
+            id: number;
+            attributes: {
+              Title: string;
+              FaqDsrc: string;
+            };
+          }) => ({
+            id: faq.id,
+            title: faq.attributes.Title,
+            description: faq.attributes.FaqDsrc,
+          }),
+        );
+      },
+    }),
   }),
 });
 
 export const {
   usePostAJobMutation,
   useGetClientScheduleQuery,
+  useFetchFaqsQuery,
   useStopAJobPostMutation,
   useUpdateClientDetailsMutation,
   usePatchADraftMutation,

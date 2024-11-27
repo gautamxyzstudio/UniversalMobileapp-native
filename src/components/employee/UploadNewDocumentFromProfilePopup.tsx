@@ -107,7 +107,7 @@ const UploadNewDocumentFromProfilePopup = React.forwardRef<
     }
     if (isValid && state.docValue && state.docType) {
       getSelectedDocument({
-        name: state.docType.label,
+        name: state.docName,
         docValue: state.docValue,
         docType: state.docType.value,
       });

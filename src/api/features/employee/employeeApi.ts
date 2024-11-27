@@ -78,6 +78,7 @@ const employeeApi = baseApi.injectEndpoints({
               company: getCompanyFromClientDetails(job.client_details[0]),
               required_certificates: job.required_certificates,
               postID: job.postID,
+              client_details: null,
             };
             customizedJobs.push(details);
           }
@@ -128,6 +129,8 @@ const employeeApi = baseApi.injectEndpoints({
             company: getCompanyFromClientDetails(
               details.jobs[0].client_details[0],
             ),
+            postID: '0',
+            client_details: null,
           });
         });
         return {
@@ -160,10 +163,12 @@ const employeeApi = baseApi.injectEndpoints({
             details.status === IJobPostStatus.COMPLETED
           ) {
             jobs.push({
-              id: details.id,
               ...details.jobs[0],
+              id: details.id,
               status: details.status,
+              postID: '0',
               company: null,
+              client_details: null,
             });
           }
         });
@@ -244,6 +249,7 @@ const employeeApi = baseApi.injectEndpoints({
               company: getCompanyFromClientDetails(job.client_details[0]),
               required_certificates: job.required_certificates,
               postID: job.postID,
+              client_details: null,
             };
             customizedJobs.push(details);
           }

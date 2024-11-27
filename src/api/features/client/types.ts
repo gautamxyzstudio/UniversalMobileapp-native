@@ -32,7 +32,7 @@ export interface IJobPostTypes {
   city: string;
   address: string;
   postalCode: string;
-  postID?: number | null;
+  postID?: string | null;
   gender: string;
   salary: string;
   notAccepting?: boolean;
@@ -122,6 +122,7 @@ export type IPostedJobsResponse = {
     eventDate: Date;
     salary: string;
     createdAt: Date;
+    postID: string | null;
     notAccepting: boolean;
     updatedAt: Date;
     status: IJobPostStatus;
@@ -283,6 +284,7 @@ export type INewPostedJobResponse = {
       city: string;
       address: string;
       postalCode: string;
+      postID: string;
       gender: string;
       eventDate: Date;
       salary: string;
@@ -320,4 +322,20 @@ export type ICustomizedClientResponse = {
   Name: string;
   contactno: string;
   location: string;
+};
+
+export type IFaq = {
+  id: number;
+  title: string;
+  description: string;
+};
+
+export type IGetFaqResponse = {
+  data: {
+    id: number;
+    attributes: {
+      Title: string;
+      FaqDsrc: string;
+    };
+  }[];
 };

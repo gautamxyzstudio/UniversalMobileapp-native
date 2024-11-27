@@ -49,6 +49,7 @@ export enum IDocumentNames {
   SECURITY_DOCUMENT_BASIC = 'd3',
   SECURITY_DOCUMENT_ADV = 'd4',
   SUPPORTING_DOCUMENT = 'd5',
+  RESUME = 'd6',
 }
 
 export enum IEmployeeDocsApiKeys {
