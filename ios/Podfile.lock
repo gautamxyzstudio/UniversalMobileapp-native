@@ -53,33 +53,9 @@ PODS:
     - nanopb (~> 3.30910.0)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - Google-Maps-iOS-Utils (4.2.2):
-    - Google-Maps-iOS-Utils/Clustering (= 4.2.2)
-    - Google-Maps-iOS-Utils/Geometry (= 4.2.2)
-    - Google-Maps-iOS-Utils/GeometryUtils (= 4.2.2)
-    - Google-Maps-iOS-Utils/Heatmap (= 4.2.2)
-    - Google-Maps-iOS-Utils/QuadTree (= 4.2.2)
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Clustering (4.2.2):
-    - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Geometry (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/GeometryUtils (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Heatmap (4.2.2):
-    - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/QuadTree (4.2.2):
-    - GoogleMaps (~> 7.3)
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - GoogleMaps (7.4.0):
-    - GoogleMaps/Maps (= 7.4.0)
-  - GoogleMaps/Base (7.4.0)
-  - GoogleMaps/Maps (7.4.0):
-    - GoogleMaps/Base
   - GoogleSignIn (7.0.0):
     - AppAuth (~> 1.5)
     - GTMAppAuth (< 3.0, >= 1.3)
@@ -1113,10 +1089,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-google-maps (1.15.2):
-    - Google-Maps-iOS-Utils (= 4.2.2)
-    - GoogleMaps (= 7.4.0)
-    - React-Core
   - react-native-image-picker (7.1.2):
     - DoubleConversion
     - glog
@@ -1159,8 +1131,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-maps (1.15.2):
-    - React-Core
   - react-native-month-year-picker (1.9.0):
     - React
   - react-native-netinfo (11.3.2):
@@ -1590,10 +1560,8 @@ DEPENDENCIES:
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
-  - react-native-google-maps (from `../node_modules/react-native-maps`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
-  - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-month-year-picker (from `../node_modules/react-native-month-year-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pdf (from `../node_modules/react-native-pdf`)
@@ -1654,9 +1622,7 @@ SPEC REPOS:
     - FirebaseCoreInternal
     - FirebaseInstallations
     - FirebaseMessaging
-    - Google-Maps-iOS-Utils
     - GoogleDataTransport
-    - GoogleMaps
     - GoogleSignIn
     - GoogleUtilities
     - GTMAppAuth
@@ -1746,14 +1712,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-document-picker"
   react-native-geolocation:
     :path: "../node_modules/@react-native-community/geolocation"
-  react-native-google-maps:
-    :path: "../node_modules/react-native-maps"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-keyboard-controller:
     :path: "../node_modules/react-native-keyboard-controller"
-  react-native-maps:
-    :path: "../node_modules/react-native-maps"
   react-native-month-year-picker:
     :path: "../node_modules/react-native-month-year-picker"
   react-native-netinfo:
@@ -1866,9 +1828,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 9f4e42053241bd45ce8565c881bfdd9c1df2f7da
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
-  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
@@ -1908,10 +1868,8 @@ SPEC CHECKSUMS:
   react-native-date-picker: 90687f1dbd374ff0265dca99d949998364c22fa9
   react-native-document-picker: 2b3efb60622b7be891b8d0e0e5424632150e0c94
   react-native-geolocation: 26d62314499618e6a810ed4a9a6121542c76df04
-  react-native-google-maps: 712561ea5515795b0437c4895c197508958040c7
   react-native-image-picker: 8b791a2bec6da84ca7d8cbcad30da159d6dd6da4
   react-native-keyboard-controller: 310a4b40d1cd32ef361dcfe27470556fef58b17e
-  react-native-maps: 3df08c84c698a6f6a98c290a23c138d4706a42da
   react-native-month-year-picker: 948797e981ca502427024a34b17f545eb321bbff
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
   react-native-pdf: 103940c90d62adfd259f63cca99c7c0c306b514c
@@ -1964,6 +1922,6 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 3f9165051bbc60b66f6a88c5eeafd9e9faa29500
 
-PODFILE CHECKSUM: 8b6b8b75a8a8a4b01e4600f9ba580df1800a984a
+PODFILE CHECKSUM: 3dc5a2924eb4909e39619e8500eb3b7fd8cf4c76
 
 COCOAPODS: 1.15.2

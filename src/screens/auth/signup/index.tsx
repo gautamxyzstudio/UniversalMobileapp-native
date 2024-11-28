@@ -1,4 +1,4 @@
-import {Alert, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useReducer} from 'react';
 import CustomTextInput from '@components/atoms/customtextInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -163,7 +163,7 @@ const SignUp: React.FC<ISignUpParams> = ({route}) => {
           normalText={STRINGS.By_Signing_up_I_agree_to_the}
           withCheckbox={true}
           checkboxCurrentValue={state.isCheckedPrivacyPolicy}
-          onTextPress={() => Alert.alert('Privacy Policy')}
+          onTextPress={() => navigation.navigate('privacyPolicy')}
           focusedText={STRINGS.privacy_Policy}
           checkBoxClickHandler={() =>
             dispatch({isCheckedPrivacyPolicy: !state.isCheckedPrivacyPolicy})

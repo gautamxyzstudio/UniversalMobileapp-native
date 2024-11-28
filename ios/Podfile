@@ -16,8 +16,6 @@ end
 
 target 'UniversalMobileApp' do
   config = use_native_modules!
-  rn_maps_path = '../node_modules/react-native-maps'
-  pod 'react-native-google-maps', :path => rn_maps_path
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
   use_react_native!(

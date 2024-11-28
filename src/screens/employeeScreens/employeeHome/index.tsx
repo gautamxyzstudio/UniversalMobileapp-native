@@ -85,7 +85,7 @@ const EmployeeHome = () => {
     dispatch(setLoading(true));
     setIsLastPage(true);
     getJobsPosts(true);
-  }, [jobType, filterDate.startDate, filterDate.endDate, preferredLocations]);
+  }, [jobType, filterDate?.startDate, filterDate?.endDate, preferredLocations]);
 
   // to set the data after from redux after  api call
   useEffect(() => {

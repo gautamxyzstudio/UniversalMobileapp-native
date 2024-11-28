@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TextInput, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React, {useMemo, useState} from 'react';
 import {BaseBottomSheet} from '../bottomsheet';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
@@ -18,7 +18,7 @@ import CustomTextInput from '@components/atoms/customtextInput';
 
 const GetHelpBottomSheet = React.forwardRef<BottomSheetModal, any>(
   ({}, ref) => {
-    const modalHeight = verticalScale(560);
+    const modalHeight = verticalScale(350);
     const styles = useThemeAwareObject(createStyles);
     const toast = useToast();
     const [issueDescription, setIssueDescription] = useState('');

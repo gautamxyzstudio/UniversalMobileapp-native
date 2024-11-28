@@ -55,7 +55,7 @@ import BRIEF_CASE from './icons/svg/briefcase.svg';
 import DOLLAR_SMALL from './icons/svg/dollarSec.svg';
 import CLOCK_SEC from './icons/svg/clockSec.svg';
 import MEAT_BALL from './icons/svg/meatball.svg';
-
+import PRIVACY_POLICY from './icons/svg/privacyPolicy.svg';
 import GALLERY from './icons/svg/gallery.svg';
 import ADD_ICON from './icons/svg/add.svg';
 import EDIT_PROFILE from './icons/svg/editPorfile.svg';
@@ -63,7 +63,7 @@ import BANK from './icons/svg/bank.svg';
 import HISTORY from './icons/svg/history.svg';
 import TICK from './icons/svg/tick.svg';
 import LOGOUT_SECONDARY from './icons/svg/logoutSecondary.svg';
-import BIN from './icons/svg/delete.svg';
+import BIN from './icons/svg/bin.svg';
 import LANGUAGE_ICON from './icons/svg/language.svg';
 import HELP_SECONDARY from './icons/svg/helpSecondary.svg';
 import DELETE_SECONDARY from './icons/svg/deleteSecondary.svg';
@@ -159,6 +159,7 @@ export {
   IC_DOWNLOAD_SHEET,
   IC_PLUS_DISABLED,
   NO_INTERNET,
+  PRIVACY_POLICY,
   EMPTY,
   CROSS_ORANGE,
   EVENT,

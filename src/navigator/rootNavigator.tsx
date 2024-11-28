@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {RootStackParamList, routNames} from './types';
+import {navigationRef, RootStackParamList, routNames} from './types';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Splash from '@screens/splash';
 import {stackNavigatorConfigurations} from './cofiguration';
@@ -38,6 +38,7 @@ import JobDetailsContextProvider from 'src/contexts/displayJobDetailsContext';
 import ShortlistedCandidateWithContextWrapper from '@components/client/ShortlistedCandidateWithContextWrapper';
 import ClientDetails from '@screens/clientScreens/clientDetails';
 import HelpAndSupport from '@screens/common/helpAndSupport';
+import PrivacyPolicy from '@screens/common/privacyPolicy';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,7 +48,7 @@ const RootNavigator = () => {
   }, []);
   return (
     <JobDetailsContextProvider>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
           initialRouteName={routNames.splash}
           screenOptions={stackNavigatorConfigurations}>
@@ -178,6 +179,10 @@ const RootNavigator = () => {
             component={
               ShortlistedCandidateWithContextWrapper as React.ComponentType<any>
             }
+          />
+          <Stack.Screen
+            name={routNames.privacyPolicy}
+            component={PrivacyPolicy}
           />
           <Stack.Screen
             name={routNames.clientDetails}

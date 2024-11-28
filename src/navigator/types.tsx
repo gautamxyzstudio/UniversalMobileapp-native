@@ -2,6 +2,8 @@ import React from 'react';
 import {ICONS} from '@assets/exporter';
 import {BottomTabNavigationOptions} from '@react-navigation/bottom-tabs';
 import {
+  CommonActions,
+  createNavigationContainerRef,
   NavigationProp,
   ParamListBase,
   RouteProp,
@@ -13,6 +15,7 @@ import {Source} from 'react-native-pdf';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {styles} from './styles';
 import {Row} from '@components/atoms/Row';
+import store, {persistor} from '@api/store';
 //type of params which are required by the screen;
 export type RootStackParamList = {
   splash: undefined;
@@ -35,6 +38,7 @@ export type RootStackParamList = {
     confirmPassword: string;
     userType: 'emp' | 'client';
   };
+  privacyPolicy: undefined;
   forgotPassword: undefined;
   confirmPassword: undefined;
   employeeTabBar: undefined;
@@ -105,6 +109,7 @@ type IScreenType = {
   helpAndSupport: 'helpAndSupport';
   employeeJobHistory: 'employeeJobHistory';
   profileSettings: 'profileSettings';
+  privacyPolicy: 'privacyPolicy';
   updatedDocumentStatus: 'updatedDocumentStatus';
   jobPosting: 'jobPosting';
   reviewJobPost: 'reviewJobPost';
@@ -148,6 +153,7 @@ export const routNames: IScreenType = {
   textEditor: 'textEditor',
   clientDetails: 'clientDetails',
   helpAndSupport: 'helpAndSupport',
+  privacyPolicy: 'privacyPolicy',
 };
 
 export const employeeTabBarRoutes = {
@@ -264,3 +270,17 @@ export const employeeTabBarProps = ({
   tabBarActiveTintColor: Colors.primaryDark,
   tabBarInactiveTintColor: Colors.textGrey,
 });
+
+export const navigationRef = createNavigationContainerRef<RootStackParamList>();
+
+export function resetNavigation() {
+  setTimeout(() => {
+    persistor.purge();
+    store.dispatch({type: 'RESET'});
+    let action = CommonActions.reset({
+      index: 0,
+      routes: [{name: routNames.onBoarding}],
+    });
+    navigationRef.current?.dispatch(action);
+  }, 200);
+}

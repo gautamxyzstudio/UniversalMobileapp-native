@@ -8,6 +8,7 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {RootState} from './store';
 import {QueryReturnValue} from 'node_modules/@reduxjs/toolkit/dist/query/baseQueryTypes';
 import NetInfo from '@react-native-community/netinfo';
+import {resetNavigation} from 'src/navigator/types';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${process.env.BASE_URL}`,
@@ -54,6 +55,9 @@ const queryFetcher = async (
   const result = await baseQuery(args, api, extraOptions);
 
   if (result.error) {
+    if (result.error?.status === 401) {
+      resetNavigation();
+    }
     if (result.error.status === 'FETCH_ERROR') {
       if (isConnected.isInternetReachable || isConnected.isConnected) {
         console.log('====================================');
