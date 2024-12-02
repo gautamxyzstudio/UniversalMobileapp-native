@@ -1,4 +1,9 @@
-import {IClientStatus, IEmployeeDocsApiKeys, IWorkStatus} from '@utils/enums';
+import {
+  IClientStatus,
+  IDocumentNames,
+  IEmployeeDocsApiKeys,
+  IWorkStatus,
+} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
@@ -59,6 +64,7 @@ export interface IEmployeeDetails {
 export type IEmployeeDocumentsType = {
   primary: IEmployeeDocument[] | null;
   secondary: IEmployeeDocument[] | null;
+  document_requests: IEmployeeDocument[] | null;
 };
 
 export interface IEmployeeDocument {
@@ -278,12 +284,26 @@ export interface IEmployeeDetailsApiResponse {
   trasitNumber?: string;
   sinDocument?: IDoc;
   Docstatus: IDocumentStatus;
-  other_documents: INewDocument[];
+  other_documents: IOtherDocument[];
+  document_requests: IDocumentRequests[];
 }
+
+export type IDocumentRequests = {
+  id: number | null | undefined;
+  DocName: IDocumentNames | null | undefined;
+  status: IDocumentStatus | null | undefined;
+  document: IDoc | null | undefined;
+};
 
 export type INewDocument = {
   id: number;
   status: IDocumentStatus;
+  name: string;
+  Document: IDoc;
+};
+export type IOtherDocument = {
+  id: number;
+  Docstatus: IDocumentStatus;
   name: string;
   Document: IDoc;
 };

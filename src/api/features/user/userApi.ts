@@ -5,9 +5,11 @@ import {
   ICheckEmailVerificationStatus,
   IClientDetails,
   IDoc,
+  IDocumentRequests,
   IDocumentStatus,
   IEmployeeBankDetails,
   IEmployeeDetails,
+  IEmployeeDocument,
   IEmployeeUploadOtherDocumentsRequest,
   IGetUserResponse,
   ILoginArgs,
@@ -33,11 +35,17 @@ import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {apiMethodType} from '@api/apiConstants';
 import {getImageUrl} from '@utils/constants';
 import {
+  extractDocumentRequestFromApiResponse,
   extractEmployeeDocumentsFromApiResponse,
   extractEmployeeSecondaryDocumentsFromApiResponse,
+  getDocumentNameFromCode,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
-import {IClientStatus, IEmployeeDocsApiKeys} from '@utils/enums';
+import {
+  IClientStatus,
+  IDocumentNames,
+  IEmployeeDocsApiKeys,
+} from '@utils/enums';
 
 const baseApiWithUserTag = baseApi.enhanceEndpoints({
   addTagTypes: ['user'],
@@ -200,6 +208,8 @@ const authApi = baseApiWithUserTag.injectEndpoints({
             const secondaryCertificates =
               extractEmployeeSecondaryDocumentsFromApiResponse(employeeDetails);
 
+            const documentRequest =
+              extractDocumentRequestFromApiResponse(employeeDetails);
             //user details
             const userDetails: IEmployeeDetails = {
               name: employeeDetails?.name ?? '',
@@ -227,6 +237,7 @@ const authApi = baseApiWithUserTag.injectEndpoints({
               documents: {
                 primary: primaryCertificates,
                 secondary: secondaryCertificates,
+                document_requests: documentRequest,
               },
               bankDetails: bankingDetails,
             };
@@ -334,6 +345,43 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         body,
       }),
     }),
+    getUpdatedEmployeeDocumentsRequest: builder.query<
+      IEmployeeDocument[],
+      {id: number}
+    >({
+      query: ({id}) => ({
+        url: apiEndPoints.getUpdateDocumentsRequests(id),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (
+        response: IDocumentRequests[],
+      ): IEmployeeDocument[] => {
+        const documents: IEmployeeDocument[] = [];
+        response.forEach(doc => {
+          documents.push({
+            doc: {
+              url: getImageUrl(doc.document?.url ?? ''),
+              id: doc.document?.id ?? 0,
+              name: doc.document?.name ?? '',
+              size: doc.document?.size ?? 0,
+              mime: doc.document?.mime ?? '',
+            },
+            docName: getDocumentNameFromCode(
+              doc.DocName ?? IDocumentNames.NULL,
+            ),
+            docStatus: doc.status ?? IDocumentStatus.PENDING,
+            docId: doc.id ?? 0,
+          });
+        });
+        return documents;
+      },
+    }),
+    cancelDocumentRequest: builder.mutation({
+      query: (docId: number) => ({
+        url: apiEndPoints.cancelDocumentUpdateRequest(docId),
+        method: apiMethodType.delete,
+      }),
+    }),
     submitOtherDocuments: builder.mutation<
       ISubmitOtherDocumentsResponse,
       IEmployeeUploadOtherDocumentsRequest
@@ -364,4 +412,6 @@ export const {
   useAddClientDetailsMutation,
   useLazyCheckEmailVerificationStatusQuery,
   useUpdateEmployeeDocumentsMutation,
+  useLazyGetUpdatedEmployeeDocumentsRequestQuery,
+  useCancelDocumentRequestMutation,
 } = authApi;

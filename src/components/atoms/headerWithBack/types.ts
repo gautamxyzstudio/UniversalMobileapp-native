@@ -9,6 +9,7 @@ export interface IHeaderWithBackProps {
   headerStyles?: StyleProp<ViewStyle>;
   withCross?: boolean;
   onPressCross?: () => void;
+  customRightContent?: React.ReactNode;
   withArrow?: boolean;
   icon?: React.FC<SvgProps>;
   onPressRightIcon?: () => void;

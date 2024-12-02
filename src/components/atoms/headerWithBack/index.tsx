@@ -13,6 +13,7 @@ const HeaderWithBack: React.FC<IHeaderWithBackProps> = ({
   headerTitle,
   headerTitleStyles,
   headerStyles,
+  customRightContent,
   icon,
   onPressCross,
   withCross,
@@ -87,11 +88,17 @@ const HeaderWithBack: React.FC<IHeaderWithBackProps> = ({
         </Text>
       )}
 
-      {renderRightIcon && Icon && (
-        <TouchableOpacity onPress={onPressRightIcon}>
-          <Icon width={verticalScale(24)} height={verticalScale(24)} />
-        </TouchableOpacity>
-      )}
+      {renderRightIcon &&
+        Icon &&
+        (customRightContent ? (
+          <TouchableOpacity onPress={onPressRightIcon}>
+            {customRightContent}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={onPressRightIcon}>
+            <Icon width={verticalScale(24)} height={verticalScale(24)} />
+          </TouchableOpacity>
+        ))}
     </Row>
   );
 };

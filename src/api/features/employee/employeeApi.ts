@@ -12,12 +12,14 @@ import {
   IGetScheduledJobResponse,
   IJobTypes,
   IUpdateEmployeePrimaryDocumentRequest,
+  IUserPrimaryDocumentResponse,
 } from './types';
 import {IErrorResponse, ICustomErrorResponse} from '@api/types';
 import {STRINGS} from 'src/locales/english';
-import {IJobPostStatus} from '@utils/enums';
+import {IEmployeeDocsApiKeys, IJobPostStatus} from '@utils/enums';
 import {getImageUrl} from '@utils/constants';
-import {IDoc} from '../user/types';
+import {IDoc, IEmployeeDocument} from '../user/types';
+import {getDocumentNameFromCode} from '@utils/utils.common';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -189,12 +191,26 @@ const employeeApi = baseApi.injectEndpoints({
         method: apiMethodType.get,
       }),
     }),
-    updateUserPrimaryDocuments: builder.mutation({
+    updateUserPrimaryDocuments: builder.mutation<
+      IEmployeeDocument,
+      IUpdateEmployeePrimaryDocumentRequest
+    >({
       query: (body: IUpdateEmployeePrimaryDocumentRequest) => ({
         url: apiEndPoints.updatePrimaryDocuments,
         method: apiMethodType.post,
         body,
       }),
+      transformResponse: (response: IUserPrimaryDocumentResponse) => {
+        let document: IEmployeeDocument | null = null;
+        document = {
+          docName: getDocumentNameFromCode(response.data.attributes.DocName),
+          docStatus: response.data.attributes.status,
+          docId: response.data.id,
+          doc: null,
+          apiKey: IEmployeeDocsApiKeys.NULL,
+        };
+        return document;
+      },
     }),
     getJobPostsViaSearch: builder.query({
       query: (body: {

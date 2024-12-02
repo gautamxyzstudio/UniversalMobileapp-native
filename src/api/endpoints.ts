@@ -71,6 +71,8 @@ export const apiEndPoints = {
       location,
     ),
   updatePrimaryDocuments: `${process.env.BASE_URL}/api/document-requests`,
+  getUpdateDocumentsRequests: (id: number) =>
+    `${process.env.BASE_URL}/api/document-requests/employee/${id}`,
   checkInOutEmployee: (applicationId: number) =>
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/checkin-checkout`,
   getScheduledJobs: (emplyeeId: number) =>
@@ -78,4 +80,6 @@ export const apiEndPoints = {
   updateClientDetails: (userId: number) =>
     `${process.env.BASE_URL}/api/client-details/${userId}`,
   getFaqs: `${process.env.BASE_URL}/api/faqs`,
+  cancelDocumentUpdateRequest: (docId: number) =>
+    `${process.env.BASE_URL}/api/document-requests/${docId}`,
 };

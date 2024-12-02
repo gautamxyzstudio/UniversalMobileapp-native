@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Row} from '@components/atoms/Row';
@@ -9,7 +9,11 @@ import {fonts} from '@utils/common.styles';
 import Spacers from '@components/atoms/Spacers';
 import {STRINGS} from 'src/locales/english';
 import ImageView from 'react-native-image-viewing';
-import {IDocumentStatus, IEmployeeDocument} from '@api/features/user/types';
+import {
+  IDoc,
+  IDocumentStatus,
+  IEmployeeDocument,
+} from '@api/features/user/types';
 import {useTheme} from '@theme/Theme.context';
 import {getFileExtension} from '@utils/utils.common';
 import {NavigationProps} from 'src/navigator/types';
@@ -30,9 +34,17 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
   const styles = useThemeAwareObject(getStyles);
   const [visible, setIsVisible] = useState(false);
   const theme = useTheme();
-  const doc = document?.doc;
+  const [doc, setDoc] = useState<IDoc | null>(null);
+
+  useEffect(() => {
+    if (document) {
+      setDoc(document.doc);
+    }
+  }, [document]);
+
   const onPressView = () => {
     const fileExtension = getFileExtension(doc?.url ?? '');
+
     if (fileExtension === 'pdf' || fileExtension === 'docx') {
       navigation.navigate('pdfViewer', {
         source: doc?.url ? {uri: doc.url} : undefined, // Wrapping the URL in an object
@@ -43,7 +55,7 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
   };
 
   const statusAttributes = getStatusAttributesFromStatus(
-    document?.docStatus,
+    document?.docStatus ?? IDocumentStatus.PENDING,
     theme.theme,
   );
 

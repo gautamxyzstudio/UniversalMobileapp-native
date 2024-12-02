@@ -42,6 +42,7 @@ import CALENDER_THIRD from './icons/svg/calendarThird.svg';
 import CLOCK from './icons/svg/clock.svg';
 import DOLLAR from './icons/svg/dollar.svg';
 import DOCUMENTS_SECONDARY from './icons/svg/documentsSecondary.svg';
+import NO_DOCUMENT from './icons/svg/noDocument.svg';
 import LOGOUT from './icons/svg/logout.svg';
 import PROFILE from './icons/svg/profile.svg';
 import RATE from './icons/svg/rate.svg';
@@ -171,6 +172,7 @@ export {
   PERSON_SECONDARY,
   JOB_ID,
   IC_COMPANY_DETAIL,
+  NO_DOCUMENT,
   DRAFT,
   DOCUMENTS_SECONDARY,
   NOTIFICATION_READ,

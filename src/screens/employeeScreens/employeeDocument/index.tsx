@@ -50,6 +50,7 @@ import {useTheme} from '@theme/Theme.context';
 import {IDocumentNames, IEmployeeDocsApiKeys} from '@utils/enums';
 import {getDocNameCodeThroughName} from './types';
 import {useUpdateUserPrimaryDocumentsMutation} from '@api/features/employee/employeeApi';
+import {verticalScale} from '@utils/metrics';
 
 const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -76,13 +77,24 @@ const EmployeeDocuments = () => {
   const [refreshing, updateRefreshing] = useState(false);
 
   useEffect(() => {
-    if (user.documents?.primary) {
+    if (user.documents?.primary && user.documents.document_requests) {
       let options: {name: string; key: IDocumentNames}[] = [];
       let previousDocs = [...user.documents.primary];
-      previousDocs?.map(doc => {
+      let currentDocsRequests = [...user.documents.document_requests];
+      previousDocs?.forEach(doc => {
+        let isAlreadyRequested = false;
+        currentDocsRequests.forEach(req => {
+          if (
+            doc.docName === req.docName &&
+            doc.docStatus === IDocumentStatus.PENDING
+          ) {
+            isAlreadyRequested = true;
+          }
+        });
         if (
-          doc.docStatus === IDocumentStatus.APPROVED ||
-          doc.docStatus === IDocumentStatus.DENIED
+          (doc.docStatus === IDocumentStatus.APPROVED ||
+            doc.docStatus === IDocumentStatus.DENIED) &&
+          !isAlreadyRequested
         ) {
           options.push({
             name: getDocNameCodeThroughName(doc.apiKey as IEmployeeDocsApiKeys)
@@ -202,7 +214,6 @@ const EmployeeDocuments = () => {
             addNewDocumentEmployee({document: uploadedDoc, type: 'secondary'}),
           );
           showToast(toast, 'Document added successfully', 'success');
-          // dispatch(addNewDocument({id: re}))
         }
       } else {
         if (response.data) {
@@ -222,7 +233,7 @@ const EmployeeDocuments = () => {
     try {
       const response = await uploadImage({asset: asset});
       if (response && user.detailsId) {
-        const doucmentResponse = await updateEmployeeDocument({
+        const documentResponse = await updateEmployeeDocument({
           data: {
             document: response[0].id,
             DocName: currentDocumentToUpdate,
@@ -230,7 +241,15 @@ const EmployeeDocuments = () => {
             employee_detail: user.detailsId,
           },
         }).unwrap();
-        console.log(doucmentResponse, 'RESPONSE RESUME');
+        if (documentResponse) {
+          showToast(toast, 'Document Request Created', 'success');
+          dispatch(
+            addNewDocumentEmployee({
+              document: documentResponse,
+              type: 'new requests',
+            }),
+          );
+        }
       }
     } catch (error) {
       console.log(error, 'ERROR');
@@ -251,6 +270,14 @@ const EmployeeDocuments = () => {
         headerStyles={styles.header}
         isDark
         icon={STATUS}
+        customRightContent={
+          <View>
+            <STATUS width={verticalScale(24)} height={verticalScale(24)} />
+            {user?.documents?.document_requests && (
+              <View style={styles.redDot} />
+            )}
+          </View>
+        }
         renderRightIcon
         onPressRightIcon={() => navigation.navigate('updatedDocumentStatus')}
         headerTitle={STRINGS.documents}

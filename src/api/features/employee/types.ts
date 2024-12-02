@@ -303,3 +303,14 @@ export type IClientDetailsResponse = {
     | null
     | undefined;
 };
+
+export type IUserPrimaryDocumentResponse = {
+  data: {
+    attributes: {
+      DocName: IDocumentNames;
+      status: IDocumentStatus.PENDING;
+    };
+    id: number;
+  };
+  meta: {};
+};

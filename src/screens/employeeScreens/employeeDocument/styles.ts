@@ -6,7 +6,7 @@ import {StyleSheet} from 'react-native';
 export const getStyles = (colors: Theme) => {
   const styles = StyleSheet.create({
     mainView: {
-      marginTop: verticalScale(24),
+      marginTop: verticalScale(12),
       flex: 1,
     },
     header: {
@@ -41,6 +41,15 @@ export const getStyles = (colors: Theme) => {
     value: {
       color: colors.color.textPrimary,
       ...fonts.regular,
+    },
+    redDot: {
+      width: verticalScale(8),
+      height: verticalScale(8),
+      borderRadius: verticalScale(4),
+      backgroundColor: '#C11919',
+      position: 'absolute',
+      right: verticalScale(2),
+      top: verticalScale(2),
     },
   });
   return styles;

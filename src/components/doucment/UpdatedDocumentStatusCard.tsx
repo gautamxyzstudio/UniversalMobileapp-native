@@ -1,60 +1,63 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {Theme} from '@theme/Theme.type';
-import PreUploadedDocCardWithView from './PreUploadedDocCardWithView';
-import {IImage} from '@utils/photomanager';
-import {IDocument} from '@utils/doumentManager';
+import PreUploadedDocCardWithView, {
+  getStatusAttributesFromStatus,
+} from './PreUploadedDocCardWithView';
 import {fonts} from '@utils/common.styles';
 import Spacers from '@components/atoms/Spacers';
-import {useTheme} from '@theme/Theme.context';
 import {Row} from '@components/atoms/Row';
 import {MEAT_BALL} from '@assets/exporter';
 import {verticalScale} from '@utils/metrics';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
+import {IDocumentStatus, IEmployeeDocument} from '@api/features/user/types';
+import {useTheme} from '@theme/Theme.context';
+import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 
 type IUpdatedDocumentStatusCard = {
-  status: 'Pending' | 'Updated';
+  status: IDocumentStatus;
   title?: string;
-  asset: IImage | IDocument;
+  onPressThreeDots: (doc: IEmployeeDocument) => void;
+  asset: IEmployeeDocument;
 };
 
 const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
   title,
   status,
+  onPressThreeDots,
+  asset,
 }) => {
   const styles = useThemeAwareObject(createStyles);
   const navigation = useNavigation<NavigationProps>();
-
   const {theme} = useTheme();
-
-  const getStatusTextColorFromStatus = () => {
-    switch (status) {
-      case 'Pending':
-        return theme.color.yellow;
-      case 'Updated':
-        return theme.color.green;
-      default:
-        return theme.color.green;
-    }
-  };
 
   return (
     <View style={styles.container}>
       {title && (
         <>
           <Row alignCenter spaceBetween>
-            <Text style={styles.heading}>{title}</Text>
-            <Row alignCenter style={styles.gap}>
+            <CustomText
+              value={asset.docName}
+              color="disabled"
+              size={textSizeEnum.medium}
+            />
+            {/* <Text style={styles.heading}>{title}</Text> */}
+            <Row alignCenter>
               <Text
                 style={[
                   styles.status,
-                  {color: getStatusTextColorFromStatus()},
+                  {color: getStatusAttributesFromStatus(status, theme).color},
                 ]}>
-                {status}
+                {getStatusAttributesFromStatus(status, theme).title}
               </Text>
-              <MEAT_BALL width={verticalScale(20)} height={verticalScale(20)} />
+              <TouchableOpacity onPress={() => onPressThreeDots(asset)}>
+                <MEAT_BALL
+                  style={styles.dot}
+                  width={verticalScale(12)}
+                  height={verticalScale(12)}
+                />
+              </TouchableOpacity>
             </Row>
           </Row>
           <Spacers type="vertical" size={8} />
@@ -62,7 +65,7 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
       )}
       <PreUploadedDocCardWithView
         withTitle={false}
-        document={null}
+        document={asset}
         navigation={navigation}
       />
     </View>
@@ -71,7 +74,7 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
 
 export default UpdatedDocumentStatusCard;
 
-const createStyles = (theme: Theme) =>
+const createStyles = () =>
   StyleSheet.create({
     container: {
       padding: verticalScale(12),
@@ -86,12 +89,10 @@ const createStyles = (theme: Theme) =>
       borderRadius: 8,
       elevation: 1,
     },
-    heading: {
-      ...fonts.mediumBold,
-      color: theme.color.textPrimary,
-    },
     status: {
-      ...fonts.mediumBold,
+      ...fonts.medium,
     },
-    gap: {},
+    dot: {
+      marginLeft: verticalScale(4),
+    },
   });

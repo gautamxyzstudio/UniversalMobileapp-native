@@ -186,7 +186,7 @@ export const STRINGS = {
   update: 'Update',
   add_or_update_document: 'Update',
   select_the_document: 'Select the document',
-  updatedDocument: 'Document Status',
+  updatedDocument: 'Update Requests',
   privacy_check: 'Kindly check our Privacy Policy.',
   usernameOrEmailError: 'Please enter a valid username or email address',
   select_the_company: 'Select the company',
@@ -325,4 +325,5 @@ export const STRINGS = {
   mandatoryDocs: 'Mandatory Documents',
   otherDocs: 'Other Documents',
   resume_simple: 'Resume',
+  directDeposit: 'directDepositVoidCheque',
 };

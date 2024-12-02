@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {
-  IClientDetails,
   IEmployeeDetails,
   IEmployeeDocument,
   IUser,
@@ -44,7 +43,7 @@ const userSlice = createSlice({
       state,
       action: PayloadAction<{
         document: IEmployeeDocument;
-        type: 'primary' | 'secondary';
+        type: 'primary' | 'secondary' | 'new requests';
       }>,
     ) => {
       const employee = {...(state.user as IUser<'emp'>)};
@@ -59,6 +58,13 @@ const userSlice = createSlice({
           empDocs.secondary
         ) {
           empDocs.secondary.push(action.payload.document);
+        }
+        if (
+          empDocs &&
+          action.payload.type === 'new requests' &&
+          empDocs.document_requests
+        ) {
+          empDocs.document_requests.push(action.payload.document);
         }
       }
       state.user = employee;
@@ -118,12 +124,36 @@ const userSlice = createSlice({
       state.jobTypeFilter = null;
       state.filtersDate = {startDate: null, endDate: null};
     },
+    cancelDocumentRequest: (state, action: PayloadAction<{docId: number}>) => {
+      const employee = {...(state.user as IUser<'emp'>)};
+      if (employee.details?.documents?.document_requests) {
+        const docIndex = employee.details.documents.document_requests.findIndex(
+          doc => doc.doc?.id === action.payload.docId,
+        );
+        if (docIndex !== -1) {
+          employee.details.documents.document_requests.splice(docIndex, 1);
+        }
+        state.user = {
+          ...employee,
+          details: {
+            ...employee.details,
+            documents: {
+              ...employee.details.documents,
+              document_requests: [
+                ...employee.details.documents.document_requests,
+              ],
+            },
+          },
+        };
+      }
+    },
   },
 });
 
 export const {
   updateFilters,
   updateFiltersDate,
+  cancelDocumentRequest,
   removeFilter,
   clearFilters,
   saveUserDetails,

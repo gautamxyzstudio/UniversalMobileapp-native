@@ -50,6 +50,7 @@ export enum IDocumentNames {
   SECURITY_DOCUMENT_ADV = 'd4',
   SUPPORTING_DOCUMENT = 'd5',
   RESUME = 'd6',
+  NULL = 'd7',
 }
 
 export enum IEmployeeDocsApiKeys {
@@ -60,6 +61,7 @@ export enum IEmployeeDocsApiKeys {
   GOVT_ID = 'govtid',
   CHEQUE = 'directDepositVoidCheque',
   RESUME = 'resume',
+  NULL = 'null',
 }
 
 export enum IWorkStatus {

@@ -30,7 +30,7 @@ module.exports = {
   ],
   env: {
     production: {
-      plugins: ['react-native-paper/babel'],
+      plugins: ['react-native-paper/babel','transform-remove-console'],
     },
     development: {
       plugins: [['@babel/plugin-transform-react-jsx', {runtime: 'classic'}]],

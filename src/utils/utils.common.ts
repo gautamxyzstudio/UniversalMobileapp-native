@@ -7,7 +7,7 @@ import {
 import moment from 'moment';
 import {getImageUrl} from './constants';
 import {STRINGS} from 'src/locales/english';
-import {IEmployeeDocsApiKeys} from './enums';
+import {IDocumentNames, IEmployeeDocsApiKeys} from './enums';
 
 export const minTwoDigits = (n: number) => {
   return (n < 10 ? '0' : '') + n;
@@ -146,13 +146,32 @@ export const getFileExtension = (
   return undefined;
 };
 
+export const getDocumentNameFromCode = (code: IDocumentNames) => {
+  switch (code) {
+    case IDocumentNames.SIN_DOCUMENT:
+      return STRINGS.sinDocument;
+    case IDocumentNames.DIRECT_DEPOSIT_VOID_CHEQUE:
+      return STRINGS.directDeposit;
+    case IDocumentNames.GOVT_ID:
+      return STRINGS.Govt_ID;
+    case IDocumentNames.SUPPORTING_DOCUMENT:
+      return STRINGS.document;
+    case IDocumentNames.SECURITY_DOCUMENT_ADV:
+      return STRINGS.license_advance;
+    case IDocumentNames.SECURITY_DOCUMENT_BASIC:
+      return STRINGS.license_basic;
+    default:
+      return STRINGS.sinDocument;
+  }
+};
+
 export const extractEmployeeSecondaryDocumentsFromApiResponse = (
   response: IEmployeeDetailsApiResponse,
 ) => {
   const documents: IEmployeeDocument[] = [];
   response.other_documents.forEach(doc => {
     const docName = doc.name;
-    const docStatus = doc.status;
+    const docStatus = doc.Docstatus;
     const docs = doc.Document;
     if (docs) {
       documents.push({
@@ -298,6 +317,36 @@ export const extractEmployeeDocumentsFromApiResponse = (
     securityDocumentBasic && documents.push(securityDocumentBasic);
   }
 
+  return documents;
+};
+
+export const extractDocumentRequestFromApiResponse = (
+  response: IEmployeeDetailsApiResponse,
+) => {
+  const documents: IEmployeeDocument[] = [];
+  response.document_requests.forEach(doc => {
+    if (doc) {
+      const docName = getDocumentNameFromCode(
+        doc.DocName ?? IDocumentNames.NULL,
+      );
+      const docStatus = doc?.status ?? IDocumentStatus.PENDING;
+      const docs = doc.document;
+      if (docs) {
+        documents.push({
+          docName,
+          docStatus,
+          doc: {
+            url: getImageUrl(docs?.url),
+            id: doc?.id ?? 0,
+            name: docs?.name ?? '',
+            mime: docs?.mime ?? '',
+            size: docs?.size ?? 0,
+          },
+          docId: docs.id,
+        });
+      }
+    }
+  });
   return documents;
 };
 
