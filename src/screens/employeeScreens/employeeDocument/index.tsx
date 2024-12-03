@@ -84,10 +84,7 @@ const EmployeeDocuments = () => {
       previousDocs?.forEach(doc => {
         let isAlreadyRequested = false;
         currentDocsRequests.forEach(req => {
-          if (
-            doc.docName === req.docName &&
-            doc.docStatus === IDocumentStatus.PENDING
-          ) {
+          if (doc.docName === req.docName) {
             isAlreadyRequested = true;
           }
         });

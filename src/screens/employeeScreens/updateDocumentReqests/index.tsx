@@ -19,7 +19,7 @@ import {
   cancelDocumentRequest,
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
-import {IEmployeeDocument} from '@api/features/user/types';
+import {IDocumentStatus, IEmployeeDocument} from '@api/features/user/types';
 import CustomList from '@components/molecules/customList';
 import UpdatedDocumentStatusCard from '@components/doucment/UpdatedDocumentStatusCard';
 import {useTheme} from '@theme/Theme.context';
@@ -98,6 +98,8 @@ const UpdateDocumentRequests = () => {
     dispatch,
   );
 
+  console.log(requestedDocs, 'requested docs');
+
   const renderItem = useCallback(
     ({item}: {item: IEmployeeDocument}) => {
       return (
@@ -157,10 +159,13 @@ const UpdateDocumentRequests = () => {
           {
             icon: HELP_SECONDARY,
             title: STRINGS.help,
+
             onPress: onPressHelpButton,
           },
           {
             icon: CROSS_BUTTON,
+            isDisabled:
+              currentSelectedDoc?.docStatus === IDocumentStatus.UPDATE,
             title: STRINGS.cancel,
             onPress: onPressCancel,
           },

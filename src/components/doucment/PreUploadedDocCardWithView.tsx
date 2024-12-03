@@ -148,6 +148,11 @@ export const getStatusAttributesFromStatus = (
         title: STRINGS.verified,
         color: theme.color.green,
       };
+    case IDocumentStatus.UPDATE:
+      return {
+        title: STRINGS.updated,
+        color: theme.color.blue,
+      };
     case IDocumentStatus.DENIED:
       return {
         color: theme.color.red,

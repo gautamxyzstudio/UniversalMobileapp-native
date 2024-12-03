@@ -184,6 +184,7 @@ export const STRINGS = {
   apply: 'Apply',
   view: 'View',
   update: 'Update',
+  updated: 'Updated',
   add_or_update_document: 'Update',
   select_the_document: 'Select the document',
   updatedDocument: 'Update Requests',
