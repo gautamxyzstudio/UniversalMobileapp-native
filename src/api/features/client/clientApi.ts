@@ -168,81 +168,70 @@ const clientApi = baseApiWithTag.injectEndpoints({
         url: apiEndPoints.saveAsDraft,
         method: apiMethodType.get,
       }),
-      transformResponse: (
-        response: IDraftResponse,
-      ): IJobPostCustomizedResponse => {
-        let data: IJobPostTypes[] = [];
+      transformResponse: (response: IDraftResponse): IJobPostTypes[] => {
+        const data: IJobPostTypes[] = [];
         if (response.data) {
           response.data.forEach(job => {
-            if (job.id && job.attributes) {
-              const clientDetails: IClientBasic | null = {
-                id: job.attributes.client_details?.data[0]?.id ?? 0,
-                name:
-                  job.attributes.client_details?.data[0]?.attributes?.Name ??
-                  '',
-                email:
-                  job.attributes.client_details?.data[0]?.attributes?.Email ??
-                  '',
-                location:
-                  job.attributes.client_details?.data[0]?.attributes
-                    ?.location ?? '',
-              };
+            // Extract client details
+            const clientDetails: IClientBasic | null = job.client_details
+              ? {
+                  id: job?.client_details[0]?.id ?? 0,
+                  name: job?.client_details[0]?.Name ?? '',
+                  email: job?.client_details[0]?.Email ?? '',
+                  location: job?.client_details[0]?.location ?? '',
+                }
+              : null;
 
-              const company: ICompany = {
-                id:
-                  job.attributes.client_details?.data[0].attributes
-                    ?.company_detail?.data.attributes?.data?.id ?? 0,
-                logo: {
+            // Extract company details
+            const company: ICompany | null = job.client_details[0]
+              ?.company_detail
+              ? {
                   id: 0,
-                  name:
-                    job.attributes.client_details?.data[0].attributes
-                      ?.company_detail?.data.attributes?.data?.attributes
-                      ?.companylogo?.data?.attributes?.name ?? '',
-                  url: job.attributes.client_details?.data[0].attributes
-                    ?.company_detail?.data.attributes?.data?.attributes
-                    ?.companylogo?.data?.attributes?.url
-                    ? getImageUrl(
-                        job.attributes.client_details?.data[0].attributes
-                          ?.company_detail?.data.attributes?.data?.attributes
-                          ?.companylogo?.data?.attributes?.url,
-                      )
+                  logo: job.client_details[0]?.company_detail?.companylogo
+                    ? {
+                        url: job.client_details[0]?.company_detail.companylogo
+                          ?.url,
+                        mime: job.client_details[0]?.company_detail.companylogo
+                          ?.mime,
+                        size: job.client_details[0]?.company_detail.companylogo
+                          ?.size,
+                        name: job.client_details[0]?.company_detail.companylogo
+                          ?.name,
+                      }
                     : null,
-                  mime:
-                    job.attributes.client_details?.data[0].attributes
-                      ?.company_detail?.data.attributes?.data?.attributes
-                      ?.companylogo?.data?.attributes?.mime ?? '',
-                  size:
-                    job.attributes.client_details?.data[0].attributes
-                      ?.company_detail?.data.attributes?.data?.attributes
-                      ?.companylogo?.data?.attributes?.size ?? 0,
-                },
-                name:
-                  job.attributes.client_details?.data[0].attributes
-                    ?.company_detail?.data.attributes?.data?.attributes
-                    ?.companyname ?? '',
-              };
+                  name:
+                    job.client_details[0]?.company_detail?.companyname ?? '',
+                }
+              : null;
 
-              data.push({
-                ...job.attributes,
-                id: job.id,
-                status: IJobPostStatus.OPEN,
-                applicants: null,
-                client_details: clientDetails,
-                company: company,
-              });
-            }
+            // Add transformed job data to the array
+            data.push({
+              id: job.id,
+              job_name: job.job_name,
+              required_certificates: job.required_certificates,
+              city: job.city,
+              address: job.address,
+              postalCode: job.postalCode,
+              gender: job.gender,
+              salary: job.salary,
+              jobDuties: job.jobDuties,
+              job_type: job.job_type,
+              location: job.location,
+              description: job.description,
+              eventDate: job.eventDate,
+              endShift: job.endShift,
+              startShift: job.startShift,
+              requiredEmployee: job.requiredEmployee,
+              publishedAt: job.publishedAt,
+              status: IJobPostStatus.OPEN, // Default status
+              applicants: null, // Placeholder
+              client_details: clientDetails,
+              company: company,
+            });
           });
         }
 
-        return {
-          data: data,
-          pagination: response?.meta && {
-            page: response.meta?.pagination?.page ?? 1,
-            pageSize: response?.meta.pagination?.pageSize ?? 1,
-            pageCount: response?.meta.pagination?.pageCount ?? 1,
-            total: response?.meta.pagination?.total ?? 1,
-          },
-        };
+        return data;
       },
       transformErrorResponse: (
         response: IErrorResponse,

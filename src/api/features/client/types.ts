@@ -169,103 +169,52 @@ export type IPostedJobsResponse = {
 export type IDraftResponse = {
   data: {
     id: number;
-    attributes: {
-      job_name: string;
-      required_certificates: string[] | null;
-      city: string;
-      address: string;
-      postalCode: string;
-      gender: string;
-      eventDate: Date;
-      salary: string;
-      createdAt: Date;
-      updatedAt: Date;
-      publishedAt: Date;
-      jobDuties: string;
-      job_type: IJobTypesEnum;
-      location: string;
-      requiredEmployee: number;
-      startShift: Date;
-      endShift: Date;
-      description: string;
-      client_details: {
-        data: {
-          id: number;
-          attributes:
-            | {
-                Name: string | null | undefined;
-                Email: string | null | undefined;
-                location: string | null | undefined;
-                company_detail:
-                  | {
-                      data: {
-                        attributes:
-                          | {
-                              data:
-                                | {
-                                    id: number | null | undefined;
-                                    attributes:
-                                      | {
-                                          companyname:
-                                            | string
-                                            | null
-                                            | undefined;
-                                          companyemail:
-                                            | string
-                                            | null
-                                            | undefined;
-                                          location: string | null | undefined;
-                                          contactno: string | null | undefined;
-                                          address: string | null | undefined;
-                                          Industry: string | null | undefined;
-                                          companylogo:
-                                            | {
-                                                data:
-                                                  | {
-                                                      attributes:
-                                                        | {
-                                                            url: string;
-                                                            mime: string;
-                                                            size: number;
-                                                            name: string;
-                                                          }
-                                                        | null
-                                                        | undefined;
-                                                    }
-                                                  | null
-                                                  | undefined;
-                                              }
-                                            | null
-                                            | undefined;
-                                        }
-                                      | null
-                                      | undefined;
-                                  }
-                                | null
-                                | undefined;
-                            }
-                          | null
-                          | undefined;
-                      };
-                    }
-                  | null
-                  | undefined;
-              }
-            | null
-            | undefined;
-        }[];
-      } | null;
-    } | null;
+    job_name: string;
+    required_certificates: string[] | null;
+    city: string;
+    address: string;
+    postalCode: string;
+    gender: string;
+    eventDate: Date;
+    salary: string;
+    createdAt: Date;
+    updatedAt: Date;
+    publishedAt: Date;
+    jobDuties: string;
+    job_type: IJobTypesEnum;
+    location: string;
+    requiredEmployee: number;
+    startShift: Date;
+    endShift: Date;
+    description: string;
+    client_details: {
+      id: number | null | undefined;
+      Name: string | null | undefined;
+      Email: string | null | undefined;
+      location: string | null | undefined;
+      company_detail:
+        | {
+            id: number | null | undefined;
+            companyname: string | null | undefined;
+            companyemail: string | null | undefined;
+            location: string | null | undefined;
+            contactno: string | null | undefined;
+            address: string | null | undefined;
+            Industry: string | null | undefined;
+            companylogo:
+              | {
+                  url: string;
+                  mime: string;
+                  size: number;
+                  name: string;
+                }
+              | null
+              | undefined;
+          }
+        | null
+        | undefined;
+    }[];
   }[];
-
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  } | null;
 };
 
 export type IClientBasic = {

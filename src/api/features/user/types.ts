@@ -249,7 +249,7 @@ export type IUserDetailsAndDocsInitialState = {
 export type IDoc = {
   url: string | null;
   mime?: string;
-  id: number;
+  id?: number;
   name: string;
   size?: number;
 };

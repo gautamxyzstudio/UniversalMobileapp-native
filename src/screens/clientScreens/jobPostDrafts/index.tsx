@@ -63,10 +63,8 @@ const JobPostDrafts = () => {
   const fetchDrafts = async () => {
     try {
       const posts = await getDrafts(null).unwrap();
-      if (posts.data) {
-        console.log(posts.data, 'Doto');
-
-        dispatch(saveDrafts(posts.data));
+      if (posts) {
+        dispatch(saveDrafts(posts));
       }
     } catch (e) {
       setIsLoading(false);
