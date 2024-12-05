@@ -199,17 +199,19 @@ const authApi = baseApiWithUserTag.injectEndpoints({
                 apiKey: IEmployeeDocsApiKeys.CHEQUE,
               },
             };
+            const documentRequest =
+              extractDocumentRequestFromApiResponse(employeeDetails);
 
             //primary certificates
-            const primaryCertificates =
-              extractEmployeeDocumentsFromApiResponse(employeeDetails);
+            const primaryCertificates = extractEmployeeDocumentsFromApiResponse(
+              employeeDetails,
+              documentRequest,
+            );
 
             //secondary certificates
             const secondaryCertificates =
               extractEmployeeSecondaryDocumentsFromApiResponse(employeeDetails);
 
-            const documentRequest =
-              extractDocumentRequestFromApiResponse(employeeDetails);
             //user details
             const userDetails: IEmployeeDetails = {
               name: employeeDetails?.name ?? '',

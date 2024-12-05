@@ -82,7 +82,7 @@ const Approval = () => {
     <OnBoardingBackground
       hideBack={true}
       title={STRINGS.approval}
-      subTitle={'Lorem Ipsum is simply dummy text'}
+      subTitle={'Your Request is Under Review'}
       displayRightIcon={true}
       rightIconPressHandler={() => bottomSheetRef.current?.snapToIndex(1)}
       rightIcon={MEAT_BALL_WHiTE}>

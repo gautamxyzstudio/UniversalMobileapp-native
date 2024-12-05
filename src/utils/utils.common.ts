@@ -193,6 +193,7 @@ export const extractEmployeeSecondaryDocumentsFromApiResponse = (
 
 export const extractEmployeeDocumentsFromApiResponse = (
   response: IEmployeeDetailsApiResponse,
+  requests: IEmployeeDocument[],
 ): IEmployeeDocument[] | [] => {
   //to merge doc details into one
   const addDocument = (
@@ -223,7 +224,7 @@ export const extractEmployeeDocumentsFromApiResponse = (
     const sinDocument = addDocument(
       {
         name: STRINGS.sinDocument,
-        id: employeeDetails.sinDocument.id,
+        id: employeeDetails.sinDocument.id ?? 0,
         doc: {
           mime: employeeDetails.sinDocument.mime,
           url: employeeDetails.sinDocument.url,
@@ -241,7 +242,7 @@ export const extractEmployeeDocumentsFromApiResponse = (
     const govtID = addDocument(
       {
         name: STRINGS.Govt_ID,
-        id: employeeDetails.govtid.id,
+        id: employeeDetails.govtid.id ?? 0,
         doc: {
           mime: employeeDetails.govtid.mime,
           url: employeeDetails.govtid.url,
@@ -259,7 +260,7 @@ export const extractEmployeeDocumentsFromApiResponse = (
     const supportingDocument = addDocument(
       {
         name: STRINGS.document,
-        id: employeeDetails.supportingDocument.id,
+        id: employeeDetails.supportingDocument.id ?? 0,
         doc: {
           mime: employeeDetails.supportingDocument.mime,
           url: employeeDetails.supportingDocument.url,
@@ -317,7 +318,26 @@ export const extractEmployeeDocumentsFromApiResponse = (
     securityDocumentBasic && documents.push(securityDocumentBasic);
   }
 
-  return documents;
+  const docs: IEmployeeDocument[] = [];
+  if (documents.length > 0) {
+    documents.forEach(doc => {
+      let isUpdate = false;
+      let document = null;
+      for (const reqDoc of requests) {
+        if (
+          doc.docName === reqDoc.docName &&
+          reqDoc.docStatus === IDocumentStatus.UPDATE
+        ) {
+          isUpdate = true;
+          document = reqDoc;
+          break;
+        }
+      }
+      docs.push(isUpdate && document ? document : doc);
+    });
+  }
+
+  return docs;
 };
 
 export const extractDocumentRequestFromApiResponse = (
@@ -342,7 +362,7 @@ export const extractDocumentRequestFromApiResponse = (
             mime: docs?.mime ?? '',
             size: docs?.size ?? 0,
           },
-          docId: docs.id,
+          docId: docs.id ?? 0,
         });
       }
     }

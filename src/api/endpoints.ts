@@ -82,4 +82,5 @@ export const apiEndPoints = {
   getFaqs: `${process.env.BASE_URL}/api/faqs`,
   cancelDocumentUpdateRequest: (docId: number) =>
     `${process.env.BASE_URL}/api/document-requests/${docId}`,
+  raiseIssues: `${process.env.BASE_URL}/api/issue-raiseds`,
 };
