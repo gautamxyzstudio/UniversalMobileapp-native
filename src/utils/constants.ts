@@ -6,7 +6,6 @@ import {Dispatch} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {Toast} from 'react-native-toast-notifications';
 import {STRINGS} from 'src/locales/english';
-import {IWorkStatus} from './enums';
 
 export const convertDateToDobFormat = (dateObj: Date | null): string | null => {
   if (dateObj) {
@@ -249,27 +248,6 @@ export const withAsyncErrorHandlingPost = (
       dispatch(setLoading(false));
     }
   };
-};
-
-export const getWorkStatusCodeFromText = (text: string) => {
-  switch (text) {
-    case STRINGS.partTime:
-      return IWorkStatus.PART_TIME;
-    case STRINGS.fullTime:
-      return IWorkStatus.FULL_TIME;
-    default:
-      return IWorkStatus.PART_TIME;
-  }
-};
-export const getWorkStatusTextFromText = (code: IWorkStatus) => {
-  switch (code) {
-    case IWorkStatus.PART_TIME:
-      return STRINGS.partTime;
-    case IWorkStatus.FULL_TIME:
-      return STRINGS.fullTime;
-    default:
-      return STRINGS.fullTime;
-  }
 };
 
 export const companyEmail = 'help@universalworkforce.com';

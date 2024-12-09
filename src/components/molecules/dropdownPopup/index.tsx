@@ -83,6 +83,7 @@ const DropdownComponent: React.FC<IDropdownComponentProps> = ({
         textAnimation.value = withTiming(0.7);
       }
       setIsFocus(false);
+
       onChangeValue(item);
     },
     [onChangeValue, textAnimation, value],

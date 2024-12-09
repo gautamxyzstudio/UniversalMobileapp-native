@@ -85,4 +85,6 @@ export const apiEndPoints = {
   cancelDocumentUpdateRequest: (docId: number) =>
     `${process.env.BASE_URL}/api/document-requests/${docId}`,
   raiseIssues: `${process.env.BASE_URL}/api/issue-raiseds`,
+  replaceUpdateDocumentRequest: (docId: number) =>
+    `${process.env.BASE_URL}/api/document-requests/${docId}`,
 };

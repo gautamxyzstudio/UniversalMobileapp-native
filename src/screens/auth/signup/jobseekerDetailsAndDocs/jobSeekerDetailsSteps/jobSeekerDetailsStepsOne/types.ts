@@ -16,7 +16,6 @@ export type IJobSeekerDetailsStepsOneState = {
   selfie: number[];
   email: string;
   phone: string;
-  workStatus: string;
   gender: string;
   dob?: Date | null;
   address: string;
@@ -26,7 +25,6 @@ export type IJobSeekerDetailsStepsOneState = {
   addressError: string;
   phoneError: string;
   dobError: string;
-  workStatusError: string;
   cityError: string;
   genderError: string;
 };
@@ -39,6 +37,5 @@ export type userBasicDetails = {
   email: string;
   city: string;
   gender: string;
-  workStatus: string;
   selfie: number[];
 };

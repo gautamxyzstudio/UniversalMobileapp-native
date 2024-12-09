@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet, View} from 'react-native';
-import React, {useEffect, useReducer, useState} from 'react';
+import {Alert, RefreshControl, StyleSheet, View} from 'react-native';
+import React, {useEffect, useReducer, useRef, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
 import {STRINGS} from 'src/locales/english';
@@ -12,7 +13,7 @@ import PhoneNumberInput from '@components/molecules/InputTypes/PhoneNumberInput'
 import {IDefaultValues, updateEmployeeProfileProfile} from './types';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import UploadProfilePhoto from '@components/molecules/uploadProfilePhoto';
-import {mockGenders, mockWorkStatus} from '@api/mockData';
+import {mockGenders, provincesAndCities} from '@api/mockData';
 import Spacers from '@components/atoms/Spacers';
 import DropdownComponent from '@components/molecules/dropdownPopup';
 import {
@@ -20,12 +21,18 @@ import {
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {useDispatch, useSelector} from 'react-redux';
-import {useUpdateEmployeeDetailsMutation} from '@api/features/user/userApi';
+import {
+  useLazyGetUserQuery,
+  useUpdateEmployeeDetailsMutation,
+} from '@api/features/user/userApi';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {useToast} from 'react-native-toast-notifications';
 import {IEmployeeDetails} from '@api/features/user/types';
-import {getWorkStatusTextFromText} from '@utils/constants';
-import {IWorkStatus} from '@utils/enums';
+import {showToast} from '@components/organisms/customToast';
+import {updateEmployeeDetails} from '@api/features/user/userSlice';
+import LocationInput from '@components/molecules/InputTypes/locationInput';
+import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
+import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 
 const UpdateEmployeeProfile = () => {
   const userBasicDetails = useSelector(userBasicDetailsFromState);
@@ -38,25 +45,25 @@ const UpdateEmployeeProfile = () => {
     gender: '',
     selfie: [],
     city: '',
-    workStatus: '',
   });
   const userDetails = useSelector(
     userAdvanceDetailsFromState,
   ) as IEmployeeDetails;
   const reduxDispatch = useDispatch();
   const [updateDetails] = useUpdateEmployeeDetailsMutation();
-  const [changedFields, setChangedField] = useState<IDefaultValues>({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    gender: '',
-    selfie: [],
-    city: '',
-    workStatus: '',
-  });
+  const [changedFields, setChangedField] = useState<Partial<IDefaultValues>>(
+    {},
+  );
+  const [refreshing, updateRefreshing] = useState(false);
+  const [getUserDetails] = useLazyGetUserQuery();
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const toast = useToast();
+  const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
+
+  const locationInputPressHandler = () => {
+    bottomSheetRef.current?.snapToIndex(1);
+  };
+
   const [state, dispatch] = useReducer(
     (
       prev: updateEmployeeProfileProfile,
@@ -80,7 +87,6 @@ const UpdateEmployeeProfile = () => {
       gender: '',
       city: '',
       cityError: '',
-      workStatus: IWorkStatus.PART_TIME,
     },
   );
 
@@ -93,7 +99,6 @@ const UpdateEmployeeProfile = () => {
       gender: userDetails?.gender ?? '',
       city: userDetails?.city ?? '',
       selfie: userDetails?.selfie,
-      workStatus: userDetails?.workStatus,
     });
     dispatch({
       ...state,
@@ -104,9 +109,8 @@ const UpdateEmployeeProfile = () => {
       gender: userDetails?.gender ?? '',
       selfie: userDetails?.selfie,
       city: userDetails?.city ?? '',
-      workStatus: userDetails?.workStatus,
     });
-  }, []);
+  }, [userDetails]);
 
   useEffect(() => {
     const myOBj = {
@@ -117,10 +121,28 @@ const UpdateEmployeeProfile = () => {
       gender: state.gender,
       city: state.city,
       selfie: state.selfie,
-      workStatus: state.workStatus,
     };
     setIsButtonEnabled(JSON.stringify(myOBj) !== JSON.stringify(defaultValues));
-  }, [state, defaultValues]);
+  }, [state, defaultValues, userDetails]);
+
+  // to refresh user details on pull to refresh
+  const fetchUserDetailsHandler = async () => {
+    try {
+      const response = (await getUserDetails(
+        null,
+      ).unwrap()) as IEmployeeDetails;
+      reduxDispatch(updateEmployeeDetails(response));
+    } catch (error) {
+      showToast(toast, STRINGS.unable_to_fetch_user_details, 'error');
+    } finally {
+      updateRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    updateRefreshing(true);
+    fetchUserDetailsHandler();
+  };
 
   const handleInputChange = (field: keyof IDefaultValues, value: any) => {
     dispatch({
@@ -129,30 +151,30 @@ const UpdateEmployeeProfile = () => {
       [`${field}Error`]: '',
     });
 
-    if (value !== defaultValues[field]) {
-      setChangedField(prev => ({...prev, [field]: value}));
-    } else if (value === defaultValues[field]) {
-      setChangedField(prev => {
-        const preValues = {...prev};
-        delete preValues[field];
-        return preValues;
-      });
-    }
+    setChangedField(prev => {
+      if (value !== defaultValues[field]) {
+        return {...prev, [field]: value};
+      } else {
+        const {[field]: _, ...rest} = prev;
+        return rest;
+      }
+    });
   };
 
-  const updateEmployeeDetails = async () => {
+  const updateEmployee = async () => {
     let isValid = true;
     Object.keys(changedFields).forEach(field => {
-      // @ts-ignore
-      const value = changedFields[field].value;
-      if (!value || value.trim() === '') {
+      const value = changedFields[field as keyof IDefaultValues];
+
+      if (!value || value.toString().trim() === '') {
         isValid = false;
         dispatch({...state, [`${field}Error`]: `${field} is required`});
       }
     });
+
     if (isValid) {
+      reduxDispatch(setLoading(true));
       try {
-        reduxDispatch(setLoading(true));
         const updatedDetails = await updateDetails({
           data: {
             data: changedFields,
@@ -160,14 +182,15 @@ const UpdateEmployeeProfile = () => {
           },
         }).unwrap();
         if (updatedDetails) {
-          console.log(updatedDetails, 'update');
-          // reduxDispatch(updateEmployeeDetails(changedFields));
+          fetchUserDetailsHandler();
+          showToast(toast, 'Profile Updated Successfully', 'success');
         }
       } catch (error) {
-        toast.hideAll();
-        toast.show('Failed to update details please try again later', {
-          type: 'error',
-        });
+        showToast(
+          toast,
+          'Failed to update details please try again later',
+          'error',
+        );
       } finally {
         reduxDispatch(setLoading(false));
       }
@@ -181,7 +204,11 @@ const UpdateEmployeeProfile = () => {
         headerTitleStyles={styles.title}
         headerTitle={STRINGS.my_Accounts}
       />
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}>
         <View style={styles.view}>
           <UploadProfilePhoto
             getUploadedImageIds={ids => handleInputChange('selfie', ids)}
@@ -215,10 +242,9 @@ const UpdateEmployeeProfile = () => {
             onTextChange={e => handleInputChange('address', e)}
             errorMessage={state.addressError}
           />
-          <CustomTextInput
+          <LocationInput
+            onPress={locationInputPressHandler}
             value={state.city}
-            title={STRINGS.city}
-            onTextChange={e => handleInputChange('city', e)}
             errorMessage={state.cityError}
           />
           <DropdownComponent
@@ -228,20 +254,20 @@ const UpdateEmployeeProfile = () => {
             data={mockGenders}
             error={''}
           />
-          <DropdownComponent
-            title={STRINGS.work_status}
-            onChangeValue={e => handleInputChange('workStatus', e.value)}
-            error={''}
-            value={getWorkStatusTextFromText(state.workStatus)}
-            data={mockWorkStatus}
-          />
         </View>
         <Spacers type={'vertical'} size={48} />
       </KeyboardAwareScrollView>
       <BottomButtonView
         title={STRINGS.save}
         disabled={!isButtonEnabled}
-        onButtonPress={updateEmployeeDetails}
+        onButtonPress={updateEmployee}
+      />
+      <FilterListBottomSheet
+        ref={bottomSheetRef}
+        selectionType="singleOptionSelect"
+        filters={provincesAndCities}
+        snapPoints={[0.01, verticalScale(698)]}
+        getAppliedFilters={filters => handleInputChange('city', filters[0])}
       />
     </SafeAreaView>
   );

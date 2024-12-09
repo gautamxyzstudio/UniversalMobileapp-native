@@ -121,7 +121,9 @@ const RootNavigator = () => {
             component={EmployeeTabNavigation}
           />
           <Stack.Screen
-            options={{presentation: 'fullScreenModal'}}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
             name={routNames.updateEmployeeDetails}
             component={UpdateEmployeeProfile}
           />

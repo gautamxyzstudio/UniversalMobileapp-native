@@ -189,16 +189,18 @@ const EmployeeDocuments = () => {
               },
             ],
           };
-      await (key
+      const response = await (key
         ? uploadPrevDocuments(requestData as IUpdateUserDetailsRequest)
         : uploadNewDoc(requestData as IEmployeeUploadOtherDocumentsRequest)
       ).unwrap();
+      if (response) {
+        showToast(toast, 'Document added successfully', 'success');
+      }
     } catch (error) {
       showToast(toast, 'Failed to add document', 'error');
     } finally {
       dispatch(setLoading(false));
       fetchUserDetailsHandler();
-      showToast(toast, 'Document added successfully', 'success');
     }
   };
 

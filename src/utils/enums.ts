@@ -63,8 +63,3 @@ export enum IEmployeeDocsApiKeys {
   RESUME = 'resume',
   NULL = 'null',
 }
-
-export enum IWorkStatus {
-  PART_TIME = 's0',
-  FULL_TIME = 's1',
-}

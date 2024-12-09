@@ -15,12 +15,14 @@ import {
   IRegisterUserArgs,
   IRegisterUserResponse,
   IReplaceRejectedDocumentResponse,
+  IReplaceUpdateDocumentRequestResponse,
   ISendOtp,
   ISendOtpResponse,
   ISubmitOtherDocumentsResponse,
   IUpdateClientDetailsRequest,
   IUpdateClientDetailsResponse,
   IUpdateEmployeeDocumentsRequest,
+  IUpdateUserDetailsCustomResponse,
   IUpdateUserDetailsRequest,
   IUser,
   IUserDetailsRequest,
@@ -38,7 +40,7 @@ import {
   formatDocument,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
-import {IClientStatus, IWorkStatus} from '@utils/enums';
+import {IClientStatus} from '@utils/enums';
 
 const baseApiWithUserTag = baseApi.enhanceEndpoints({
   addTagTypes: ['user'],
@@ -166,7 +168,6 @@ const authApi = baseApiWithUserTag.injectEndpoints({
               selfie: profilePic,
               gender: employeeDetails?.gender ?? '',
               sinNumber: employeeDetails?.sinNo ?? null,
-              workStatus: employeeDetails?.workStatus ?? IWorkStatus.FULL_TIME,
               resume: {
                 docName: STRINGS.resume_title,
                 docId: employeeDetails?.resume?.id ?? 0,
@@ -243,13 +244,15 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         body,
       }),
     }),
-    updateEmployeeDetails: builder.mutation<any, IUpdateUserDetailsRequest>({
+    updateEmployeeDetails: builder.mutation<
+      IUpdateUserDetailsCustomResponse,
+      IUpdateUserDetailsRequest
+    >({
       query: body => ({
         url: apiEndPoints.updateEmployeeDetails(body.data.docId),
         method: apiMethodType.PUT,
         body: body.data,
       }),
-      invalidatesTags: ['user'],
     }),
     addClientDetails: builder.mutation<
       IUpdateClientDetailsResponse,
@@ -356,6 +359,38 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         return document;
       },
     }),
+    replaceUpdateDocRequest: builder.mutation<
+      IEmployeeDocument,
+      {
+        prevID: number;
+        args: {
+          document: number;
+          employee_detail: number;
+          status: IDocumentStatus.PENDING;
+        };
+      }
+    >({
+      query: body => ({
+        url: apiEndPoints.replaceUpdateDocumentRequest(body.prevID),
+        method: apiMethodType.patch,
+        body: body.args,
+      }),
+      transformResponse: (response: IReplaceUpdateDocumentRequestResponse) => {
+        const document = formatDocument({
+          id: response.id ?? 0,
+          Docstatus: response.status ?? IDocumentStatus.PENDING,
+          name: response.name ?? '',
+          Document: {
+            url: getImageUrl(response.document?.url ?? ''),
+            id: response.document?.id ?? 0,
+            name: response.document?.name ?? '',
+            size: response.document?.size ?? 0,
+            mime: response.document?.mime ?? '',
+          },
+        });
+        return document;
+      },
+    }),
   }),
 
   overrideExisting: false,
@@ -379,4 +414,5 @@ export const {
   useLazyGetUpdatedEmployeeDocumentsRequestQuery,
   useCancelDocumentRequestMutation,
   useReplaceRejectedDocumentMutation,
+  useReplaceUpdateDocRequestMutation,
 } = authApi;

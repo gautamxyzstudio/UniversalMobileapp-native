@@ -1,5 +1,4 @@
 import {IDoc} from '@api/features/user/types';
-import {IWorkStatus} from '@utils/enums';
 
 export type updateEmployeeProfileProfile = {
   name: string;
@@ -13,7 +12,6 @@ export type updateEmployeeProfileProfile = {
   addressError: string;
   city: string;
   cityError: string;
-  workStatus: IWorkStatus;
   gender: string;
 };
 
@@ -25,5 +23,4 @@ export type IDefaultValues = {
   gender?: string;
   selfie: number[] | IDoc | null;
   city?: string;
-  workStatus?: string;
 };

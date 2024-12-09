@@ -152,6 +152,26 @@ const userSlice = createSlice({
         };
       }
     },
+    updateRejectedDocument: (
+      state,
+      action: PayloadAction<IEmployeeDocument>,
+    ) => {
+      const employee = {...(state.user as IUser<'emp'>)};
+      if (employee.details?.update_requests) {
+        const docIndex = employee.details.update_requests.findIndex(
+          doc => doc.docName === action.payload.docName,
+        );
+
+        employee.details.update_requests[docIndex] = action.payload;
+        state.user = {
+          ...employee,
+          details: {
+            ...employee.details,
+            update_requests: [...employee.details.update_requests],
+          },
+        };
+      }
+    },
   },
 });
 
@@ -162,6 +182,7 @@ export const {
   removeFilter,
   clearFilters,
   saveUserDetails,
+  updateRejectedDocument,
   setJobType,
   updateEmployeeDetails,
   clearDateFilters,

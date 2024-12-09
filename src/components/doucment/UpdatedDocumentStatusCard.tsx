@@ -20,12 +20,14 @@ type IUpdatedDocumentStatusCard = {
   title?: string;
   onPressThreeDots: (doc: IEmployeeDocument) => void;
   asset: IEmployeeDocument;
+  onPressReplace?: () => void;
 };
 
 const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
   title,
   status,
   onPressThreeDots,
+  onPressReplace,
   asset,
 }) => {
   const styles = useThemeAwareObject(createStyles);
@@ -66,6 +68,7 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
       <PreUploadedDocCardWithView
         withTitle={false}
         hideStatus
+        onPressReplace={onPressReplace}
         document={asset}
         navigation={navigation}
       />

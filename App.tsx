@@ -64,9 +64,10 @@ const App = () => {
     Geocoder.init(`${process.env.GOOGLE_KEY}`, {language: 'en'});
   }, []);
 
-  LogBox.ignoreLogs([
-    'Tried to modify key `reduceMotion` of an object which has been already passed to a worklet.',
-  ]);
+  // LogBox.ignoreLogs([
+  //   'Tried to modify key `reduceMotion` of an object which has been already passed to a worklet',
+  // ]);
+  LogBox.ignoreAllLogs();
 
   return (
     <GestureHandlerRootView>

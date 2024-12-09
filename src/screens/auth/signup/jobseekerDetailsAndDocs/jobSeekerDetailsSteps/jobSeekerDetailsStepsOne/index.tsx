@@ -17,12 +17,11 @@ import CustomTextInput from '@components/atoms/customtextInput';
 import Spacers from '@components/atoms/Spacers';
 import PhoneNumberInput from '@components/molecules/InputTypes/PhoneNumberInput';
 import DatePickerInput from '@components/molecules/datepickerInput';
-import {mockGenders, mockWorkStatus, provincesAndCities} from '@api/mockData';
+import {mockGenders, provincesAndCities} from '@api/mockData';
 import {userDetailsStep1Schema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {useSelector} from 'react-redux';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
-import {getWorkStatusCodeFromText} from '@utils/constants';
 import LocationInput from '@components/molecules/InputTypes/locationInput';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
@@ -36,7 +35,6 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
   const addressRef = useRef<TextInput>(null);
   const cityRef = useRef<TextInput>(null);
   const genderRef = useRef<TextInput>(null);
-  const workStatusRef = useRef<TextInput>(null);
   const userDetails = useSelector(userBasicDetailsFromState);
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const [state, setState] = useReducer(
@@ -59,8 +57,6 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
       phone: '9646106068',
       gender: '',
       genderError: '',
-      workStatus: '',
-      workStatusError: '',
       address: '',
       addressError: '',
       dob: null,
@@ -94,7 +90,6 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           city: fields.city,
           address: fields.address,
           gender: fields.gender,
-          workStatus: getWorkStatusCodeFromText(fields.workStatus),
         },
         isValid: true,
       };
@@ -147,12 +142,6 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
         setState({
           ...state,
           genderError: validationErrors.inner[0].message,
-        });
-        scrollViewRef.current?.scrollToEnd();
-      } else if (validationErrors.inner[0].path === 'workStatus') {
-        setState({
-          ...state,
-          workStatusError: validationErrors.inner[0].message,
         });
         scrollViewRef.current?.scrollToEnd();
       }
@@ -239,20 +228,6 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           data={mockGenders}
         />
         <Spacers type={'vertical'} size={16} />
-        <DropdownComponent
-          title={STRINGS.work_status}
-          compRef={workStatusRef}
-          onChangeValue={e =>
-            setState({
-              ...state,
-              workStatus: e.value,
-              workStatusError: '',
-            })
-          }
-          error={state.workStatusError}
-          value={state.workStatus}
-          data={mockWorkStatus}
-        />
         <Spacers type={'vertical'} size={48} />
         <FilterListBottomSheet
           ref={bottomSheetRef}

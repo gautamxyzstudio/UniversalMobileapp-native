@@ -87,7 +87,6 @@ const JobSeekerDetailsAndDocs = () => {
       address: employeeDetails?.address,
       gender: employeeDetails?.gender,
       sinNo: employeeDetails?.sinNo,
-      workStatus: employeeDetails?.workStatus,
       Emp_id: user?.id ?? 0,
       bankAcNo: employeeDetails?.bankAcNo,
       resume: resume,
@@ -137,7 +136,6 @@ const JobSeekerDetailsAndDocs = () => {
           dob: stepOneResult.fields.dob,
           email: stepOneResult.fields.email,
           city: stepOneResult.fields.city,
-          workStatus: stepOneResult.fields.workStatus,
           address: stepOneResult.fields.address,
           gender: stepOneResult.fields.gender,
         };

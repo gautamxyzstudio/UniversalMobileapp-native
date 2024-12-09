@@ -9,6 +9,7 @@ import {verticalScale} from '@utils/metrics';
 import {
   useCancelDocumentRequestMutation,
   useLazyGetUpdatedEmployeeDocumentsRequestQuery,
+  useReplaceUpdateDocRequestMutation,
 } from '@api/features/user/userApi';
 import {
   withAsyncErrorHandlingGet,
@@ -17,6 +18,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {
   cancelDocumentRequest,
+  updateRejectedDocument,
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {IDocumentStatus, IEmployeeDocument} from '@api/features/user/types';
@@ -32,6 +34,11 @@ import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {useToast} from 'react-native-toast-notifications';
 import {showToast} from '@components/organisms/customToast';
+import SelectImagePopup from '@components/molecules/selectimagepopup';
+import useUploadAssets from 'src/hooks/useUploadAsset';
+import {IFile} from '@components/organisms/uploadPopup/types';
+import {ICustomErrorResponse} from '@api/types';
+import {setLoading} from '@api/features/loading/loadingSlice';
 
 const UpdateDocumentRequests = () => {
   const styles = useThemeAwareObject(createStyles);
@@ -43,6 +50,10 @@ const UpdateDocumentRequests = () => {
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
   const [requestedDocs, setRequestedDocs] = useState<IEmployeeDocument[]>([]);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const documentSelector = useRef<BottomSheetModal | null>(null);
+  const [selectedDocId, setSelectedDocId] = useState<number | null>(null);
+  const [replaceUpdateDocRequest] = useReplaceUpdateDocRequestMutation();
+  const {uploadImage} = useUploadAssets();
   const [cancelUpdateRequest] = useCancelDocumentRequestMutation();
   const [getRequests, {isFetching, error}] =
     useLazyGetUpdatedEmployeeDocumentsRequestQuery();
@@ -100,7 +111,11 @@ const UpdateDocumentRequests = () => {
     dispatch,
   );
 
-  console.log(requestedDocs, 'requested docs');
+  //replace rejected document
+  const onPressReplaceDoc = (id: number | null) => {
+    setSelectedDocId(id);
+    documentSelector.current?.snapToIndex(1);
+  };
 
   const renderItem = useCallback(
     ({item}: {item: IEmployeeDocument}) => {
@@ -109,6 +124,7 @@ const UpdateDocumentRequests = () => {
           title={STRINGS.sinDocument}
           status={item.docStatus}
           asset={item}
+          onPressReplace={() => onPressReplaceDoc(item.docId)}
           onPressThreeDots={onPressThreeDots}
         />
       );
@@ -128,6 +144,41 @@ const UpdateDocumentRequests = () => {
     setTimeout(() => {
       cancelUpdateRequestHandler();
     }, timeOutTimeSheets);
+  };
+
+  const updateDocument = async (asset: IFile[]) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await uploadImage({asset: asset});
+      if (response && user?.details?.detailsId) {
+        const docResponse = await replaceUpdateDocRequest({
+          prevID: selectedDocId ?? 0,
+          args: {
+            document: response[0].id,
+            employee_detail: user?.details?.detailsId,
+            status: IDocumentStatus.PENDING,
+          },
+        }).unwrap();
+        if (docResponse) {
+          showToast(toast, 'document updated Successfully', 'success');
+          setRequestedDocs(prev => {
+            let preDocs = [...prev];
+            const index = preDocs.findIndex(doc => doc.docId === selectedDocId);
+            if (index !== -1) {
+              preDocs[index] = docResponse;
+            }
+            return preDocs;
+          });
+          dispatch(updateRejectedDocument(docResponse));
+        }
+      }
+    } catch (err) {
+      const error = err as ICustomErrorResponse;
+      showToast(toast, error.message, 'error');
+      console.log(error, 'ERROR');
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   return (
@@ -154,6 +205,12 @@ const UpdateDocumentRequests = () => {
           />
         )}
       </View>
+      <SelectImagePopup
+        isDocumentMultiple={false}
+        selectionLimit={1}
+        getSelectedImages={asset => updateDocument(asset.assets)}
+        compRef={documentSelector}
+      />
       <SelectOptionBottomSheet
         modalHeight={216}
         ref={quickActionSheetRef}

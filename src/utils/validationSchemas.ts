@@ -72,7 +72,6 @@ export const userDetailsStep1Schema = Yup.object().shape({
   address: Yup.string().required(STRINGS.address_Required),
   city: Yup.string().required(STRINGS.city_required),
   gender: Yup.string().required(STRINGS.gender_required),
-  workStatus: Yup.string().required(STRINGS.work_status_required),
 });
 
 export const userDetailsStep2Schema = Yup.object().shape({

@@ -1,4 +1,4 @@
-import {IClientStatus, IWorkStatus} from '@utils/enums';
+import {IClientStatus} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
@@ -47,7 +47,6 @@ export interface IEmployeeDetails {
   selfie: IDoc | null;
   gender: string | null;
   sinNumber: string | null;
-  workStatus: IWorkStatus;
   city: string | null;
   resume: IEmployeeDocument | null;
   address: string | null;
@@ -213,7 +212,6 @@ export type IUserDetailsRequestParams = {
   address?: string;
   sinNo?: string;
   directDepositVoidCheque?: number;
-  workStatus?: string;
   supportingDocument?: number;
   securityDocumentBasic?: number | null;
   Emp_id?: number;
@@ -255,7 +253,7 @@ export interface IEmployeeDetailsApiResponse {
   resume?: IDoc | null | undefined;
   address: string | null | undefined;
   sinNo: string | null | undefined;
-  workStatus: IWorkStatus | null | undefined;
+
   bankAcNo?: string | null | undefined;
   institutionNumber?: string | null | undefined;
   trasitNumber?: string | null | undefined;
@@ -346,7 +344,7 @@ export type IAddEmployeeDetailsResponse = {
       city: string;
       address: string;
       sinNo: string;
-      workStatus: string;
+
       createdAt: Date;
       updatedAt: Date;
       publishedAt: Date;
@@ -370,4 +368,36 @@ export type IReplaceRejectedDocumentResponse = {
     Docstatus: IDocumentStatus | null | undefined;
     Document: IDoc | null | undefined;
   };
+};
+
+export type IReplaceUpdateDocumentRequestResponse = {
+  document: IDoc | null | undefined;
+  id: number | null | undefined;
+  name: string | null | undefined;
+  status: IDocumentStatus | null | undefined;
+};
+
+export type IUpdateUserDetailsResponse = {
+  attributes: {
+    EmployeId: string | null | undefined;
+    address: string | null | undefined;
+    bankAcNo: string | null | undefined;
+    city: string | null | undefined;
+    dob: Date | null | undefined;
+    email: string | null | undefined;
+    gender: string | null | undefined;
+    institutionNumber: string | null | undefined;
+    name: string | null | undefined;
+    phone: string | null | undefined;
+  };
+};
+
+export type IUpdateUserDetailsCustomResponse = {
+  address: string | null | undefined;
+  city: string | null | undefined;
+  dob: Date | null | undefined;
+  email: string | null | undefined;
+  gender: string | null | undefined;
+  name: string | null | undefined;
+  phone: string | null | undefined;
 };
