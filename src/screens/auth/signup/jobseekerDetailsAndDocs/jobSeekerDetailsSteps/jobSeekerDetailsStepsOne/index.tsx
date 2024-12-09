@@ -227,14 +227,6 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           value={state.city}
           errorMessage={state.cityError}
         />
-        {/* <CustomTextInput
-          value={state.city}
-          ref={cityRef}
-          title={STRINGS.city}
-          errorMessage={state.cityError}
-          onChangeText={e => setState({...state, city: e, cityError: ''})}
-        /> */}
-
         <Spacers type={'vertical'} size={16} />
         <DropdownComponent
           title={STRINGS.gender}
@@ -268,6 +260,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
           filters={provincesAndCities}
           snapPoints={[0.01, verticalScale(698)]}
           title={STRINGS.select_location}
+          withClearButton={false}
           selectionType="singleOptionSelect"
           getAppliedFilters={value =>
             setState({...state, city: value[0], cityError: ''})

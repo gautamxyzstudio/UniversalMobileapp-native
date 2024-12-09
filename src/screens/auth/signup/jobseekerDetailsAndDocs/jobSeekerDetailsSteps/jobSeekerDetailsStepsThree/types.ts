@@ -1,4 +1,5 @@
 import {IFile} from '@components/organisms/uploadPopup/types';
+import {IDocument} from '@utils/doumentManager';
 import {STRINGS} from 'src/locales/english';
 
 export type jobSeekerDetailsStepThreeState = {
@@ -42,9 +43,9 @@ export type userDocuments = {
 
 export type jobSeekerThirdRef = {
   validate?: () => Promise<{
-    fields: userDocuments;
+    documents: IDocument[];
+    resume: number | null;
     isValid: boolean;
-    otherDocs: IOtherDocSpecifications[];
   }>;
 };
 

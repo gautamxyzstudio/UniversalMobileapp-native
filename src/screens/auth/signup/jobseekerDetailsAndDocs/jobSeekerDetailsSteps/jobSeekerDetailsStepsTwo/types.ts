@@ -22,9 +22,15 @@ export type userBankingDetails = {
   sinDocument: number;
 };
 
+export type IDocument = {
+  name: string;
+  Document: number;
+};
+
 export type jobSeekerSecRef = {
   validate?: () => Promise<{
     fields: userBankingDetails;
+    documents: IDocument[];
     isValid: boolean;
   }>;
 };

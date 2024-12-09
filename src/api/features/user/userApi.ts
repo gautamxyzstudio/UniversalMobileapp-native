@@ -1,7 +1,6 @@
 import {baseApi} from '../../baseApi';
 import {
   IAddEmployeeDetailsCustomizedResponse,
-  IAddEmployeeDetailsResponse,
   ICheckEmailVerificationStatus,
   IClientDetails,
   IDoc,
@@ -15,6 +14,7 @@ import {
   ILoginArgs,
   IRegisterUserArgs,
   IRegisterUserResponse,
+  IReplaceRejectedDocumentResponse,
   ISendOtp,
   ISendOtpResponse,
   ISubmitOtherDocumentsResponse,
@@ -31,21 +31,14 @@ import {
   IVerifyOtpResponse,
 } from './types';
 import {apiEndPoints} from '@api/endpoints';
-import {ICustomErrorResponse, IErrorResponse} from '@api/types';
 import {apiMethodType} from '@api/apiConstants';
 import {getImageUrl} from '@utils/constants';
 import {
   extractDocumentRequestFromApiResponse,
-  extractEmployeeDocumentsFromApiResponse,
-  extractEmployeeSecondaryDocumentsFromApiResponse,
-  getDocumentNameFromCode,
+  formatDocument,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
-import {
-  IClientStatus,
-  IDocumentNames,
-  IEmployeeDocsApiKeys,
-} from '@utils/enums';
+import {IClientStatus, IWorkStatus} from '@utils/enums';
 
 const baseApiWithUserTag = baseApi.enhanceEndpoints({
   addTagTypes: ['user'],
@@ -68,14 +61,6 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         user_type: response.user?.user_type ?? 'client',
         details: null,
       }),
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     login: builder.mutation<IUser<'client' | 'emp'>, ILoginArgs>({
       query: body => ({
@@ -92,12 +77,6 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         user_type: response.user?.user_type ?? 'client',
         details: null,
       }),
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => ({
-        statusCode: response.status,
-        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
-      }),
     }),
     sendEmailOtp: builder.mutation<ISendOtpResponse, ISendOtp>({
       query: body => ({
@@ -105,24 +84,12 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         method: apiMethodType.post,
         body,
       }),
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => ({
-        statusCode: response.status,
-        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
-      }),
     }),
     verifyOtpEmail: builder.mutation<IVerifyOtpResponse, IVerifyOtp>({
       query: body => ({
         url: apiEndPoints.verifyEmail,
         method: apiMethodType.post,
         body,
-      }),
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => ({
-        statusCode: response.status,
-        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
       }),
     }),
     checkEmailVerificationStatus: builder.query<
@@ -143,14 +110,6 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         method: apiMethodType.post,
         body,
       }),
-      transformResponse: (response: IAddEmployeeDetailsResponse) => {
-        const employeeDetails = response.data.attributes;
-        return {
-          name: employeeDetails.name,
-          email: employeeDetails.email,
-          detailsId: response.data.id,
-        };
-      },
     }),
     getUser: builder.query<IEmployeeDetails | IClientDetails | null, any>({
       query: () => ({
@@ -178,48 +137,36 @@ const authApi = baseApiWithUserTag.injectEndpoints({
               profilePic = userProfilePic;
             }
 
+            let employeeDocs: IEmployeeDocument[] = [];
+            let cheque: IEmployeeDocument | null = null;
+
+            const update_requests =
+              extractDocumentRequestFromApiResponse(employeeDetails);
+
+            employeeDetails.other_documents.forEach(doc => {
+              if (doc.name === STRINGS.cheque) {
+                cheque = formatDocument(doc);
+              } else {
+                employeeDocs.push(formatDocument(doc));
+              }
+            });
+
             // user banking details
             const bankingDetails: IEmployeeBankDetails = {
               bankAccountNumber: employeeDetails?.bankAcNo ?? '',
               transitNumber: employeeDetails?.trasitNumber ?? '',
               institutionNumber: employeeDetails?.institutionNumber ?? '',
-              cheque: {
-                docName: STRINGS.cheque,
-                docId: employeeDetails?.directDepositVoidCheque?.id ?? 0,
-                docStatus: employeeDetails?.directDepositVoidChequeStatus,
-                doc: {
-                  url: getImageUrl(
-                    employeeDetails?.directDepositVoidCheque?.url ?? null,
-                  ),
-                  id: employeeDetails?.directDepositVoidCheque?.id ?? 0,
-                  name: employeeDetails?.directDepositVoidCheque?.name ?? '',
-                  size: employeeDetails?.directDepositVoidCheque?.size,
-                  mime: employeeDetails?.directDepositVoidCheque?.mime,
-                },
-                apiKey: IEmployeeDocsApiKeys.CHEQUE,
-              },
+              cheque: cheque,
             };
-            const documentRequest =
-              extractDocumentRequestFromApiResponse(employeeDetails);
-
-            //primary certificates
-            const primaryCertificates = extractEmployeeDocumentsFromApiResponse(
-              employeeDetails,
-              documentRequest,
-            );
-
-            //secondary certificates
-            const secondaryCertificates =
-              extractEmployeeSecondaryDocumentsFromApiResponse(employeeDetails);
-
             //user details
             const userDetails: IEmployeeDetails = {
               name: employeeDetails?.name ?? '',
               phone: employeeDetails?.phone ?? '',
+              bankDetails: bankingDetails,
               selfie: profilePic,
-              gender: employeeDetails?.gender,
+              gender: employeeDetails?.gender ?? '',
               sinNumber: employeeDetails?.sinNo ?? null,
-              workStatus: employeeDetails?.workStatus,
+              workStatus: employeeDetails?.workStatus ?? IWorkStatus.FULL_TIME,
               resume: {
                 docName: STRINGS.resume_title,
                 docId: employeeDetails?.resume?.id ?? 0,
@@ -232,16 +179,11 @@ const authApi = baseApiWithUserTag.injectEndpoints({
                   mime: employeeDetails?.resume?.mime,
                 },
               },
-
               city: employeeDetails.city ?? '',
               address: employeeDetails.address ?? '',
               detailsId: employeeDetails.id ?? null,
-              documents: {
-                primary: primaryCertificates,
-                secondary: secondaryCertificates,
-                document_requests: documentRequest,
-              },
-              bankDetails: bankingDetails,
+              documents: employeeDocs,
+              update_requests: update_requests,
             };
             return userDetails;
           }
@@ -276,12 +218,6 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         }
         return null;
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => ({
-        statusCode: response.status,
-        message: response?.data?.error?.message ?? STRINGS.someting_went_wrong,
-      }),
     }),
     getUserDetails: builder.query<any, IUserDetailsRequest>({
       query: body => ({
@@ -324,12 +260,6 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         method: apiMethodType.post,
         body: body,
       }),
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => ({
-        statusCode: response.status,
-        message: response.data.error.message,
-      }),
     }),
     getUpdatedEmployeeDocuments: builder.query({
       query: () => ({
@@ -368,9 +298,7 @@ const authApi = baseApiWithUserTag.injectEndpoints({
               size: doc.document?.size ?? 0,
               mime: doc.document?.mime ?? '',
             },
-            docName: getDocumentNameFromCode(
-              doc.DocName ?? IDocumentNames.NULL,
-            ),
+            docName: doc?.name ?? '',
             docStatus: doc.status ?? IDocumentStatus.PENDING,
             docId: doc.id ?? 0,
           });
@@ -394,6 +322,40 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         body: body,
       }),
     }),
+    replaceRejectedDocument: builder.mutation<
+      IEmployeeDocument,
+      {
+        prevID: number;
+        args: {
+          data: {
+            Document: number;
+            employee_detail: number;
+            Docstatus: IDocumentStatus.PENDING;
+          };
+        };
+      }
+    >({
+      query: body => ({
+        url: apiEndPoints.replaceDocument(body.prevID),
+        method: apiMethodType.patch,
+        body: body.args,
+      }),
+      transformResponse: (response: IReplaceRejectedDocumentResponse) => {
+        const document = formatDocument({
+          id: response.data.id ?? 0,
+          Docstatus: response.data.Docstatus ?? IDocumentStatus.PENDING,
+          name: response.data.name ?? '',
+          Document: {
+            url: getImageUrl(response.data.Document?.url ?? ''),
+            id: response.data.Document?.id ?? 0,
+            name: response.data.Document?.name ?? '',
+            size: response.data.Document?.size ?? 0,
+            mime: response.data.Document?.mime ?? '',
+          },
+        });
+        return document;
+      },
+    }),
   }),
 
   overrideExisting: false,
@@ -416,4 +378,5 @@ export const {
   useUpdateEmployeeDocumentsMutation,
   useLazyGetUpdatedEmployeeDocumentsRequestQuery,
   useCancelDocumentRequestMutation,
+  useReplaceRejectedDocumentMutation,
 } = authApi;

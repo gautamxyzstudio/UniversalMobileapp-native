@@ -7,7 +7,6 @@ import {useTheme} from '@theme/Theme.context';
 import * as TapHaptic from '@utils/haptic';
 import {TapHapticFeedbackTypes} from '@utils/haptic';
 import {ICustomButtonProps} from './types';
-import {verticalScale} from '@utils/metrics';
 import {ActivityIndicator} from 'react-native-paper';
 
 const CustomButton: React.FC<ICustomButtonProps> = ({
@@ -40,12 +39,7 @@ const CustomButton: React.FC<ICustomButtonProps> = ({
           styles.button,
           {backgroundColor: backgroundColor ?? theme.color.darkBlue},
           disabled && {backgroundColor: theme.color.disabled},
-          type === 'outline' && {
-            backgroundColor: theme.color.primary,
-            borderWidth: 1,
-            borderColor: theme.color.darkBlue,
-            height: verticalScale(48),
-          },
+          type === 'outline' && styles.primary,
           buttonStyle,
         ]}>
         {isLoading ? (

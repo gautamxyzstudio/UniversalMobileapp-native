@@ -79,6 +79,8 @@ const UpdateDocumentRequests = () => {
         currentSelectedDoc?.docId ?? 0,
       ).unwrap();
       if (response) {
+        console.log(response, 'response');
+
         dispatch(
           cancelDocumentRequest({docId: currentSelectedDoc?.docId ?? 0}),
         );

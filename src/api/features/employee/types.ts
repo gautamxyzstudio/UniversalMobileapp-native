@@ -274,7 +274,7 @@ export type IGetJobPostResponse = {
 export type IUpdateEmployeePrimaryDocumentRequest = {
   data: {
     document: number;
-    DocName: IDocumentNames;
+    name: string;
     status: IDocumentStatus;
     employee_detail: number;
   };
@@ -307,7 +307,7 @@ export type IClientDetailsResponse = {
 export type IUserPrimaryDocumentResponse = {
   data: {
     attributes: {
-      DocName: IDocumentNames;
+      name: IDocumentNames;
       status: IDocumentStatus.PENDING;
     };
     id: number;

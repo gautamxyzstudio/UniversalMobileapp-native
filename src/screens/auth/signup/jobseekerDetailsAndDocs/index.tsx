@@ -1,4 +1,4 @@
-import {Alert, FlatList, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import React, {useRef, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -13,14 +13,13 @@ import {
   jobSeekerRef,
   userBasicDetails,
 } from './jobSeekerDetailsSteps/jobSeekerDetailsStepsOne/types';
-import {jobSeekerSecRef} from './jobSeekerDetailsSteps/jobSeekerDetailsStepsTwo/types';
+import {
+  IDocument,
+  jobSeekerSecRef,
+} from './jobSeekerDetailsSteps/jobSeekerDetailsStepsTwo/types';
 import JobSeekerDetailsStepsOne from './jobSeekerDetailsSteps/jobSeekerDetailsStepsOne';
 import JobSeekerDetailsStepsTwo from './jobSeekerDetailsSteps/jobSeekerDetailsStepsTwo/indext';
-import {
-  IOtherDocSpecifications,
-  jobSeekerThirdRef,
-  userDocuments,
-} from './jobSeekerDetailsSteps/jobSeekerDetailsStepsThree/types';
+import {jobSeekerThirdRef} from './jobSeekerDetailsSteps/jobSeekerDetailsStepsThree/types';
 import SuccessPopup from '@components/molecules/SucessPopup';
 import {useScreenInsets} from 'src/hooks/useScreenInsets';
 import {useNavigation} from '@react-navigation/native';
@@ -57,9 +56,10 @@ const JobSeekerDetailsAndDocs = () => {
   const stepThreeRef = useRef<jobSeekerThirdRef>(null);
 
   // @ts-ignore
-  const [employeeDocuments, setEmployeeDocuments] =
+  const [employeeDetails, setEmployeeDetails] =
     useState<IUserDetailsRequestParams>({} as IUserDetailsRequestParams);
   const [submitUserDetails] = useSubmitUserDetailsMutation();
+  const [employeeDocs, setEmployeeDocs] = useState<IDocument[]>();
   const [uploadOtherDocuments] = useSubmitOtherDocumentsMutation();
   const navigation = useNavigation<NavigationProps>();
   const [getUserDetails] = useLazyGetUserQuery();
@@ -73,119 +73,39 @@ const JobSeekerDetailsAndDocs = () => {
   const popupRef = useRef<customModalRef>(null);
   const toast = useToast();
 
-  const onPressNext = async () => {
-    if (stepOneRef?.current?.validate && currentIndex === 0) {
-      const stepOneResult = await stepOneRef!.current!.validate();
-      if (stepOneResult?.isValid && stepOneResult.fields) {
-        const basicDetails: userBasicDetails = {
-          name: stepOneResult.fields.name,
-          selfie: stepOneResult.fields.selfie,
-          phone: stepOneResult.fields.phone,
-          dob: stepOneResult.fields.dob,
-          email: stepOneResult.fields.email,
-          city: stepOneResult.fields.city,
-          workStatus: stepOneResult.fields.workStatus,
-          address: stepOneResult.fields.address,
-          gender: stepOneResult.fields.gender,
-        };
-        setEmployeeDocuments(prev => ({...prev, ...basicDetails}));
-        setCurrentIndex(currentIndex + 1);
-        FlatListRef.current?.scrollToIndex({
-          animated: true,
-          index: currentIndex + 1,
-        });
-      }
-    }
-
-    if (stepTwoRef?.current?.validate && currentIndex === 1) {
-      const stepTwoResult = await stepTwoRef!.current!.validate();
-      if (stepTwoResult.isValid) {
-        setEmployeeDocuments(prev => ({...prev, ...stepTwoResult.fields}));
-        setCurrentIndex(currentIndex + 1);
-        FlatListRef.current?.scrollToIndex({
-          animated: true,
-          index: currentIndex + 1,
-        });
-      }
-    }
-    if (stepThreeRef!.current!.validate && currentIndex === 2) {
-      const stepThreeResult = await stepThreeRef!.current!.validate();
-      if (stepThreeResult.isValid) {
-        setEmployeeDocuments(prev => ({...prev, ...stepThreeResult.fields}));
-        submitUserDetailsHandler(
-          stepThreeResult.fields,
-          stepThreeResult.otherDocs,
-        );
-      }
-    }
-  };
-
-  const onPressPrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      FlatListRef.current?.scrollToIndex({
-        animated: true,
-        index: currentIndex - 1,
-      });
-    }
-  };
-
   const submitUserDetailsHandler = async (
-    thirdStep: userDocuments,
-    otherDocument: IOtherDocSpecifications[],
+    thirdStepDocs: IDocument[],
+    resume: number | null,
   ) => {
     const fields: IUserDetailsRequestParams = {
-      name: employeeDocuments?.name,
-      city: employeeDocuments?.city,
-      email: employeeDocuments?.email,
-      phone: employeeDocuments?.phone,
-      dob: employeeDocuments?.dob ?? new Date(),
-      selfie: employeeDocuments?.selfie ?? [],
-      address: employeeDocuments?.address,
-      securityDocumentBasic: thirdStep?.securityDocumentBasic,
-      securityDocumentAdv: thirdStep?.securityDocumentAdv,
-      govtidStaus: IDocumentStatus.PENDING,
-      gender: employeeDocuments?.gender,
-      resume: thirdStep?.resume,
-      govtid: thirdStep?.govtid,
-      sinNo: employeeDocuments?.sinNo,
-      directDepositVoidCheque: employeeDocuments?.directDepositVoidCheque ?? -1,
-      workStatus: employeeDocuments?.workStatus,
-      supportingDocument: thirdStep?.supportingDocument ?? -1,
+      name: employeeDetails?.name,
+      city: employeeDetails?.city,
+      email: employeeDetails?.email,
+      phone: employeeDetails?.phone,
+      dob: employeeDetails?.dob ?? new Date(),
+      selfie: employeeDetails?.selfie ?? [],
+      address: employeeDetails?.address,
+      gender: employeeDetails?.gender,
+      sinNo: employeeDetails?.sinNo,
+      workStatus: employeeDetails?.workStatus,
       Emp_id: user?.id ?? 0,
-      bankAcNo: employeeDocuments?.bankAcNo,
-      institutionNumber: employeeDocuments?.institutionNumber,
-      trasitNumber: employeeDocuments?.trasitNumber,
-      sinDocument: employeeDocuments?.sinDocument ?? -1,
-      securityDocBasicStatus: IDocumentStatus.PENDING,
-      securityDocumentAdvStatus: IDocumentStatus.PENDING,
-      directDepositVoidChequeStatus: IDocumentStatus.PENDING,
-      sinDocumentStatus: IDocumentStatus.PENDING,
-      job_applications: [],
+      bankAcNo: employeeDetails?.bankAcNo,
+      resume: resume,
+      institutionNumber: employeeDetails?.institutionNumber,
+      trasitNumber: employeeDetails?.trasitNumber,
     };
-
     try {
       dispatch(setLoading(true));
       const submitUserDetailsResponse = await submitUserDetails({
         data: fields,
       }).unwrap();
       if (submitUserDetailsResponse) {
-        if (otherDocument.length > 0) {
-          const isOtherDocumentsUploaded = await uploadOtherDocHandler(
-            otherDocument,
-            submitUserDetailsResponse.detailsId,
-          );
-          const userDetails = await getUser();
-          if (isOtherDocumentsUploaded) {
-            if (userDetails) {
-              dispatch(updateEmployeeDetails(userDetails));
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'employeeTabBar'}],
-              });
-            }
-          }
-        } else {
+        const docs = employeeDocs?.concat(thirdStepDocs);
+        const isDocumentsUploaded = await uploadOtherDocHandler(
+          docs ?? [],
+          submitUserDetailsResponse.detailsId,
+        );
+        if (isDocumentsUploaded) {
           const userDetails = await getUser();
           if (userDetails) {
             dispatch(updateEmployeeDetails(userDetails));
@@ -206,15 +126,72 @@ const JobSeekerDetailsAndDocs = () => {
     }
   };
 
+  const onPressNext = async () => {
+    if (stepOneRef?.current?.validate && currentIndex === 0) {
+      const stepOneResult = await stepOneRef!.current!.validate();
+      if (stepOneResult?.isValid && stepOneResult.fields) {
+        const basicDetails: userBasicDetails = {
+          name: stepOneResult.fields.name,
+          selfie: stepOneResult.fields.selfie,
+          phone: stepOneResult.fields.phone,
+          dob: stepOneResult.fields.dob,
+          email: stepOneResult.fields.email,
+          city: stepOneResult.fields.city,
+          workStatus: stepOneResult.fields.workStatus,
+          address: stepOneResult.fields.address,
+          gender: stepOneResult.fields.gender,
+        };
+        setEmployeeDetails(prev => ({...prev, ...basicDetails}));
+        setCurrentIndex(currentIndex + 1);
+        FlatListRef.current?.scrollToIndex({
+          animated: true,
+          index: currentIndex + 1,
+        });
+      }
+    }
+
+    if (stepTwoRef?.current?.validate && currentIndex === 1) {
+      const stepTwoResult = await stepTwoRef!.current!.validate();
+      if (stepTwoResult.isValid) {
+        setEmployeeDetails(prev => ({...prev, ...stepTwoResult.fields}));
+        setEmployeeDocs(prev => [...(prev ?? []), ...stepTwoResult.documents]);
+        setCurrentIndex(currentIndex + 1);
+        FlatListRef.current?.scrollToIndex({
+          animated: true,
+          index: currentIndex + 1,
+        });
+      }
+    }
+    if (stepThreeRef!.current!.validate && currentIndex === 2) {
+      const stepThreeResult = await stepThreeRef!.current!.validate();
+      if (stepThreeResult.isValid) {
+        await submitUserDetailsHandler(
+          stepThreeResult.documents as any,
+          stepThreeResult.resume,
+        );
+      }
+    }
+  };
+
+  const onPressPrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      FlatListRef.current?.scrollToIndex({
+        animated: true,
+        index: currentIndex - 1,
+      });
+    }
+  };
+
   const uploadOtherDocHandler = async (
-    otherDocument: IOtherDocSpecifications[],
+    otherDocument: IDocument[],
     detailsId: number,
   ): Promise<boolean> => {
     let otherDocs: IOtherDocRequest[] = [];
     otherDocs = otherDocument.map(doc => {
       return {
         name: doc.name,
-        Document: doc.docId,
+        Document: doc.Document,
         employee_detail: detailsId,
         Docstatus: IDocumentStatus.PENDING,
       };

@@ -7,14 +7,9 @@ import {STRINGS} from 'src/locales/english';
 import SelectedDocumentToUpdateCard from './SelectedDocumentToUpdateCard';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 
-import {IDocumentNames} from '@utils/enums';
-
 type ISelectDocumentToUpdatePopupTypes = {
-  addOrUpdateDocument: (selectedOption: {
-    name: string;
-    key: IDocumentNames;
-  }) => void;
-  documents: {name: string; key: IDocumentNames}[];
+  addOrUpdateDocument: (selectedOption: {name: string; key: string}) => void;
+  documents: {name: string; key: string}[];
 };
 
 const SelectDocumentToUpdatePopup = forwardRef<
@@ -23,7 +18,7 @@ const SelectDocumentToUpdatePopup = forwardRef<
 >(({addOrUpdateDocument, documents}, ref) => {
   const [selectedOption, setSelectedOption] = useState<{
     name: string;
-    key: IDocumentNames;
+    key: string;
   }>();
 
   const onClose = () => {

@@ -9,6 +9,8 @@ import {RootState} from './store';
 import {QueryReturnValue} from 'node_modules/@reduxjs/toolkit/dist/query/baseQueryTypes';
 import NetInfo from '@react-native-community/netinfo';
 import {resetNavigation} from 'src/navigator/types';
+import {STRINGS} from 'src/locales/english';
+import {IErrorResponse, transformErrorResponse} from './types';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${process.env.BASE_URL}`,
@@ -57,46 +59,34 @@ const queryFetcher = async (
   if (result.error) {
     if (result.error?.status === 401) {
       resetNavigation();
-    }
-    if (result.error.status === 'FETCH_ERROR') {
+    } else if (result.error.status === 'FETCH_ERROR') {
       if (isConnected.isInternetReachable || isConnected.isConnected) {
-        console.log('====================================');
-        console.log(isConnected);
-        console.log('====================================');
-        result.error.data = {
-          statusCode: 512,
+        return {
           error: {
             message: 'Server not reachable.Please try again later',
-          },
-        } as any;
+            statusCode: 10,
+          } as any,
+        };
       } else {
-        result.error.data = {
-          statusCode: 511,
+        return {
           error: {
-            message: 'No Internet Connection. Please try again later',
-          },
-        } as any;
+            message: STRINGS.your_internet_is_a_little_wonky_right_now,
+            statusCode: 0,
+          } as any,
+        };
       }
     } else if (result.error.status === 'TIMEOUT_ERROR') {
-      console.log('====================================');
-      console.log('TIMEOUT');
-      console.log('====================================');
-      result.error.data = {
-        statusCode: 513,
-        error: {
-          message: 'Request timed out. Please try again after some time.',
-        },
-      } as any;
-    } else if (result.error.status === 'PARSING_ERROR') {
-      console.log('====================================');
-      console.log('PARSING_ERROR');
-      console.log('====================================');
-      result.error.data = {
-        statusCode: result.error?.originalStatus ?? 503,
+      return {
         error: {
           message: 'Server not reachable.Please try again later',
-        },
-      } as any;
+          statusCode: 10,
+        } as any,
+      };
+    } else {
+      const transformedError = transformErrorResponse(
+        result?.error as IErrorResponse,
+      );
+      return {error: transformedError as any};
     }
   }
   console.log(

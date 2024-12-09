@@ -3,10 +3,9 @@ import React, {useEffect, useState} from 'react';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Row} from '@components/atoms/Row';
-import {IC_DOCUMENT} from '@assets/exporter';
+import {IC_DOCUMENT, IC_REPLACE} from '@assets/exporter';
 import {verticalScale} from '@utils/metrics';
 import {fonts} from '@utils/common.styles';
-import Spacers from '@components/atoms/Spacers';
 import {STRINGS} from 'src/locales/english';
 import ImageView from 'react-native-image-viewing';
 import {
@@ -17,19 +16,22 @@ import {
 import {useTheme} from '@theme/Theme.context';
 import {getFileExtension} from '@utils/utils.common';
 import {NavigationProps} from 'src/navigator/types';
+import AnimatedPressable from '@components/atoms/AnimatedPressable';
+import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 
 type IPreUploadedDocCardWithView = {
   document: IEmployeeDocument | null;
   withTitle: boolean;
   hideStatus?: boolean;
   navigation: NavigationProps;
+  onPressReplace?: () => void;
 };
 
 const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
   document,
   navigation,
+  onPressReplace,
   hideStatus,
-  withTitle = true,
 }) => {
   const styles = useThemeAwareObject(getStyles);
   const [visible, setIsVisible] = useState(false);
@@ -61,31 +63,46 @@ const PreUploadedDocCardWithView: React.FC<IPreUploadedDocCardWithView> = ({
 
   return (
     <View>
-      {withTitle && (
-        <>
-          <Row alignCenter spaceBetween>
-            <Text style={styles.title}>{document?.docName}</Text>
-            {!hideStatus && (
-              <Text style={[styles.status, {color: statusAttributes.color}]}>
-                {statusAttributes.title}
+      <View style={styles.mainView}>
+        <Row alignCenter spaceBetween>
+          <Row style={styles.left} alignCenter>
+            <IC_DOCUMENT width={verticalScale(24)} height={verticalScale(24)} />
+            <View>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="middle"
+                style={styles.name}>
+                {document?.docName}
               </Text>
-            )}
+              {!hideStatus && (
+                <Text style={{color: statusAttributes.color}}>
+                  {statusAttributes.title}
+                </Text>
+              )}
+            </View>
           </Row>
-          <Spacers type="vertical" size={8} />
-        </>
-      )}
-
-      <Row alignCenter spaceBetween style={styles.mainView}>
-        <Row style={styles.left} alignCenter>
-          <IC_DOCUMENT width={verticalScale(16)} height={verticalScale(16)} />
-          <Text numberOfLines={1} ellipsizeMode="middle" style={styles.name}>
-            {doc?.name}
-          </Text>
+          <TouchableOpacity onPress={onPressView}>
+            <Text style={styles.viewButton}>{STRINGS.view}</Text>
+          </TouchableOpacity>
         </Row>
-        <TouchableOpacity onPress={onPressView}>
-          <Text style={styles.viewButton}>{STRINGS.view}</Text>
-        </TouchableOpacity>
-      </Row>
+        {document?.docStatus === IDocumentStatus.DENIED && (
+          <AnimatedPressable
+            onPress={onPressReplace}
+            styles={styles.buttonOuter}>
+            <Row style={styles.replaceButton}>
+              <IC_REPLACE
+                width={verticalScale(16)}
+                height={verticalScale(16)}
+              />
+              <CustomText
+                color="darkBlue"
+                value={STRINGS.replace}
+                size={textSizeEnum.small}
+              />
+            </Row>
+          </AnimatedPressable>
+        )}
+      </View>
       {doc?.url && (
         <ImageView
           images={[{uri: doc?.url}]}
@@ -108,18 +125,30 @@ export const getStyles = (theme: Theme) => {
       color: theme.color.disabled,
     },
     mainView: {
-      height: verticalScale(56),
-      paddingHorizontal: verticalScale(12),
+      padding: verticalScale(12),
       backgroundColor: theme.color.ternary,
       borderRadius: 4,
     },
     left: {
+      flex: 1,
       gap: 12,
     },
+    replaceButton: {
+      width: verticalScale(80),
+      height: verticalScale(24),
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 40,
+      borderWidth: 1,
+      borderColor: theme.color.darkBlue,
+    },
+    buttonOuter: {
+      alignSelf: 'center',
+    },
     name: {
-      width: verticalScale(130),
+      width: verticalScale(250),
 
-      ...fonts.small,
+      ...fonts.regular,
       color: theme.color.textPrimary,
     },
     viewButton: {

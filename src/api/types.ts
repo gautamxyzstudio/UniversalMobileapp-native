@@ -1,3 +1,5 @@
+import {STRINGS} from 'src/locales/english';
+
 export type CardType = 'employee' | 'client';
 
 export interface IEmployeeTypes {
@@ -128,4 +130,13 @@ export const getJobsEmployeeSearchUrl = (
   } else {
     return `${process.env.BASE_URL}/api/jobs?search=${character}&[page]=${page}&[pageSize]=10`;
   }
+};
+
+export const transformErrorResponse = (
+  response: IErrorResponse,
+): ICustomErrorResponse => {
+  return {
+    message: response?.data?.error?.message ?? STRINGS.something_went_wrong,
+    statusCode: response?.status ?? 0,
+  };
 };

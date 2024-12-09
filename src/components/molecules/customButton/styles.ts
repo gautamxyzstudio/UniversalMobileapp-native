@@ -17,6 +17,12 @@ export const getStyles = (colors: Theme) => {
       ...fonts.medium,
       color: colors.color.primary,
     },
+    primary: {
+      backgroundColor: colors.color.primary,
+      borderWidth: 1,
+      borderColor: colors.color.darkBlue,
+      height: verticalScale(48),
+    },
   });
   return styles;
 };

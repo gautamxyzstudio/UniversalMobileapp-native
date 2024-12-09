@@ -43,31 +43,41 @@ const userSlice = createSlice({
       state,
       action: PayloadAction<{
         document: IEmployeeDocument;
-        type: 'primary' | 'secondary' | 'new requests';
       }>,
     ) => {
-      const employee = {...(state.user as IUser<'emp'>)};
-      if (employee) {
-        const empDocs = employee.details?.documents;
-        if (empDocs && action.payload.type === 'primary' && empDocs.primary) {
-          empDocs.primary.push(action.payload.document);
-        }
-        if (
-          empDocs &&
-          action.payload.type === 'secondary' &&
-          empDocs.secondary
-        ) {
-          empDocs.secondary.push(action.payload.document);
-        }
-        if (
-          empDocs &&
-          action.payload.type === 'new requests' &&
-          empDocs.document_requests
-        ) {
-          empDocs.document_requests.push(action.payload.document);
-        }
+      let employee = {...(state.user as IUser<'emp'>)};
+      if (employee.details && employee.details.documents) {
+        employee?.details.documents.push(action.payload.document);
+        state.user = employee;
       }
-      state.user = employee;
+    },
+    addNewUpdateRequest: (state, action: PayloadAction<IEmployeeDocument>) => {
+      let employee = {...(state.user as IUser<'emp'>)};
+      if (employee.details && employee.details.update_requests) {
+        employee?.details.update_requests.push(action.payload);
+        state.user = employee;
+      }
+    },
+    replaceRejectedDocument: (
+      state,
+      action: PayloadAction<IEmployeeDocument>,
+    ) => {
+      let employee = {...(state.user as IUser<'emp'>)};
+      if (employee.details && employee.details.documents) {
+        const index = employee.details.documents.findIndex(doc => {
+          console.log(
+            doc.docId === action.payload.docId,
+            doc.docId,
+            action.payload.docId,
+          );
+          return doc.docId === action.payload.docId;
+        });
+
+        if (index !== -1) {
+          employee.details.documents[index] = action.payload;
+        }
+        state.user = employee;
+      }
     },
     updateClientDetails: (state, action: PayloadAction<any>) => {
       let prevData = {...state.user?.details};
@@ -126,23 +136,18 @@ const userSlice = createSlice({
     },
     cancelDocumentRequest: (state, action: PayloadAction<{docId: number}>) => {
       const employee = {...(state.user as IUser<'emp'>)};
-      if (employee.details?.documents?.document_requests) {
-        const docIndex = employee.details.documents.document_requests.findIndex(
-          doc => doc.doc?.id === action.payload.docId,
+      if (employee.details?.update_requests) {
+        const docIndex = employee.details.update_requests.findIndex(
+          doc => doc.docId === action.payload.docId,
         );
         if (docIndex !== -1) {
-          employee.details.documents.document_requests.splice(docIndex, 1);
+          employee.details.update_requests.splice(docIndex, 1);
         }
         state.user = {
           ...employee,
           details: {
             ...employee.details,
-            documents: {
-              ...employee.details.documents,
-              document_requests: [
-                ...employee.details.documents.document_requests,
-              ],
-            },
+            update_requests: [...employee.details.update_requests],
           },
         };
       }
@@ -164,10 +169,12 @@ export const {
   addNewSearchEmployee,
   deleteRecentSearch,
   addPreferredLocation,
+  replaceRejectedDocument,
   updateClientDetails,
   clearPreferredLocations,
   removeLocation,
   addNewDocumentEmployee,
+  addNewUpdateRequest,
 } = userSlice.actions;
 export default userSlice.reducer;
 export const userBasicDetailsFromState = (state: RootState) => state.user.user;

@@ -63,10 +63,18 @@ const JobSeekerDetailsStepsTwo = forwardRef<{}, jobSeekerSecRef>(
               bankAcNo: fields.backAccountNumber,
               institutionNumber: fields.institutionNumber,
               trasitNumber: fields.transitNumber,
-              directDepositVoidCheque: fields.cheque,
               sinNo: fields.sinNumber,
-              sinDocument: fields.sinDocument,
             },
+            documents: [
+              {
+                name: STRINGS.cheque,
+                Document: fields.cheque,
+              },
+              {
+                name: STRINGS.sinDocument,
+                Document: fields.sinDocument,
+              },
+            ],
             isValid: true,
           };
         }

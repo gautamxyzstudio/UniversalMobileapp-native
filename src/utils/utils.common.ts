@@ -1,13 +1,13 @@
 import {
-  IDoc,
   IDocumentStatus,
   IEmployeeDetailsApiResponse,
   IEmployeeDocument,
+  IOtherDocument,
 } from '@api/features/user/types';
 import moment from 'moment';
 import {getImageUrl} from './constants';
 import {STRINGS} from 'src/locales/english';
-import {IDocumentNames, IEmployeeDocsApiKeys} from './enums';
+import {IDocumentNames} from './enums';
 
 export const minTwoDigits = (n: number) => {
   return (n < 10 ? '0' : '') + n;
@@ -108,6 +108,10 @@ export const getHistoryStartDate = () => {
   return startDate;
 };
 
+export const getTitleWithoutSpaces = (title: string) => {
+  return title.replace(/\s+/g, '').trim();
+};
+
 export const getHistoryEndDate = () => {
   const endDate = new Date();
   endDate.setMonth(endDate.getMonth() + 1);
@@ -165,179 +169,22 @@ export const getDocumentNameFromCode = (code: IDocumentNames) => {
   }
 };
 
-export const extractEmployeeSecondaryDocumentsFromApiResponse = (
-  response: IEmployeeDetailsApiResponse,
-) => {
-  const documents: IEmployeeDocument[] = [];
-  response.other_documents.forEach(doc => {
-    const docName = doc.name;
-    const docStatus = doc.Docstatus;
-    const docs = doc.Document;
-    if (docs) {
-      documents.push({
-        docName,
-        docStatus,
-        doc: {
-          url: getImageUrl(docs?.url),
-          id: doc.id,
-          name: doc.name,
-          mime: docs.mime,
-          size: docs.size,
-        },
-        docId: doc.id,
-      });
-    }
-  });
-  return documents;
-};
-
-export const extractEmployeeDocumentsFromApiResponse = (
-  response: IEmployeeDetailsApiResponse,
-  requests: IEmployeeDocument[],
-): IEmployeeDocument[] | [] => {
-  //to merge doc details into one
-  const addDocument = (
-    document:
-      | {name: string; doc: IDoc; id: number; key: IEmployeeDocsApiKeys}
-      | undefined,
-    status: IDocumentStatus | undefined,
-  ): IEmployeeDocument | null => {
-    return document && status
-      ? {
-          docName: document.name,
-          docStatus: status,
-          doc: {
-            url: getImageUrl(document.doc.url),
-            id: document.doc.id,
-            name: document.doc.name,
-            mime: document.doc.mime,
-            size: document.doc.size,
-          },
-          docId: document.id,
-          apiKey: document.key,
-        }
-      : null;
+export const formatDocument = (response: IOtherDocument): IEmployeeDocument => {
+  const docName = response.name;
+  const docStatus = response.Docstatus;
+  const docs = response.Document;
+  return {
+    docName,
+    docStatus,
+    doc: {
+      url: getImageUrl(docs?.url) ?? '',
+      id: docs?.id ?? 0,
+      name: docs.name ?? '',
+      mime: docs.mime ?? '',
+      size: docs.size ?? 0,
+    },
+    docId: response.id ?? 0,
   };
-  const documents: IEmployeeDocument[] = [];
-  const employeeDetails = response;
-  if (employeeDetails.sinDocument) {
-    const sinDocument = addDocument(
-      {
-        name: STRINGS.sinDocument,
-        id: employeeDetails.sinDocument.id ?? 0,
-        doc: {
-          mime: employeeDetails.sinDocument.mime,
-          url: employeeDetails.sinDocument.url,
-          size: employeeDetails.sinDocument.size,
-          id: employeeDetails.sinDocument.id,
-          name: employeeDetails.sinDocument.name,
-        },
-        key: IEmployeeDocsApiKeys.SIN_DOCUMENT,
-      },
-      employeeDetails.sinDocumentStatus,
-    );
-    sinDocument && documents.push(sinDocument);
-  }
-  if (employeeDetails.govtid) {
-    const govtID = addDocument(
-      {
-        name: STRINGS.Govt_ID,
-        id: employeeDetails.govtid.id ?? 0,
-        doc: {
-          mime: employeeDetails.govtid.mime,
-          url: employeeDetails.govtid.url,
-          size: employeeDetails.govtid.size,
-          id: employeeDetails.govtid.id,
-          name: employeeDetails.govtid.name,
-        },
-        key: IEmployeeDocsApiKeys.GOVT_ID,
-      },
-      employeeDetails.govtidStaus,
-    );
-    govtID && documents.push(govtID);
-  }
-  if (employeeDetails.supportingDocument) {
-    const supportingDocument = addDocument(
-      {
-        name: STRINGS.document,
-        id: employeeDetails.supportingDocument.id ?? 0,
-        doc: {
-          mime: employeeDetails.supportingDocument.mime,
-          url: employeeDetails.supportingDocument.url,
-          size: employeeDetails.supportingDocument.size,
-          id: employeeDetails.supportingDocument.id,
-          name: employeeDetails.supportingDocument.name,
-        },
-        key: IEmployeeDocsApiKeys.SUPPORTING_DOCUMENT,
-      },
-      employeeDetails.supportingDocumentStatus,
-    );
-    supportingDocument && documents.push(supportingDocument);
-  }
-
-  if (
-    employeeDetails.securityDocumentAdv &&
-    employeeDetails.securityDocumentAdv?.id
-  ) {
-    const securityDocumentAdv = addDocument(
-      {
-        name: STRINGS.license_advance,
-        id: employeeDetails.securityDocumentAdv.id,
-        doc: {
-          mime: employeeDetails.securityDocumentAdv.mime,
-          url: employeeDetails.securityDocumentAdv.url,
-          size: employeeDetails.securityDocumentAdv.size,
-          id: employeeDetails.securityDocumentAdv.id,
-          name: employeeDetails.securityDocumentAdv.name,
-        },
-        key: IEmployeeDocsApiKeys.LICENSE_ADVANCE,
-      },
-      employeeDetails.securityDocumentAdvStatus,
-    );
-    securityDocumentAdv && documents.push(securityDocumentAdv);
-  }
-  if (
-    employeeDetails.securityDocumentBasic &&
-    employeeDetails.securityDocumentBasic?.id
-  ) {
-    const securityDocumentBasic = addDocument(
-      {
-        name: STRINGS.license_basic,
-        id: employeeDetails.securityDocumentBasic.id,
-        doc: {
-          mime: employeeDetails.securityDocumentBasic.mime,
-          url: employeeDetails.securityDocumentBasic.url,
-          size: employeeDetails.securityDocumentBasic.size,
-          id: employeeDetails.securityDocumentBasic.id,
-          name: employeeDetails.securityDocumentBasic.name,
-        },
-        key: IEmployeeDocsApiKeys.LICENSE_BASIC,
-      },
-      employeeDetails.securityDocBasicStatus,
-    );
-    securityDocumentBasic && documents.push(securityDocumentBasic);
-  }
-
-  const docs: IEmployeeDocument[] = [];
-  if (documents.length > 0) {
-    documents.forEach(doc => {
-      let isUpdate = false;
-      let document = null;
-      for (const reqDoc of requests) {
-        if (
-          doc.docName === reqDoc.docName &&
-          reqDoc.docStatus === IDocumentStatus.UPDATE
-        ) {
-          isUpdate = true;
-          document = reqDoc;
-          break;
-        }
-      }
-      docs.push(isUpdate && document ? document : doc);
-    });
-  }
-
-  return docs;
 };
 
 export const extractDocumentRequestFromApiResponse = (
@@ -346,9 +193,7 @@ export const extractDocumentRequestFromApiResponse = (
   const documents: IEmployeeDocument[] = [];
   response.document_requests.forEach(doc => {
     if (doc) {
-      const docName = getDocumentNameFromCode(
-        doc.DocName ?? IDocumentNames.NULL,
-      );
+      const docName = doc.name ?? '';
       const docStatus = doc?.status ?? IDocumentStatus.PENDING;
       const docs = doc.document;
       if (docs) {

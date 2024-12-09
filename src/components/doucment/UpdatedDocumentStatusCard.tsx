@@ -42,7 +42,7 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
               color="disabled"
               size={textSizeEnum.medium}
             />
-            {/* <Text style={styles.heading}>{title}</Text> */}
+
             <Row alignCenter>
               <Text
                 style={[
@@ -65,6 +65,7 @@ const UpdatedDocumentStatusCard: React.FC<IUpdatedDocumentStatusCard> = ({
       )}
       <PreUploadedDocCardWithView
         withTitle={false}
+        hideStatus
         document={asset}
         navigation={navigation}
       />

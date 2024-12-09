@@ -18,8 +18,6 @@ import {
   IPostedJobsResponse,
   IUpdateClientResponse,
 } from './types';
-import {ICustomErrorResponse, IErrorResponse} from '@api/types';
-import {STRINGS} from 'src/locales/english';
 import {IJobPostStatus, IJobTypesEnum} from '@utils/enums';
 import {IClientDetailsResponse, ICompany, IJobTypes} from '../employee/types';
 import {getImageUrl} from '@utils/constants';
@@ -103,14 +101,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
           },
         };
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     getClosedJobs: builder.query({
       query: company_id => ({
@@ -145,14 +135,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
             pageCount: response?.meta.total ?? 1,
             total: response?.meta.totalPages ?? 1,
           },
-        };
-      },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
         };
       },
     }),
@@ -233,14 +215,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
 
         return data;
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     deleteADraft: builder.mutation<{id: number}, any>({
       query: ({id}) => ({
@@ -278,14 +252,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
           client_details: null,
           applicants: null,
           company: null,
-        };
-      },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
         };
       },
     }),
@@ -343,14 +309,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
         }
         return candidates;
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     stopAJobPost: builder.mutation({
       query: (body: {jobId: number}) => ({
@@ -396,14 +354,6 @@ const clientApi = baseApiWithTag.injectEndpoints({
         method: apiMethodType.patch,
         body: body.args,
       }),
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     updateClientDetails: builder.mutation<
       ICustomizedClientResponse,

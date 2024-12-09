@@ -14,12 +14,9 @@ import {
   IUpdateEmployeePrimaryDocumentRequest,
   IUserPrimaryDocumentResponse,
 } from './types';
-import {IErrorResponse, ICustomErrorResponse} from '@api/types';
-import {STRINGS} from 'src/locales/english';
-import {IEmployeeDocsApiKeys, IJobPostStatus} from '@utils/enums';
+import {IJobPostStatus} from '@utils/enums';
 import {getImageUrl} from '@utils/constants';
 import {IDoc, IEmployeeDocument} from '../user/types';
-import {getDocumentNameFromCode} from '@utils/utils.common';
 
 const employeeApi = baseApi.injectEndpoints({
   endpoints: builder => ({
@@ -95,14 +92,6 @@ const employeeApi = baseApi.injectEndpoints({
           },
         };
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     applyForJob: builder.mutation<any, IApplyForJobRequest>({
       query: body => ({
@@ -140,14 +129,6 @@ const employeeApi = baseApi.injectEndpoints({
           pagination: res.pagination,
         };
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     fetchScheduledJobs: builder.query<
       IJobTypes[],
@@ -176,14 +157,6 @@ const employeeApi = baseApi.injectEndpoints({
         });
         return jobs;
       },
-      transformErrorResponse: (
-        response: IErrorResponse,
-      ): ICustomErrorResponse => {
-        return {
-          statusCode: response.status,
-          message: response.data.error?.message ?? STRINGS.someting_went_wrong,
-        };
-      },
     }),
     getUpdateDocRequests: builder.query({
       query: () => ({
@@ -203,11 +176,10 @@ const employeeApi = baseApi.injectEndpoints({
       transformResponse: (response: IUserPrimaryDocumentResponse) => {
         let document: IEmployeeDocument | null = null;
         document = {
-          docName: getDocumentNameFromCode(response.data.attributes.DocName),
+          docName: response.data.attributes.name,
           docStatus: response.data.attributes.status,
           docId: response.data.id,
           doc: null,
-          apiKey: IEmployeeDocsApiKeys.NULL,
         };
         return document;
       },

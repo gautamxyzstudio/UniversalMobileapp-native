@@ -1,9 +1,4 @@
-import {
-  IClientStatus,
-  IDocumentNames,
-  IEmployeeDocsApiKeys,
-  IWorkStatus,
-} from '@utils/enums';
+import {IClientStatus, IWorkStatus} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
@@ -57,29 +52,23 @@ export interface IEmployeeDetails {
   resume: IEmployeeDocument | null;
   address: string | null;
   detailsId: number | null;
-  documents: IEmployeeDocumentsType | null;
+  documents: IEmployeeDocument[] | null;
+  update_requests: IEmployeeDocument[] | null;
   bankDetails: IEmployeeBankDetails | null;
 }
-
-export type IEmployeeDocumentsType = {
-  primary: IEmployeeDocument[] | null;
-  secondary: IEmployeeDocument[] | null;
-  document_requests: IEmployeeDocument[] | null;
-};
 
 export interface IEmployeeDocument {
   docName: string;
   docStatus: IDocumentStatus;
   doc: IDoc | null;
   docId: number | null;
-  apiKey?: IEmployeeDocsApiKeys;
 }
 
 export interface IEmployeeBankDetails {
   bankAccountNumber: string;
   transitNumber: string;
   institutionNumber: string;
-  cheque: IEmployeeDocument;
+  cheque: IEmployeeDocument | null | undefined;
 }
 
 //enums
@@ -255,42 +244,29 @@ export type IDoc = {
 };
 
 export interface IEmployeeDetailsApiResponse {
-  name: string;
-  selfie: IDoc[] | null;
-  id?: number;
-  dob: Date;
-  gender: string;
-  email: string;
-  phone: string;
-  city: string;
-  resume?: IDoc;
-  securityDocumentBasic: IDoc;
-  securityDocumentAdv: IDoc;
-  licencesExpiry?: IDoc;
-  securityDocumentAdvStatus: IDocumentStatus;
-  securityDocBasicStatus: IDocumentStatus;
-  sinDocumentStatus: IDocumentStatus;
-  directDepositVoidChequeStatus: IDocumentStatus;
-  govtidStaus: IDocumentStatus;
-  supportingDocumentStatus: IDocumentStatus;
-  govtid?: IDoc;
-  address: string;
-  sinNo: string;
-  directDepositVoidCheque?: IDoc;
-  workStatus: IWorkStatus;
-  supportingDocument?: IDoc;
-  bankAcNo?: string;
-  institutionNumber?: string;
-  trasitNumber?: string;
-  sinDocument?: IDoc;
-  Docstatus: IDocumentStatus;
+  name: string | null | undefined;
+  selfie: IDoc[] | null | undefined;
+  id?: number | null | undefined;
+  dob: Date | null | undefined;
+  gender: string | null | undefined;
+  email: string | null | undefined;
+  phone: string | null | undefined;
+  city: string | null | undefined;
+  resume?: IDoc | null | undefined;
+  address: string | null | undefined;
+  sinNo: string | null | undefined;
+  workStatus: IWorkStatus | null | undefined;
+  bankAcNo?: string | null | undefined;
+  institutionNumber?: string | null | undefined;
+  trasitNumber?: string | null | undefined;
+  Docstatus: IDocumentStatus | null | undefined;
   other_documents: IOtherDocument[];
   document_requests: IDocumentRequests[];
 }
 
 export type IDocumentRequests = {
   id: number | null | undefined;
-  DocName: IDocumentNames | null | undefined;
+  name: string | null | undefined;
   status: IDocumentStatus | null | undefined;
   document: IDoc | null | undefined;
 };
@@ -385,4 +361,13 @@ export type IAddEmployeeDetailsCustomizedResponse = {
   name: string;
   email: string;
   detailsId: number;
+};
+
+export type IReplaceRejectedDocumentResponse = {
+  data: {
+    id: number | null | undefined;
+    name: string | null | undefined;
+    Docstatus: IDocumentStatus | null | undefined;
+    Document: IDoc | null | undefined;
+  };
 };

@@ -966,7 +966,6 @@ export const provincesAndCities: IFilterSheet[] = [
     id: 0,
     title: 'Popular Cities',
     value: [
-      {id: 100, subTitle: 'Mohali', rowId: 0},
       {id: 1, subTitle: 'Toronto', rowId: 0},
       {id: 2, subTitle: 'Vancouver', rowId: 0},
       {id: 3, subTitle: 'Montreal', rowId: 0},

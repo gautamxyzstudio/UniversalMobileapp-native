@@ -18,13 +18,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   IDocumentStatus,
   IEmployeeDetails,
-  IEmployeeDocument,
   IEmployeeUploadOtherDocumentsRequest,
-  ISubmitOtherDocumentsResponse,
   IUpdateUserDetailsRequest,
 } from '@api/features/user/types';
 import {
-  addNewDocumentEmployee,
+  addNewUpdateRequest,
+  replaceRejectedDocument,
   updateEmployeeDetails,
   userAdvanceDetailsFromState,
 } from '@api/features/user/userSlice';
@@ -35,6 +34,7 @@ import {IDropDownItem} from '@components/molecules/dropdownPopup';
 import {AppDispatch} from '@api/store';
 import {
   useLazyGetUserQuery,
+  useReplaceRejectedDocumentMutation,
   useSubmitOtherDocumentsMutation,
   useUpdateEmployeeDetailsMutation,
 } from '@api/features/user/userApi';
@@ -45,28 +45,28 @@ import {Row} from '@components/atoms/Row';
 import SelectImagePopup from '@components/molecules/selectimagepopup';
 import useUploadAssets from 'src/hooks/useUploadAsset';
 import {IFile} from '@components/organisms/uploadPopup/types';
-import {getImageUrl} from '@utils/constants';
 import {useTheme} from '@theme/Theme.context';
-import {IDocumentNames, IEmployeeDocsApiKeys} from '@utils/enums';
-import {getDocNameCodeThroughName} from './types';
 import {useUpdateUserPrimaryDocumentsMutation} from '@api/features/employee/employeeApi';
+import {ICustomErrorResponse} from '@api/types';
 import {verticalScale} from '@utils/metrics';
 
 const EmployeeDocuments = () => {
   const styles = useThemeAwareObject(getStyles);
   const user = useSelector(userAdvanceDetailsFromState) as IEmployeeDetails;
-
+  const [docsName, setDocsNames] = useState<string[]>();
   const {uploadImage} = useUploadAssets();
   const documentSelector = useRef<BottomSheetModal | null>(null);
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
+  const [selectedDocId, setSelectedDocId] = useState<number | null>(null);
   const [document, setDocuments] = useState<IDropDownItem[]>([]);
   const [uploadNewDoc] = useSubmitOtherDocumentsMutation();
   const [getUserDetails] = useLazyGetUserQuery();
+  const [replaceRejectedDoc] = useReplaceRejectedDocumentMutation();
   const [updateEmployeeDocument] = useUpdateUserPrimaryDocumentsMutation();
   const [currentDocumentToUpdate, setCurrentDocumentToUpdate] =
-    useState<IDocumentNames>(IDocumentNames.SIN_DOCUMENT);
+    useState<string>('');
   const [validUpdateDocument, setValidUpdateDocument] = useState<
-    {name: string; key: IDocumentNames}[]
+    {name: string; key: string}[]
   >([]);
   const [uploadPrevDocuments] = useUpdateEmployeeDetailsMutation();
   const navigation = useNavigation<NavigationProps>();
@@ -77,79 +77,79 @@ const EmployeeDocuments = () => {
   const [refreshing, updateRefreshing] = useState(false);
 
   useEffect(() => {
-    if (user.documents?.primary && user.documents.document_requests) {
-      let options: {name: string; key: IDocumentNames}[] = [];
-      let previousDocs = [...user.documents.primary];
-      let currentDocsRequests = [...user.documents.document_requests];
+    if (user.documents) {
+      let options: {name: string; key: string}[] = [];
+      let previousDocs = [...user.documents];
+      let docNames: string[] = [];
+      let currentDocsRequests = user.update_requests ?? [];
       previousDocs?.forEach(doc => {
+        docNames.push(doc.docName);
         let isAlreadyRequested = false;
         currentDocsRequests.forEach(req => {
-          if (
-            doc.docName === req.docName &&
-            req.docStatus !== IDocumentStatus.DENIED
-          ) {
+          if (doc.docName === req.docName) {
             isAlreadyRequested = true;
           }
         });
-        if (
-          (doc.docStatus === IDocumentStatus.APPROVED ||
-            doc.docStatus === IDocumentStatus.DENIED) &&
-          !isAlreadyRequested
-        ) {
+        if (doc.docStatus === IDocumentStatus.APPROVED && !isAlreadyRequested) {
           options.push({
-            name: getDocNameCodeThroughName(doc.apiKey as IEmployeeDocsApiKeys)
-              .name,
-            key: getDocNameCodeThroughName(doc.apiKey as IEmployeeDocsApiKeys)
-              .key,
+            name: doc.docName,
+            key: doc.docName,
           });
         }
       });
+      setDocsNames(docNames);
       setValidUpdateDocument(options);
     }
-  }, [user.documents]);
+  }, [user]);
 
   useEffect(() => {
-    setDocuments(prev => {
-      const prevDocs = [...prev];
-      prevDocs.push({
-        label: STRINGS.new_document,
-        value: STRINGS.new_document,
-      });
-      prevDocs.push({
-        label: STRINGS.resume_simple,
-        value: STRINGS.resume_simple,
-      });
-
-      const securityAdvDocIndex = user.documents?.primary?.findIndex(
-        doc => doc.docName === STRINGS.license_advance,
-      );
-      if (securityAdvDocIndex === -1) {
-        prevDocs.push({
-          label: STRINGS.license_advance,
-          value: STRINGS.license_advance,
-        });
-      }
-      const securityBasicDocIndex = user.documents?.primary?.findIndex(
-        doc => doc.docName === STRINGS.license_basic,
-      );
-      if (securityBasicDocIndex === -1) {
-        prevDocs.push({
-          label: STRINGS.license_basic,
-          value: STRINGS.license_basic,
-        });
-      }
-      const uniqueOptions = prevDocs.filter(
-        (option, index, self) =>
-          self.findIndex(o => o.label === option.label) === index,
-      );
-
-      return uniqueOptions;
+    let prevDocs = [...document];
+    prevDocs.push({
+      label: STRINGS.new_document,
+      value: STRINGS.new_document,
     });
-  }, []);
+    prevDocs.push({
+      label: STRINGS.resume_simple,
+      value: STRINGS.resume_simple,
+    });
+    const securityDocAdv =
+      user.documents?.find(doc => doc.docName === STRINGS.license_advance) ??
+      null;
+
+    if (securityDocAdv) {
+      prevDocs = prevDocs.filter(doc => doc.label !== STRINGS.license_advance);
+    } else {
+      prevDocs.push({
+        label: STRINGS.license_advance,
+        value: STRINGS.license_advance,
+      });
+    }
+    const securityDocBasic =
+      user.documents?.find(doc => doc.docName === STRINGS.license_basic) ??
+      null;
+    if (securityDocBasic) {
+      prevDocs = prevDocs.filter(doc => doc.label !== STRINGS.license_basic);
+    } else {
+      prevDocs.push({
+        label: STRINGS.license_basic,
+        value: STRINGS.license_basic,
+      });
+    }
+    const uniqueOptions = prevDocs.filter(
+      (option, index, self) =>
+        self.findIndex(o => o.label === option.label) === index,
+    );
+
+    setDocuments(uniqueOptions);
+  }, [user]);
+
+  const onRefresh = () => {
+    updateRefreshing(true);
+    fetchUserDetailsHandler();
+  };
 
   // to refresh user details on pull to refresh
-  const fetchUserDetailsHandler = useCallback(async () => {
-    updateRefreshing(true);
+  const fetchUserDetailsHandler = async () => {
     try {
       const response = (await getUserDetails(
         null,
@@ -160,15 +160,13 @@ const EmployeeDocuments = () => {
     } finally {
       updateRefreshing(false);
     }
-  }, []);
+  };
 
   // to add a new other document or upload a previously not uploaded document
   const addNewDocHandler = async (doc: INewSelectedDocument) => {
     try {
       dispatch(setLoading(true));
       const keyMap = {
-        [STRINGS.license_advance]: 'securityDocumentAdv',
-        [STRINGS.license_basic]: 'securityDocumentBasic',
         [STRINGS.resume_simple]: 'resume',
       };
       const key = keyMap[doc.docType] || null;
@@ -191,39 +189,16 @@ const EmployeeDocuments = () => {
               },
             ],
           };
-      const response: ISubmitOtherDocumentsResponse = await (key
+      await (key
         ? uploadPrevDocuments(requestData as IUpdateUserDetailsRequest)
         : uploadNewDoc(requestData as IEmployeeUploadOtherDocumentsRequest)
       ).unwrap();
-      if (doc.docType === STRINGS.new_document) {
-        if (response.data as unknown as ISubmitOtherDocumentsResponse) {
-          const docs = response.data[0];
-          let uploadedDoc: IEmployeeDocument = {
-            doc: {
-              name: docs.Document.name,
-              size: docs.Document.size,
-              id: docs.Document.id,
-              url: getImageUrl(docs.Document.url),
-              mime: docs.Document.mime,
-            },
-            docId: docs.id,
-            docName: docs.name,
-            docStatus: docs.Docstatus,
-          };
-          dispatch(
-            addNewDocumentEmployee({document: uploadedDoc, type: 'secondary'}),
-          );
-          showToast(toast, 'Document added successfully', 'success');
-        }
-      } else {
-        if (response.data) {
-          showToast(toast, 'Document added successfully', 'success');
-        }
-      }
     } catch (error) {
       showToast(toast, 'Failed to add document', 'error');
     } finally {
       dispatch(setLoading(false));
+      fetchUserDetailsHandler();
+      showToast(toast, 'Document added successfully', 'success');
     }
   };
 
@@ -233,36 +208,135 @@ const EmployeeDocuments = () => {
     try {
       const response = await uploadImage({asset: asset});
       if (response && user.detailsId) {
-        const documentResponse = await updateEmployeeDocument({
-          data: {
-            document: response[0].id,
-            DocName: currentDocumentToUpdate,
-            status: IDocumentStatus.PENDING,
-            employee_detail: user.detailsId,
-          },
-        }).unwrap();
-        if (documentResponse) {
-          showToast(toast, 'Document Request Created', 'success');
-          dispatch(
-            addNewDocumentEmployee({
-              document: documentResponse,
-              type: 'new requests',
-            }),
-          );
+        if (selectedDocId) {
+          const docResponse = await replaceRejectedDoc({
+            prevID: selectedDocId,
+            args: {
+              data: {
+                Document: response[0].id,
+                employee_detail: user.detailsId,
+                Docstatus: IDocumentStatus.PENDING,
+              },
+            },
+          }).unwrap();
+          if (docResponse) {
+            dispatch(replaceRejectedDocument(docResponse));
+            showToast(toast, 'Document Updated', 'success');
+            setSelectedDocId(null);
+          }
+        } else {
+          const documentResponse = await updateEmployeeDocument({
+            data: {
+              document: response[0].id,
+              name: currentDocumentToUpdate,
+              status: IDocumentStatus.PENDING,
+              employee_detail: user.detailsId,
+            },
+          }).unwrap();
+          if (documentResponse) {
+            showToast(toast, 'Document Request Created', 'success');
+            dispatch(addNewUpdateRequest(documentResponse));
+          }
         }
       }
     } catch (error) {
+      const err = error as ICustomErrorResponse;
+      showToast(toast, err.message, 'error');
       console.log(error, 'ERROR');
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-  // execute once the document to update is selected
-  const onSelectDocumentToUpdate = (e: {name: string; key: IDocumentNames}) => {
-    setCurrentDocumentToUpdate(e.key);
+  //replace rejected document
+  const onPressReplaceDoc = (id: number | null) => {
+    setSelectedDocId(id);
     documentSelector.current?.snapToIndex(1);
   };
+
+  // execute once the document to update is selected
+  const onSelectDocumentToUpdate = (e: {name: string; key: string}) => {
+    setCurrentDocumentToUpdate(e.name);
+    documentSelector.current?.snapToIndex(1);
+  };
+
+  const renderResume = useCallback(() => {
+    return (
+      <>
+        <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
+          <Text style={styles.heading}>{STRINGS.resume_title}</Text>
+        </Row>
+        <View style={styles.listView}>
+          <PreUploadedDocCardWithView
+            document={user.resume}
+            withTitle={false}
+            hideStatus
+            navigation={navigation}
+          />
+        </View>
+        <Spacers type="vertical" scalable />
+      </>
+    );
+  }, [user.resume]);
+
+  const renderOtherDocs = useCallback(
+    () => (
+      <>
+        <View style={styles.docHeadingContainer}>
+          <Text style={styles.heading}>{STRINGS.mandatoryDocs}</Text>
+        </View>
+        <View style={styles.listView}>
+          {user.documents?.map(doc => (
+            <PreUploadedDocCardWithView
+              document={doc}
+              key={doc.docId}
+              onPressReplace={() => onPressReplaceDoc(doc?.docId)}
+              withTitle={true}
+              hideStatus={false}
+              navigation={navigation}
+            />
+          ))}
+        </View>
+      </>
+    ),
+    [user.documents],
+  );
+
+  const renderBankingDetails = useCallback(
+    () => (
+      <>
+        <View style={styles.docHeadingContainer}>
+          <Text style={styles.heading}>{STRINGS.bankDetails}</Text>
+        </View>
+        <View style={styles.listView}>
+          <View style={styles.details}>
+            <Text style={styles.title}>{STRINGS.backAccountNumber}</Text>
+            <Text style={styles.value}>
+              {user?.bankDetails?.bankAccountNumber}
+            </Text>
+          </View>
+          <View style={styles.details}>
+            <Text style={styles.title}>{STRINGS.transitNumber}</Text>
+            <Text style={styles.value}>{user?.bankDetails?.transitNumber}</Text>
+          </View>
+          <View style={styles.details}>
+            <Text style={styles.title}>{STRINGS.institutionNumber}</Text>
+            <Text style={styles.value}>
+              {user?.bankDetails?.institutionNumber}
+            </Text>
+          </View>
+          {user.bankDetails?.cheque && (
+            <PreUploadedDocCardWithView
+              document={user.bankDetails?.cheque}
+              withTitle={true}
+              navigation={navigation}
+            />
+          )}
+        </View>
+      </>
+    ),
+    [user.bankDetails],
+  );
 
   return (
     <SafeAreaView>
@@ -273,7 +347,7 @@ const EmployeeDocuments = () => {
         customRightContent={
           <View>
             <STATUS width={verticalScale(24)} height={verticalScale(24)} />
-            {user?.documents?.document_requests && (
+            {user?.update_requests && user?.update_requests?.length > 0 && (
               <View style={styles.redDot} />
             )}
           </View>
@@ -286,84 +360,12 @@ const EmployeeDocuments = () => {
       <View style={styles.mainView}>
         <ScrollView
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={fetchUserDetailsHandler}
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
-          {user.resume?.doc?.url && (
-            <>
-              <Row alignCenter spaceBetween style={styles.docHeadingContainer}>
-                <Text style={styles.heading}>{STRINGS.resume_title}</Text>
-              </Row>
-              <View style={styles.listView}>
-                <PreUploadedDocCardWithView
-                  document={user.resume}
-                  withTitle={false}
-                  navigation={navigation}
-                />
-              </View>
-              <Spacers type="vertical" scalable />
-            </>
-          )}
-          <View style={styles.docHeadingContainer}>
-            <Text style={styles.heading}>{STRINGS.mandatoryDocs}</Text>
-          </View>
-          <View style={styles.listView}>
-            {user.documents?.primary?.map(doc => (
-              <PreUploadedDocCardWithView
-                document={doc}
-                key={doc.docId}
-                withTitle={true}
-                navigation={navigation}
-              />
-            ))}
-          </View>
+          {user.resume?.doc?.url && renderResume()}
+          {user.documents && renderOtherDocs()}
           <Spacers type="vertical" scalable />
-          <View style={styles.docHeadingContainer}>
-            <Text style={styles.heading}>{STRINGS.otherDocs}</Text>
-          </View>
-          <View style={styles.listView}>
-            {user.documents?.secondary?.map(doc => (
-              <PreUploadedDocCardWithView
-                document={doc}
-                key={doc.docId}
-                withTitle={true}
-                navigation={navigation}
-              />
-            ))}
-          </View>
-          <Spacers type="vertical" scalable />
-          <View style={styles.docHeadingContainer}>
-            <Text style={styles.heading}>{STRINGS.bankDetails}</Text>
-          </View>
-          <View style={styles.listView}>
-            <View style={styles.details}>
-              <Text style={styles.title}>{STRINGS.backAccountNumber}</Text>
-              <Text style={styles.value}>
-                {user?.bankDetails?.bankAccountNumber}
-              </Text>
-            </View>
-            <View style={styles.details}>
-              <Text style={styles.title}>{STRINGS.transitNumber}</Text>
-              <Text style={styles.value}>
-                {user?.bankDetails?.transitNumber}
-              </Text>
-            </View>
-            <View style={styles.details}>
-              <Text style={styles.title}>{STRINGS.institutionNumber}</Text>
-              <Text style={styles.value}>
-                {user?.bankDetails?.institutionNumber}
-              </Text>
-            </View>
-            {user.bankDetails?.cheque && (
-              <PreUploadedDocCardWithView
-                document={user.bankDetails?.cheque}
-                withTitle={true}
-                navigation={navigation}
-              />
-            )}
-          </View>
+          {user.bankDetails && renderBankingDetails()}
           <Spacers type="vertical" scalable />
         </ScrollView>
       </View>
@@ -391,6 +393,7 @@ const EmployeeDocuments = () => {
         ref={newDocRef}
         documentTypes={document}
         getSelectedDocument={addNewDocHandler}
+        existingDocs={docsName ?? []}
       />
     </SafeAreaView>
   );

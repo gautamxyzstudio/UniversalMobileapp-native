@@ -13,6 +13,7 @@ import UploadDocView from '@components/organisms/uploadPopup';
 import CustomTextInput from '@components/atoms/customtextInput';
 import BottomButtonView from '@components/organisms/bottomButtonView';
 import {IDoc} from '@api/features/user/types';
+import {getTitleWithoutSpaces} from '@utils/utils.common';
 
 export type INewSelectedDocument = {
   name: string;
@@ -22,13 +23,14 @@ export type INewSelectedDocument = {
 
 type IUploadNewDocumentFromProfilePopupProps = {
   documentTypes: IDropDownItem[];
+  existingDocs: string[];
   getSelectedDocument: (doc: INewSelectedDocument) => void;
 };
 
 const UploadNewDocumentFromProfilePopup = React.forwardRef<
   BottomSheetMethods,
   IUploadNewDocumentFromProfilePopupProps
->(({documentTypes, getSelectedDocument}, ref) => {
+>(({documentTypes, getSelectedDocument, existingDocs}, ref) => {
   const initialState = {
     docName: '',
     docType: null,
@@ -78,7 +80,7 @@ const UploadNewDocumentFromProfilePopup = React.forwardRef<
       docNameError: '',
       docValueError: '',
       document: null,
-      docName: '',
+      docName: e.label === STRINGS.new_document ? '' : e.value,
       docValue: null,
     }));
     setFiles([]);
@@ -104,6 +106,21 @@ const UploadNewDocumentFromProfilePopup = React.forwardRef<
         ...prev,
         docValueError: STRINGS.document_required,
       }));
+    } else {
+      existingDocs.forEach(existingDocName => {
+        const currentDocName = getTitleWithoutSpaces(
+          state.docName,
+        ).toLowerCase();
+        const existingDocumentName =
+          getTitleWithoutSpaces(existingDocName).toLowerCase();
+        if (currentDocName === existingDocumentName) {
+          isValid = false;
+          setState(prev => ({
+            ...prev,
+            docNameError: STRINGS.document_already_exists,
+          }));
+        }
+      });
     }
     if (isValid && state.docValue && state.docType) {
       getSelectedDocument({
