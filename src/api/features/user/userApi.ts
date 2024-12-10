@@ -152,6 +152,10 @@ const authApi = baseApiWithUserTag.injectEndpoints({
                 employeeDocs.push(formatDocument(doc));
               }
             });
+            const formattedEmployeeDocs = getEmployeeDocs(
+              employeeDocs,
+              update_requests,
+            );
 
             // user banking details
             const bankingDetails: IEmployeeBankDetails = {
@@ -183,7 +187,7 @@ const authApi = baseApiWithUserTag.injectEndpoints({
               city: employeeDetails.city ?? '',
               address: employeeDetails.address ?? '',
               detailsId: employeeDetails.id ?? null,
-              documents: employeeDocs,
+              documents: formattedEmployeeDocs,
               update_requests: update_requests,
             };
             return userDetails;
@@ -416,3 +420,16 @@ export const {
   useReplaceRejectedDocumentMutation,
   useReplaceUpdateDocRequestMutation,
 } = authApi;
+
+const getEmployeeDocs = (
+  empDocs: IEmployeeDocument[],
+  updateRequests: IEmployeeDocument[],
+) => {
+  if (updateRequests.length === 0) {
+    return empDocs;
+  }
+  const updateRequestMap = new Map<string, IEmployeeDocument>(
+    updateRequests.map(doc => [doc.docName, doc]),
+  );
+  return empDocs.map(doc => updateRequestMap.get(doc.docName) || doc);
+};

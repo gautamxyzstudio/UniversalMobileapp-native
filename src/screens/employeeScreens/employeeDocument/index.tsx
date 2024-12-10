@@ -90,6 +90,7 @@ const EmployeeDocuments = () => {
             isAlreadyRequested = true;
           }
         });
+
         if (doc.docStatus === IDocumentStatus.APPROVED && !isAlreadyRequested) {
           options.push({
             name: doc.docName,

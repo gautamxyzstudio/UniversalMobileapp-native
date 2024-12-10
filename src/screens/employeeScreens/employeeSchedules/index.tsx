@@ -70,21 +70,6 @@ const EmployeeSchedules = () => {
       childrenStyles={styles.children}
       hideBack
       title={STRINGS.schedules}>
-      {isLoading && (
-        <View style={styles.loadingView}>
-          <View style={styles.headerLoading} />
-          <Row spaceBetween>
-            {[...Array(6)].map((_, idx) => (
-              <View key={idx} style={styles.element} />
-            ))}
-          </Row>
-          <View style={styles.body}>
-            <ScheduleCardLoading />
-            <ScheduleCardLoading />
-          </View>
-        </View>
-      )}
-
       <>
         <HorizontalCalendar
           onSelectDate={setCurrentDate}
