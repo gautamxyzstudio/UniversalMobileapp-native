@@ -229,7 +229,7 @@ const createStyles = ({color}: Theme) => {
       borderRadius: 12,
       overflow: 'hidden',
       backgroundColor: '#fff',
-      borderColor: 'rgba(18, 18, 18, 0.16)',
+      borderColor: color.strokeLight,
     },
     notAccepting: {
       color: color.red,

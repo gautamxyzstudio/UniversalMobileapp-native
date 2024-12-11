@@ -50,7 +50,7 @@ const RootNavigator = () => {
     <JobDetailsContextProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName={routNames.splash}
+          initialRouteName={routNames.employeeTabBar}
           screenOptions={stackNavigatorConfigurations}>
           <Stack.Screen
             name={routNames.profileSettings}

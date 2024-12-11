@@ -1,6 +1,6 @@
 import {fonts} from '@utils/common.styles';
 import {verticalScale} from '@utils/metrics';
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
   icon: {
@@ -18,5 +18,12 @@ export const styles = StyleSheet.create({
   text: {
     color: '#fff',
     ...fonts.smallBold,
+    ...Platform.select({
+      android: {
+        lineHeight: verticalScale(12),
+        paddingTop: verticalScale(4),
+        marginVertical: 'auto',
+      },
+    }),
   },
 });

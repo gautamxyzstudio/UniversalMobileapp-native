@@ -1,31 +1,13 @@
-import {
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs/lib/typescript/src/types';
-import {useSharedValue} from 'react-native-reanimated';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {verticalScale} from '@utils/metrics';
 import EmployeeTabBarIcon from './employeeTabBarIcon';
 import {Row} from '@components/atoms/Row';
 
-const CustomBottomTab = ({
-  state,
-  descriptors,
-  navigation,
-}: BottomTabBarProps) => {
-  const insets = useSafeAreaInsets();
-  const {width} = useWindowDimensions();
-  const MARGIN = verticalScale(16);
-  const TAB_BAR_WIDTH = width - 2 * MARGIN;
-  const scaleAnimationValue = useSharedValue(1);
+const CustomBottomTab = ({state, navigation}: BottomTabBarProps) => {
   const styles = useThemeAwareObject(createStyles);
 
   const onPress = (route: any, index: number) => {
