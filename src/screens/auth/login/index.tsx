@@ -7,9 +7,6 @@ import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {getStyles} from './styles';
 import CustomButton from '@components/molecules/customButton';
 import Statement from '@components/molecules/statement';
-import {googleSignInHandler} from '@utils/googleSignin';
-import {appleSignInHandler} from '@utils/appleSignin';
-import appleAuth from '@invertase/react-native-apple-authentication';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import Animated from 'react-native-reanimated';
@@ -55,35 +52,35 @@ const Login = () => {
     },
   );
   const navigation = useNavigation<NavigationProps>();
-  const signInHandler = async () => {
-    try {
-      const googleLoginResponse = await googleSignInHandler();
-      if (googleLoginResponse.token) {
-        console.log(googleLoginResponse.token);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const signInHandler = async () => {
+  //   try {
+  //     const googleLoginResponse = await googleSignInHandler();
+  //     if (googleLoginResponse.token) {
+  //       console.log(googleLoginResponse.token);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const signUpHandler = () => {
     navigation.navigate('welcome');
   };
 
-  const appleButtonDitTap = async () => {
-    try {
-      let appleResponse = await appleSignInHandler();
-      console.log(appleResponse);
-    } catch (error: any) {
-      if (error?.code === appleAuth.Error.CANCELED) {
-        console.log('signIn canceled');
-      } else if (error?.code === appleAuth.Error.UNKNOWN) {
-        console.log('signIn canceled');
-      } else {
-        console.log(error, 'apple auth error');
-      }
-    }
-  };
+  // const appleButtonDitTap = async () => {
+  //   try {
+  //     let appleResponse = await appleSignInHandler();
+  //     console.log(appleResponse);
+  //   } catch (error: any) {
+  //     if (error?.code === appleAuth.Error.CANCELED) {
+  //       console.log('signIn canceled');
+  //     } else if (error?.code === appleAuth.Error.UNKNOWN) {
+  //       console.log('signIn canceled');
+  //     } else {
+  //       console.log(error, 'apple auth error');
+  //     }
+  //   }
+  // };
 
   const onPressLogin = async () => {
     try {
