@@ -30,6 +30,7 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
       labelContainerStyles,
       textCustomColor,
       value,
+      disableAccessoryView,
       outerContainerStyles,
       title,
       isMultiline,
@@ -168,7 +169,9 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
           </View>
         </Pressable>
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-        {Platform.OS === 'ios' && <InputAccessoryViewComp title={title} />}
+        {!disableAccessoryView && Platform.OS === 'ios' && (
+          <InputAccessoryViewComp title={title} />
+        )}
       </View>
     );
   },

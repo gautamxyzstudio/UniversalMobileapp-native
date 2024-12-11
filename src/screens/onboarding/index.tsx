@@ -1,5 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {Animated, FlatList, Text, View, ViewToken} from 'react-native';
+import {
+  Animated,
+  FlatList,
+  Platform,
+  StatusBar,
+  Text,
+  View,
+  ViewToken,
+} from 'react-native';
 import React, {useCallback, useRef, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
 import {STRINGS} from 'src/locales/english';
@@ -101,6 +109,13 @@ const OnBoarding = () => {
       <View>
         <NextButton index={currentIndex + 1} onPress={handleNextPress} />
       </View>
+      {Platform.OS === 'android' && (
+        <StatusBar
+          translucent={true}
+          barStyle="dark-content"
+          backgroundColor={'#fff'}
+        />
+      )}
     </SafeAreaView>
   );
 };

@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {getStyles} from './styles';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, Platform, StatusBar, View} from 'react-native';
 import Animated, {
   Easing,
   interpolate,
@@ -205,6 +206,13 @@ const Splash = () => {
             title={STRINGS.try_again}
           />
         </View>
+      )}
+      {Platform.OS === 'android' && (
+        <StatusBar
+          translucent={true}
+          barStyle="dark-content"
+          backgroundColor={'#fff'}
+        />
       )}
     </>
   );

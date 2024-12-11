@@ -33,7 +33,7 @@ export enum ICandidateStatusEnum {
 export enum IHelpAndSupportTicketStatus {
   OPEN = 's0',
   CLOSED = 's1',
-  RESOLVED = 's2',
+  NO_ISSUE = 's2',
 }
 
 export enum IClientStatus {
@@ -62,4 +62,9 @@ export enum IEmployeeDocsApiKeys {
   CHEQUE = 'directDepositVoidCheque',
   RESUME = 'resume',
   NULL = 'null',
+}
+
+export enum IIssueStatus {
+  OPEN = 's0',
+  RESOLVED = 's1',
 }

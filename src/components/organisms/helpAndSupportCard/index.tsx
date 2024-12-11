@@ -9,6 +9,7 @@ import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import {useTheme} from '@theme/Theme.context';
 import {fonts} from '@utils/common.styles';
 import Spacers from '@components/atoms/Spacers';
+import {dateFormatter} from '@utils/utils.common';
 
 type IHelpAndSupportCardProps = {
   date: Date;
@@ -24,11 +25,12 @@ const HelpAndSupportCard: React.FC<IHelpAndSupportCardProps> = ({
   const styles = useThemeAwareObject(createStyles);
   const {theme} = useTheme();
   const {color, title} = getStatusTextColorFromStatus(status, theme);
+  console.log(date, 'DATE');
   return (
     <View style={styles.container}>
       <Row alignCenter spaceBetween>
         <CustomText
-          value={date.toLocaleDateString()}
+          value={dateFormatter(new Date(date))}
           size={textSizeEnum.medium}
           color="disabled"
         />
@@ -70,7 +72,12 @@ const getStatusTextColorFromStatus = (
     case IHelpAndSupportTicketStatus.CLOSED:
       return {
         color: theme.color.red,
-        title: '',
+        title: 'Resolved',
+      };
+    case IHelpAndSupportTicketStatus.NO_ISSUE:
+      return {
+        color: theme.color.greenLight,
+        title: 'Not An Issue',
       };
     default:
       return {

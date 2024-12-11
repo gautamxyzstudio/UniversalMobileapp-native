@@ -28,6 +28,8 @@ const PasswordTextInput: React.FC<IPasswordTextInputPropTypes> = ({
         value={value}
         title={title}
         autoCapitalize="none"
+        autoComplete="off"
+        showSoftInputOnFocus
         errorMessage={errorMessage}
         right={
           <Pressable onPress={onPressEye} style={styles.rightContainer}>

@@ -65,7 +65,6 @@ const ClientOpenJobs = () => {
     async (isFirstPage: boolean = false) => {
       let page = isFirstPage ? 1 : currentPage + 1;
       let perPageRecord = 100;
-
       const response = await getJobPosts(user.company?.id).unwrap();
       if (response.data) {
         setIsRefreshing(false);

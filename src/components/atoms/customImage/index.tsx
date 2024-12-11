@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -20,11 +20,19 @@ const CustomImageComponent: React.FC<ICustomImageComponentProps> = ({
   defaultSource,
   loaderSize = 'large',
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const hasLoadedRef = useRef(false);
   const styles = useThemeAwareObject(getStyles);
   const {theme} = useTheme();
 
-  const handleLoadState = (isLoading: boolean) => setLoading(isLoading);
+  const handleLoadState = (isLoading: boolean) => {
+    if (!hasLoadedRef.current) {
+      setLoading(isLoading);
+    }
+    if (!isLoading) {
+      hasLoadedRef.current = true;
+    }
+  };
 
   const imageSource = image
     ? {uri: image, cache: Platform.OS === 'ios' ? 'force-cache' : 'immutable'}
@@ -56,7 +64,7 @@ const CustomImageComponent: React.FC<ICustomImageComponentProps> = ({
           onError={() => handleLoadState(false)}
         />
       )}
-      {loading && (
+      {loading && !hasLoadedRef.current && (
         <View style={[customStyle, styles.imageContainer]}>
           <ActivityIndicator size={loaderSize} color={theme.color.primary} />
         </View>

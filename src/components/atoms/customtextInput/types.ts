@@ -30,4 +30,5 @@ export interface ICustomTextInputProps extends TextInputProps {
   textInputStyles?: StyleProp<TextStyle>;
   isMultiline?: boolean;
   textCustomColor?: string;
+  disableAccessoryView?: boolean;
 }

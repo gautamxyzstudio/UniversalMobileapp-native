@@ -196,6 +196,7 @@ const Login = () => {
             value={state.email}
             keyboardType="email-address"
             autoCapitalize="none"
+            disableAccessoryView
             title={STRINGS.emailOrUsername}
             errorMessage={state.emailError}
           />

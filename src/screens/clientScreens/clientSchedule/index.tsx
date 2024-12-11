@@ -10,9 +10,7 @@ import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {Moment} from 'moment';
 import moment from 'moment';
 import {IC_EMPTY_SCHEDULE} from '@assets/exporter';
-import {Row} from '@components/atoms/Row';
 import HorizontalCalendar from '@components/employee/HorizontalCalendar';
-import ScheduleCardLoading from '@components/employee/ScheduleCardLoading';
 import EmptyState from '@screens/common/emptyAndErrorScreen';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -20,7 +18,7 @@ import ScheduledEventCard from '@components/client/ScheduleEventCard';
 
 const ClientSchedules = () => {
   const user = useSelector(userBasicDetailsFromState);
-  const {data, isLoading, error, refetch} = useGetClientScheduleQuery({
+  const {data, error, refetch} = useGetClientScheduleQuery({
     clientId: user?.details?.detailsId ?? 0,
   });
   const styles = useThemeAwareObject(createStyles);
@@ -52,20 +50,6 @@ const ClientSchedules = () => {
       childrenStyles={styles.children}
       hideBack
       title={STRINGS.schedules}>
-      {isLoading && (
-        <View style={styles.loadingView}>
-          <View style={styles.headerLoading} />
-          <Row spaceBetween>
-            {[...Array(6)].map((_, idx) => (
-              <View key={idx} style={styles.element} />
-            ))}
-          </Row>
-          <View style={styles.body}>
-            <ScheduleCardLoading />
-            <ScheduleCardLoading />
-          </View>
-        </View>
-      )}
       <HorizontalCalendar
         onSelectDate={setCurrentDate}
         stateJobs={scheduledJobs}

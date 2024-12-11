@@ -10,14 +10,17 @@ import {
   IEmployeeDetails,
   IEmployeeDocument,
   IEmployeeUploadOtherDocumentsRequest,
+  IGetRaisedIssuesResponse,
   IGetUserResponse,
   ILoginArgs,
+  IRaiseIssueArgs,
   IRegisterUserArgs,
   IRegisterUserResponse,
   IReplaceRejectedDocumentResponse,
   IReplaceUpdateDocumentRequestResponse,
   ISendOtp,
   ISendOtpResponse,
+  Issue,
   ISubmitOtherDocumentsResponse,
   IUpdateClientDetailsRequest,
   IUpdateClientDetailsResponse,
@@ -40,7 +43,7 @@ import {
   formatDocument,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
-import {IClientStatus} from '@utils/enums';
+import {IClientStatus, IUserTypeEnum} from '@utils/enums';
 
 const baseApiWithUserTag = baseApi.enhanceEndpoints({
   addTagTypes: ['user'],
@@ -395,6 +398,37 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         return document;
       },
     }),
+    raiseAnIssue: builder.mutation<any, IRaiseIssueArgs>({
+      query: body => ({
+        url: apiEndPoints.raiseAnIssue,
+        method: apiMethodType.post,
+        body,
+      }),
+    }),
+    getIssues: builder.query<
+      Issue[],
+      {detailId: number; empType: IUserTypeEnum}
+    >({
+      query: body => ({
+        url:
+          body.empType === IUserTypeEnum.EMPLOYEE
+            ? apiEndPoints.getIssuesByEmployee(body.detailId)
+            : apiEndPoints.getIssuesByClient(body.detailId),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (response: IGetRaisedIssuesResponse) => {
+        const issues: Issue[] = [];
+        response.map(issue => {
+          issues.unshift({
+            Issue: issue.Issue,
+            createdAt: issue.createdAt,
+            id: issue.id,
+            status: issue.status,
+          });
+        });
+        return issues;
+      },
+    }),
   }),
 
   overrideExisting: false,
@@ -409,6 +443,8 @@ export const {
   useLoginMutation,
   useSendEmailOtpMutation,
   useVerifyOtpEmailMutation,
+  useLazyGetIssuesQuery,
+  useRaiseAnIssueMutation,
   useSubmitOtherDocumentsMutation,
   useSubmitUserDetailsMutation,
   useGetUpdatedEmployeeDocumentsQuery,

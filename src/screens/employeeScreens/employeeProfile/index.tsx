@@ -5,7 +5,7 @@ import {STRINGS} from 'src/locales/english';
 import EmployeeProfileTab from '@components/employee/EmployeeProfileTab';
 import {
   DOCUMENTS_SECONDARY,
-  HISTORY,
+  HELP_SECONDARY,
   LOGOUT,
   LOGOUT_SECONDARY,
   RATE,
@@ -88,11 +88,17 @@ const EmployeeProfile = () => {
             withArrow={true}
             onPressTab={() => navigation.navigate('employeeDocuments')}
           />
-          <EmployeeProfileTab
+          {/* <EmployeeProfileTab
             Icon={HISTORY}
             title={STRINGS.history}
             withArrow={true}
             onPressTab={() => navigation.navigate('employeeJobHistory')}
+          /> */}
+          <EmployeeProfileTab
+            Icon={HELP_SECONDARY}
+            title={STRINGS.helpAndSupport}
+            withArrow={true}
+            onPressTab={() => navigation.navigate('helpAndSupport')}
           />
           <EmployeeProfileTab
             Icon={SETTINGS}

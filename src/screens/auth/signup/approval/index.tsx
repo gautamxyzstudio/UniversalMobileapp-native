@@ -92,7 +92,7 @@ const Approval = () => {
       </View>
       <SelectOptionBottomSheet
         ref={bottomSheetRef}
-        modalHeight={verticalScale(308)}
+        modalHeight={verticalScale(280)}
         options={[
           {
             icon: FAQ,

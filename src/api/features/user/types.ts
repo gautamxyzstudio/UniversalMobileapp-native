@@ -1,4 +1,9 @@
-import {IClientStatus} from '@utils/enums';
+import {
+  IClientStatus,
+  IHelpAndSupportTicketStatus,
+  IIssueStatus,
+  IUserTypeEnum,
+} from '@utils/enums';
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
@@ -400,4 +405,27 @@ export type IUpdateUserDetailsCustomResponse = {
   gender: string | null | undefined;
   name: string | null | undefined;
   phone: string | null | undefined;
+};
+
+export type IRaiseIssueArgs = {
+  Issue: string;
+  status: IIssueStatus;
+  employee_detail?: number;
+  client_detail?: number;
+  user_type: IUserTypeEnum;
+};
+
+export type IGetRaisedIssuesResponse = {
+  Issue: string;
+  createdAt: Date;
+  employee_detail: null;
+  id: number;
+  status: IHelpAndSupportTicketStatus;
+}[];
+
+export type Issue = {
+  Issue: string;
+  createdAt: Date;
+  id: number;
+  status: IHelpAndSupportTicketStatus;
 };

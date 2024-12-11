@@ -14,7 +14,6 @@ import FloatingButton from '@components/molecules/floatingButton';
 
 const ClientHome = () => {
   const styles = useThemeAwareObject(getStyles);
-
   const segmentRef = useRef<ISegmentViewRefMethods | null>(null);
   const scrollViewRef = useRef<ScrollView | null>(null);
 
