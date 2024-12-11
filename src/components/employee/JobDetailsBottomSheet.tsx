@@ -41,7 +41,6 @@ import {
 import JobDetailsKey from './JobDetailsKeys';
 import {useTheme} from '@theme/Theme.context';
 import {getStatusStylesFromStatus} from '@components/client/JobStatusChip';
-import {ActivityIndicator} from 'react-native-paper';
 import CustomImageComponent from '@components/atoms/customImage';
 
 type IJobDetailsBottomSheetProps = {
@@ -56,9 +55,8 @@ const JobDetailsBottomSheet = React.forwardRef<
   IJobDetailsBottomSheetProps
 >(({jobDetails, isDraft, onClose, onPressApply}, ref) => {
   const styles = useThemeAwareObject(createStyles);
-  const [isLoading, setIsLoading] = useState(true);
-  const {theme} = useTheme();
   const [details, setDetails] = useState<IJobPostTypes | null>(null);
+  const {theme} = useTheme();
   const companyDetails = useSelector(
     userAdvanceDetailsFromState,
   ) as IClientDetails;
@@ -66,38 +64,41 @@ const JobDetailsBottomSheet = React.forwardRef<
   const user = useSelector(userBasicDetailsFromState);
   const snapPoints = useMemo(() => [0.01, modalHeight], [modalHeight]);
 
+  const onPressClose = () => {
+    setDetails(null);
+    onClose();
+  };
+
   useEffect(() => {
     if (jobDetails) {
-      setIsLoading(true);
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setDetails(jobDetails);
-        setIsLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
+      }, 150);
     }
   }, [jobDetails]);
 
+  console.log(ref);
   const clientJobStatusAttributes = getStatusStyleAttributesFromStatus(
     user?.user_type ?? 'emp',
-    details?.status ?? IJobPostStatus.OPEN,
+    jobDetails?.status ?? IJobPostStatus.OPEN,
     theme,
   );
 
   const companyName = useMemo(() => {
     return user?.user_type === 'emp'
-      ? details?.company?.name
+      ? jobDetails?.company?.name
       : companyDetails?.companyName;
-  }, [details?.company]);
+  }, [jobDetails?.company]);
 
   const shiftTime = useMemo(() => {
     return `${extractTimeFromDate(
-      details?.startShift ?? new Date(),
-    )} - ${extractTimeFromDate(details?.endShift ?? new Date())}`;
-  }, [details?.startShift, details?.endShift]);
+      jobDetails?.startShift ?? new Date(),
+    )} - ${extractTimeFromDate(jobDetails?.endShift ?? new Date())}`;
+  }, [jobDetails?.startShift, jobDetails?.endShift]);
 
   const jobsDate = useMemo(() => {
-    return extractDayAndMonthFromDate(details?.eventDate ?? new Date());
-  }, [details?.eventDate]);
+    return extractDayAndMonthFromDate(jobDetails?.eventDate ?? new Date());
+  }, [jobDetails?.eventDate]);
 
   const statusAttributes = getStatusStylesFromStatus(
     jobDetails?.status ?? IJobPostStatus.OPEN,
@@ -129,7 +130,7 @@ const JobDetailsBottomSheet = React.forwardRef<
       user.details &&
       !isClientDetails(user.details)
     ) {
-      if (details?.status === IJobPostStatus.OPEN) {
+      if (jobDetails?.status === IJobPostStatus.OPEN) {
         return (
           <BottomButtonView
             disabled={false}
@@ -149,121 +150,123 @@ const JobDetailsBottomSheet = React.forwardRef<
     user,
     isDraft,
     clientJobStatusAttributes,
-    details,
+    jobDetails,
     onPressApply,
     statusAttributes,
   ]);
 
+  console.log(jobDetails, 'JOB DETAILS');
+
   return (
-    <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onClose}>
+    <BaseBottomSheet ref={ref} snapPoints={snapPoints} onClose={onPressClose}>
       <View style={styles.container}>
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.color.darkBlue} />
-          </View>
-        ) : (
-          <>
-            <BottomSheetScrollView
-              showsVerticalScrollIndicator={false}
-              stickyHeaderIndices={[4]}
-              contentContainerStyle={styles.scrollView}>
-              <CustomImageComponent
-                defaultSource={ICONS.imagePlaceholder}
-                image={details?.company?.logo?.url ?? ''}
-                resizeMode="cover"
-                customStyle={styles.profilePicture}
-              />
+        <>
+          {details && jobDetails && (
+            <>
+              <BottomSheetScrollView
+                showsVerticalScrollIndicator={false}
+                stickyHeaderIndices={[4]}
+                contentContainerStyle={styles.scrollView}>
+                <CustomImageComponent
+                  defaultSource={ICONS.imagePlaceholder}
+                  image={jobDetails?.company?.logo?.url ?? ''}
+                  resizeMode="cover"
+                  customStyle={styles.profilePicture}
+                />
 
-              <Text style={styles.title}>{details?.job_name}</Text>
-              <Text style={styles.jobName}>{companyName}</Text>
-              <Row style={styles.location} alignCenter>
-                <LOCATION_SECONDARY
-                  width={verticalScale(20)}
-                  height={verticalScale(20)}
-                />
-                <Text style={styles.locationText}>{details?.location}</Text>
-              </Row>
-              <View style={styles.headerView}>
-                <Row wrap spaceBetween style={styles.stickyHeader}>
-                  {details?.job_type && (
-                    <JobDetailsTopTag
-                      icon={BRIEF_CASE}
-                      title={details?.job_type}
-                    />
-                  )}
-                  {details?.salary && (
-                    <JobDetailsTopTag
-                      icon={DOLLAR_SMALL}
-                      title={`${details?.salary}/$ hr`}
-                    />
-                  )}
+                <Text style={styles.title}>{jobDetails?.job_name}</Text>
+                <Text style={styles.jobName}>{companyName}</Text>
+                <Row style={styles.location} alignCenter>
+                  <LOCATION_SECONDARY
+                    width={verticalScale(20)}
+                    height={verticalScale(20)}
+                  />
+                  <Text style={styles.locationText}>
+                    {jobDetails?.location}
+                  </Text>
                 </Row>
-                <Row wrap spaceBetween style={styles.stickyHeaderBottom}>
-                  <JobDetailsTopTag
-                    iconSize={verticalScale(20)}
-                    icon={CALENDER_THIRD}
-                    isMultiple
-                    titleSec={shiftTime}
-                    title={jobsDate ?? ''}
-                  />
-                </Row>
-              </View>
-              <Spacers type="vertical" size={12} scalable />
-              {details?.requiredEmployee && (
-                <JobDetailsKey
-                  heading={STRINGS.requiredCertificates}
-                  value={details.requiredEmployee.toString()}
-                />
-              )}
-              <Spacers type="vertical" size={16} scalable />
-              {details?.gender && (
-                <JobDetailsKey
-                  heading={STRINGS.gender}
-                  value={details.gender}
-                />
-              )}
-              <Spacers type="vertical" size={16} scalable />
-              <View style={styles.descriptionView}>
-                {details?.description && (
-                  <JobDetailsRenderer
-                    heading={STRINGS.jobDescription}
-                    description={details?.description}
-                  />
-                )}
-
-                <Spacers type="vertical" size={16} scalable />
-                {details?.jobDuties && (
-                  <JobDetailsRenderer
-                    heading={STRINGS.jobDuties}
-                    description={details?.jobDuties}
-                  />
-                )}
-                <Spacers type="vertical" size={16} scalable />
-                {jobDetails?.required_certificates && (
-                  <JobDetailsRenderer
-                    heading={STRINGS.requiredCertificates}
-                    description={convertArrayOfStringsToUlLi(
-                      jobDetails?.required_certificates ?? [],
+                <View style={styles.headerView}>
+                  <Row wrap spaceBetween style={styles.stickyHeader}>
+                    {jobDetails?.job_type && (
+                      <JobDetailsTopTag
+                        icon={BRIEF_CASE}
+                        title={jobDetails?.job_type}
+                      />
                     )}
+                    {jobDetails?.salary && (
+                      <JobDetailsTopTag
+                        icon={DOLLAR_SMALL}
+                        title={`${jobDetails?.salary}/$ hr`}
+                      />
+                    )}
+                  </Row>
+                  <Row wrap spaceBetween style={styles.stickyHeaderBottom}>
+                    <JobDetailsTopTag
+                      iconSize={verticalScale(20)}
+                      icon={CALENDER_THIRD}
+                      isMultiple
+                      titleSec={shiftTime}
+                      title={jobsDate ?? ''}
+                    />
+                  </Row>
+                </View>
+                <Spacers type="vertical" size={12} scalable />
+                {jobDetails?.requiredEmployee && (
+                  <JobDetailsKey
+                    heading={STRINGS.requiredCertificates}
+                    value={jobDetails.requiredEmployee.toString()}
                   />
                 )}
                 <Spacers type="vertical" size={16} scalable />
-                <Text style={styles.heading}>{STRINGS.address}</Text>
-                <Spacers type="vertical" size={8} scalable />
-                <Text style={styles.pStyles}>
-                  {getJobAddress({
-                    address: details?.address ?? '',
-                    city: details?.city ?? '',
-                    postalCode: details?.postalCode ?? '',
-                    location: details?.location ?? '',
-                  })}
-                </Text>
-              </View>
-              <Spacers type="vertical" />
-            </BottomSheetScrollView>
-            {renderBottomContent}
-          </>
-        )}
+                {jobDetails?.gender && (
+                  <JobDetailsKey
+                    heading={STRINGS.gender}
+                    value={jobDetails.gender}
+                  />
+                )}
+                <Spacers type="vertical" size={16} scalable />
+                <View style={styles.descriptionView}>
+                  {jobDetails?.description && (
+                    <JobDetailsRenderer
+                      heading={STRINGS.jobDescription}
+                      description={jobDetails?.description}
+                    />
+                  )}
+
+                  <Spacers type="vertical" size={16} scalable />
+                  {jobDetails?.jobDuties && (
+                    <JobDetailsRenderer
+                      heading={STRINGS.jobDuties}
+                      description={jobDetails?.jobDuties}
+                    />
+                  )}
+                  <Spacers type="vertical" size={16} scalable />
+                  {jobDetails?.required_certificates && (
+                    <JobDetailsRenderer
+                      heading={STRINGS.requiredCertificates}
+                      description={convertArrayOfStringsToUlLi(
+                        jobDetails?.required_certificates ?? [],
+                      )}
+                    />
+                  )}
+                  <Spacers type="vertical" size={16} scalable />
+                  <Text style={styles.heading}>{STRINGS.address}</Text>
+                  <Spacers type="vertical" size={8} scalable />
+                  <Text style={styles.pStyles}>
+                    {getJobAddress({
+                      address: jobDetails?.address ?? '',
+                      city: jobDetails?.city ?? '',
+                      postalCode: jobDetails?.postalCode ?? '',
+                      location: jobDetails?.location ?? '',
+                    })}
+                  </Text>
+                </View>
+                <Spacers type="vertical" />
+              </BottomSheetScrollView>
+              {renderBottomContent}
+            </>
+          )}
+        </>
       </View>
     </BaseBottomSheet>
   );

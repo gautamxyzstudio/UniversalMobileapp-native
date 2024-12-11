@@ -1,5 +1,12 @@
-import {ActivityIndicator, Image, Platform, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  View,
+  StyleProp,
+  ImageStyle,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ICustomImageComponentProps} from './types';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
@@ -9,66 +16,47 @@ import {getStyles} from './styles';
 const CustomImageComponent: React.FC<ICustomImageComponentProps> = ({
   customStyle,
   image,
-  resizeMode,
+  resizeMode = 'cover',
   defaultSource,
   loaderSize = 'large',
 }) => {
-  const [localImage, updateLocalImag] = useState<string | undefined | null>(
-    image,
-  );
-  const [state, updateState] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const styles = useThemeAwareObject(getStyles);
   const {theme} = useTheme();
 
-  useEffect(() => {
-    updateLocalImag(image);
-  }, [image]);
+  const handleLoadState = (isLoading: boolean) => setLoading(isLoading);
 
-  const onLoadStart = () => {
-    updateState(true);
-  };
-
-  const onLoad = () => {
-    updateState(false);
-  };
-
-  const onLoadEnd = () => {
-    updateState(false);
-  };
-
-  const onError = () => {
-    updateState(false);
-  };
-  let uri = localImage;
-  // console.log("IMAGE URL----->", uri);
+  const imageSource = image
+    ? {uri: image, cache: Platform.OS === 'ios' ? 'force-cache' : 'immutable'}
+    : defaultSource;
 
   return (
     <View style={customStyle}>
       {Platform.OS === 'ios' ? (
         <Image
-          style={customStyle as any}
-          onLoadStart={onLoadStart}
-          onLoad={onLoad}
-          onLoadEnd={onLoadEnd}
-          resizeMode={resizeMode ?? 'cover'}
+          style={customStyle as StyleProp<ImageStyle>}
+          source={imageSource as any}
+          resizeMode={resizeMode}
           defaultSource={defaultSource}
-          onError={onError}
-          source={uri ? {uri, cache: 'force-cache'} : undefined}
+          onLoadStart={() => handleLoadState(true)}
+          onLoad={() => handleLoadState(false)}
+          onLoadEnd={() => handleLoadState(false)}
+          onError={() => handleLoadState(false)}
         />
       ) : (
         <FastImage
-          fallback={true}
-          source={uri ? {uri, cache: 'immutable'} : defaultSource}
           style={customStyle as any}
-          resizeMode={resizeMode ?? 'cover'}
-          onLoadStart={onLoadStart}
-          onLoad={onLoad}
-          onLoadEnd={onLoadEnd}
-          onError={onError}
+          source={imageSource as any}
+          resizeMode={resizeMode}
+          fallback
           defaultSource={defaultSource}
+          onLoadStart={() => handleLoadState(true)}
+          onLoad={() => handleLoadState(false)}
+          onLoadEnd={() => handleLoadState(false)}
+          onError={() => handleLoadState(false)}
         />
       )}
-      {state === true && (
+      {loading && (
         <View style={[customStyle, styles.imageContainer]}>
           <ActivityIndicator size={loaderSize} color={theme.color.primary} />
         </View>

@@ -77,7 +77,7 @@ const getStyles = (colors: Theme) => {
       gap: verticalScale(16),
       paddingTop: verticalScale(16),
       borderTopWidth: 1,
-      borderTopColor: colors.color.grey,
+      borderTopColor: colors.color.strokeLight,
     },
     button: {
       width: horizontalScale(164),

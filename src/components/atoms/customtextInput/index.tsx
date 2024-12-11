@@ -28,6 +28,7 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
       left,
       right,
       labelContainerStyles,
+      textCustomColor,
       value,
       outerContainerStyles,
       title,
@@ -150,7 +151,9 @@ const CustomTextInput = React.forwardRef<TextInput, ICustomTextInputProps>(
                     marginTop: verticalScale(12),
                   },
                   {
-                    color: editable
+                    color: textCustomColor
+                      ? textCustomColor
+                      : editable
                       ? theme.theme.color.textPrimary
                       : theme.theme.color.disabled,
                   },

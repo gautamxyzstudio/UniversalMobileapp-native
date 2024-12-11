@@ -5,7 +5,7 @@ import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
 import {STRINGS} from 'src/locales/english';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {verticalScale} from '@utils/metrics';
+import {verticalScale, windowHeight} from '@utils/metrics';
 import {
   useCancelDocumentRequestMutation,
   useLazyGetUpdatedEmployeeDocumentsRequestQuery,
@@ -55,7 +55,8 @@ const UpdateDocumentRequests = () => {
   const [replaceUpdateDocRequest] = useReplaceUpdateDocRequestMutation();
   const {uploadImage} = useUploadAssets();
   const [cancelUpdateRequest] = useCancelDocumentRequestMutation();
-  const [getRequests, {isFetching, error}] =
+  const [isFetching, setIsFetching] = useState(true);
+  const [getRequests, {isFetching: loading, error}] =
     useLazyGetUpdatedEmployeeDocumentsRequestQuery();
   const {theme} = useTheme();
   const user = useSelector(userBasicDetailsFromState);
@@ -68,6 +69,10 @@ const UpdateDocumentRequests = () => {
     setIsUpdating(true);
     getUpdateRequestsHandler();
   };
+
+  useEffect(() => {
+    setIsFetching(loading);
+  }, [loading]);
 
   const getUpdateRequestsHandler = withAsyncErrorHandlingGet(async () => {
     const response = await getRequests({
@@ -195,6 +200,7 @@ const UpdateDocumentRequests = () => {
           <CustomList
             data={requestedDocs}
             isRefreshing={isUpdating}
+            blankViewStyles={styles.blankView}
             onRefresh={onRefetch}
             emptyListIllustration={NO_DOCUMENT}
             emptyListMessage="No Update Requests"
@@ -240,11 +246,15 @@ const createStyles = () =>
     container: {
       flex: 1,
       marginTop: verticalScale(24),
+      paddingHorizontal: 2,
     },
     loadingView: {
       width: '100%',
       height: '100%',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    blankView: {
+      height: windowHeight / 1.5,
     },
   });

@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Linking, Platform, ScrollView, StyleSheet, View} from 'react-native';
 import React, {useCallback, useRef} from 'react';
 import OnBoardingBackground from '@components/organisms/onboardingb';
 import {STRINGS} from 'src/locales/english';
@@ -41,6 +41,23 @@ const EmployeeProfile = () => {
       popupRef?.current?.handleModalState(true);
     }, 350);
   }, []);
+
+  const redirectToStore = () => {
+    const playStoreURL = 'market://details?id=com.universalmobileapp'; // Replace with your package name
+    const appStoreURL = 'itms-apps://apps.apple.com/app/6738730507'; // Replace with your Apple App ID
+
+    const storeURL = Platform.OS === 'ios' ? appStoreURL : playStoreURL;
+
+    Linking.openURL(storeURL).catch(err => {
+      console.error('Error opening store:', err);
+      // Fallback to the web version of the store (useful for emulators or errors)
+      const fallbackURL =
+        Platform.OS === 'ios'
+          ? 'https://apps.apple.com/app/id6738730507'
+          : 'https://play.google.com/store/apps/details?id=com.universalmobileapp';
+      Linking.openURL(fallbackURL);
+    });
+  };
 
   const onPressLogout = () => {
     popupRef.current?.handleModalState(false);
@@ -87,7 +104,7 @@ const EmployeeProfile = () => {
             Icon={RATE}
             title={STRINGS.rate_us}
             withArrow={true}
-            onPressTab={() => console.log('rate_us')}
+            onPressTab={redirectToStore}
           />
           <EmployeeProfileTab
             Icon={LOGOUT}

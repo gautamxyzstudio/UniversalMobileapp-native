@@ -51,6 +51,10 @@ export const getStyles = (theme: Theme) => {
     secondaryButtonTitleStyles: {
       ...fonts.mediumBold,
     },
+    select: {
+      color: theme.color.darkBlue,
+      fontWeight: 'bold',
+    },
   });
   return styles;
 };

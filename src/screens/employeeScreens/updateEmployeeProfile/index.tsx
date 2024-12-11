@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import {Alert, RefreshControl, StyleSheet, View} from 'react-native';
+import {Alert, RefreshControl, StatusBar, StyleSheet, View} from 'react-native';
 import React, {useEffect, useReducer, useRef, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
 import HeaderWithBack from '@components/atoms/headerWithBack';
@@ -33,6 +33,7 @@ import {updateEmployeeDetails} from '@api/features/user/userSlice';
 import LocationInput from '@components/molecules/InputTypes/locationInput';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
 import {BottomSheetModalMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
+import {useTheme} from '@theme/Theme.context';
 
 const UpdateEmployeeProfile = () => {
   const userBasicDetails = useSelector(userBasicDetailsFromState);
@@ -59,7 +60,7 @@ const UpdateEmployeeProfile = () => {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const toast = useToast();
   const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
-
+  const {theme} = useTheme();
   const locationInputPressHandler = () => {
     bottomSheetRef.current?.snapToIndex(1);
   };
@@ -230,8 +231,7 @@ const UpdateEmployeeProfile = () => {
             errorMessage={state.emailError}
           />
           <PhoneNumberInput
-            isDisabled
-            withCode={false}
+            withCode={true}
             value={state.phone}
             getSelectedPhoneNumber={(e: any) => handleInputChange('phone', e)}
             errorMessage={state.phoneError}
@@ -268,6 +268,10 @@ const UpdateEmployeeProfile = () => {
         filters={provincesAndCities}
         snapPoints={[0.01, verticalScale(698)]}
         getAppliedFilters={filters => handleInputChange('city', filters[0])}
+      />
+      <StatusBar
+        barStyle={'dark-content'}
+        backgroundColor={theme.color.primary}
       />
     </SafeAreaView>
   );

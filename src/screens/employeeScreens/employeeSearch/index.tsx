@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Platform, ScrollView, StatusBar, StyleSheet, View} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import SafeAreaView from '@components/safeArea';
 import SearchInput from '@components/molecules/InputTypes/SearchInput';
 import {useTheme} from '@theme/Theme.context';
-import {verticalScale} from '@utils/metrics';
+import {verticalScale, windowHeight} from '@utils/metrics';
 import {STRINGS} from 'src/locales/english';
 import RecentSearches from '@components/molecules/recentSearch';
 import {useNavigation} from '@react-navigation/native';
@@ -377,11 +377,12 @@ const EmployeeSearch = () => {
                 </Row>
               </ScrollView>
             </View>
-            <View style={styles.horizontalViewList}>
+            <View style={styles.verticalListView}>
               <CustomList
                 isLastPage={isLastPage}
                 estimatedItemSize={verticalScale(177)}
                 error={error}
+                blankViewStyles={styles.blankView}
                 emptyListIllustration={
                   isLoading ? IC_EMPTY_JOBS_LIST : IC_SEARCH_EMPTY
                 }
@@ -415,6 +416,13 @@ const EmployeeSearch = () => {
           getAppliedFilters={onPressApplyFilters}
         />
       </View>
+      {Platform.OS === 'android' && (
+        <StatusBar
+          translucent={true}
+          barStyle="dark-content"
+          backgroundColor={'#fff'}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -427,6 +435,7 @@ const createStyles = (theme: Theme) => {
       gap: verticalScale(8),
     },
     mainView: {
+      backgroundColor: theme.color.primary,
       flex: 1,
     },
     search: {
@@ -435,13 +444,22 @@ const createStyles = (theme: Theme) => {
     },
     row: {
       marginTop: verticalScale(16),
-      marginBottom: verticalScale(8),
-      height: verticalScale(44),
+      paddingBottom: verticalScale(8),
+      height: verticalScale(46),
+      borderBottomWidth: 1,
+      borderColor: theme.color.strokeLight,
     },
     horizontalView: {
+      marginTop: verticalScale(12),
       marginHorizontal: verticalScale(24),
     },
     horizontalViewList: {
+      flex: 1,
+      backgroundColor: theme.color.primary,
+      paddingHorizontal: verticalScale(24),
+      paddingTop: verticalScale(22),
+    },
+    verticalListView: {
       flex: 1,
       backgroundColor: theme.color.backgroundWhite,
       paddingHorizontal: verticalScale(24),
@@ -449,6 +467,9 @@ const createStyles = (theme: Theme) => {
     },
     chip: {
       marginRight: verticalScale(8),
+    },
+    blankView: {
+      height: windowHeight / 1.5,
     },
   });
   return styles;

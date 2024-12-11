@@ -1,7 +1,7 @@
 import {Theme} from '@theme/Theme.type';
 import {fonts} from '@utils/common.styles';
 import {verticalScale} from '@utils/metrics';
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 
 export const getStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
@@ -21,7 +21,6 @@ export const getStyles = (theme: Theme) => {
     },
     errorDescription: {
       ...fonts.medium,
-
       marginTop: verticalScale(8),
       marginBottom: verticalScale(20),
       textAlign: 'center',

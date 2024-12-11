@@ -10,8 +10,6 @@ import EmptyState from '@screens/common/emptyAndErrorScreen';
 import {IC_EMPTY_SCHEDULE} from '@assets/exporter';
 import {Theme} from '@theme/Theme.type';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {Row} from '@components/atoms/Row';
-import ScheduleCardLoading from '@components/employee/ScheduleCardLoading';
 import {withAsyncErrorHandlingGet} from '@utils/constants';
 import {useLazyFetchScheduledJobsQuery} from '@api/features/employee/employeeApi';
 import {useSelector} from 'react-redux';
@@ -22,8 +20,7 @@ import moment, {Moment} from 'moment';
 const EmployeeSchedules = () => {
   const [refreshing, setIsRefreshing] = useState<boolean>(false);
   const user = useSelector(userBasicDetailsFromState);
-  const [fetchScheduleJobs, {isLoading, error}] =
-    useLazyFetchScheduledJobsQuery();
+  const [fetchScheduleJobs, {error}] = useLazyFetchScheduledJobsQuery();
   const [currentDate, setCurrentDate] = useState<Moment>(moment());
   const styles = useThemeAwareObject(createStyles);
   const [scheduledJobs, setScheduledJobs] = useState<IJobPostTypes[]>([]);
@@ -138,8 +135,8 @@ const createStyles = (theme: Theme) =>
       marginHorizontal: verticalScale(24),
     },
     emptyView: {
-      flex: 1,
-      marginBottom: verticalScale(50),
+      width: '100%',
+      height: '100%',
     },
     body: {
       marginTop: verticalScale(40),

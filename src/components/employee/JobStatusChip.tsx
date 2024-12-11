@@ -46,6 +46,9 @@ const createStyles = ({color}: Theme) => {
         ios: {
           lineHeight: moderateScale(18),
         },
+        android: {
+          lineHeight: moderateScale(12),
+        },
       }),
     },
   });

@@ -11,12 +11,14 @@ import {onBoardingData} from './types';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {debounce} from 'lodash';
+import Paginator from './components/paginator';
 
 const viewConfig = {viewAreaCoveragePercentThreshold: 50};
 
 const OnBoarding = () => {
   const styles = useThemeAwareObject(getStyles);
   const navigation = useNavigation<NavigationProps>();
+  const scrollX = useRef(new Animated.Value(0)).current;
   const flatlistReference = useRef<FlatList | null>(null);
   const posterWidth = verticalScale(342);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -75,11 +77,17 @@ const OnBoarding = () => {
           <Animated.FlatList
             showsHorizontalScrollIndicator={false}
             horizontal
+            scrollEnabled={true}
             ref={flatlistReference}
             data={onBoardingData}
-            scrollEnabled={false}
             keyExtractor={item => item.id.toString()}
             pagingEnabled
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {x: scrollX}}}],
+              {
+                useNativeDriver: false,
+              },
+            )}
             bounces={false}
             onViewableItemsChanged={viewableItemsChanged}
             viewabilityConfig={viewConfig}
@@ -87,7 +95,10 @@ const OnBoarding = () => {
           />
         </View>
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.dots}>
+        <Paginator data={onBoardingData} scrollX={scrollX} />
+      </View>
+      <View>
         <NextButton index={currentIndex + 1} onPress={handleNextPress} />
       </View>
     </SafeAreaView>

@@ -1,4 +1,4 @@
-import {LogBox, StatusBar, StyleSheet, View} from 'react-native';
+import {LogBox, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import React, {useEffect} from 'react';
 
 import {Provider} from 'react-redux';
@@ -94,7 +94,22 @@ const App = () => {
             </PaperProvider>
           </Provider>
         </View>
-        <StatusBar translucent={true} backgroundColor="transparent" />
+        {Platform.select({
+          ios: (
+            <StatusBar
+              translucent={true}
+              barStyle="dark-content"
+              backgroundColor="transparent"
+            />
+          ),
+          android: (
+            <StatusBar
+              translucent={true}
+              barStyle="dark-content"
+              backgroundColor={theme.color.darkBlue}
+            />
+          ),
+        })}
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

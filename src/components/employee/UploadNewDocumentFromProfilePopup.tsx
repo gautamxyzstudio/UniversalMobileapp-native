@@ -41,7 +41,7 @@ const UploadNewDocumentFromProfilePopup = React.forwardRef<
     docValueError: '',
   };
 
-  const modalHeight = verticalScale(570);
+  const modalHeight = verticalScale(480);
   const keyboardHeight = useKeyboardHeight();
   const [state, setState] = useState<{
     docType: IDropDownItem | null;

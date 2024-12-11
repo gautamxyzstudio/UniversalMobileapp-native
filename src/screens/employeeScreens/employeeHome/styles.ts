@@ -42,7 +42,7 @@ export const getStyles = ({color}: Theme) => {
       backgroundColor: color.backgroundWhite,
     },
     footer: {
-      height: verticalScale(150),
+      height: verticalScale(300),
     },
     filterView: {
       // marginRight: verticalScale(8),
@@ -53,6 +53,18 @@ export const getStyles = ({color}: Theme) => {
     },
     chip: {
       marginRight: verticalScale(8),
+    },
+    withoutHeight: {
+      height: 0,
+    },
+    withHeight: {
+      height: verticalScale(58),
+    },
+    withoutMargin: {
+      marginTop: 0,
+    },
+    withMargin: {
+      marginTop: verticalScale(24),
     },
   });
   return styles;

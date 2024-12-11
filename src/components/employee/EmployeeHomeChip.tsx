@@ -82,6 +82,7 @@ const createStyles = (theme: Theme) => {
     containerSearch: {
       marginVertical: verticalScale(12),
       borderWidth: 1,
+      height: verticalScale(36),
       borderRadius: 20,
       backgroundColor: '#FFF2EA',
       paddingHorizontal: 12,

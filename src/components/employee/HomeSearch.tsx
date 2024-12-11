@@ -74,12 +74,12 @@ const createStyles = ({color}: Theme) => {
     },
     redDot: {
       position: 'absolute',
-      width: verticalScale(12),
-      height: verticalScale(12),
+      width: verticalScale(10),
+      height: verticalScale(10),
       borderRadius: 100,
       backgroundColor: color.red,
       right: verticalScale(8),
-      top: verticalScale(6),
+      top: verticalScale(8),
     },
     flex: {
       flex: 1,

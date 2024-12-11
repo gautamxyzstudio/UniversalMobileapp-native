@@ -131,6 +131,9 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
+  - NVActivityIndicatorView (5.1.1):
+    - NVActivityIndicatorView/Base (= 5.1.1)
+  - NVActivityIndicatorView/Base (5.1.1)
   - PromisesObjC (2.4.0)
   - RCT-Folly (2024.01.01.00):
     - boost
@@ -1131,6 +1134,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-loader-kit (2.0.8):
+    - NVActivityIndicatorView (= 5.1.1)
+    - React-Core
   - react-native-month-year-picker (1.9.0):
     - React
   - react-native-netinfo (11.3.2):
@@ -1562,6 +1568,7 @@ DEPENDENCIES:
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
+  - react-native-loader-kit (from `../node_modules/react-native-loader-kit`)
   - react-native-month-year-picker (from `../node_modules/react-native-month-year-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pdf (from `../node_modules/react-native-pdf`)
@@ -1630,6 +1637,7 @@ SPEC REPOS:
     - libwebp
     - lottie-ios
     - nanopb
+    - NVActivityIndicatorView
     - PromisesObjC
     - RecaptchaInterop
     - SDWebImage
@@ -1716,6 +1724,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-keyboard-controller:
     :path: "../node_modules/react-native-keyboard-controller"
+  react-native-loader-kit:
+    :path: "../node_modules/react-native-loader-kit"
   react-native-month-year-picker:
     :path: "../node_modules/react-native-month-year-picker"
   react-native-netinfo:
@@ -1838,6 +1848,7 @@ SPEC CHECKSUMS:
   lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
   lottie-react-native: 445dc3d3c964a4365ec39131d8b991556dc55b01
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
   RCTDeprecation: 3ca8b6c36bfb302e1895b72cfe7db0de0c92cd47
@@ -1870,6 +1881,7 @@ SPEC CHECKSUMS:
   react-native-geolocation: 26d62314499618e6a810ed4a9a6121542c76df04
   react-native-image-picker: 8b791a2bec6da84ca7d8cbcad30da159d6dd6da4
   react-native-keyboard-controller: 310a4b40d1cd32ef361dcfe27470556fef58b17e
+  react-native-loader-kit: ed18c8ce83b69083211912326897d8286f37d797
   react-native-month-year-picker: 948797e981ca502427024a34b17f545eb321bbff
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
   react-native-pdf: 103940c90d62adfd259f63cca99c7c0c306b514c

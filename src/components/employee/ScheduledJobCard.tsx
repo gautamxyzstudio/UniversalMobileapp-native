@@ -45,7 +45,7 @@ const ScheduledJobCard: React.FC<IScheduledJobCardProps> = ({jobDetails}) => {
             {getJobStartAndEndTime(jobDetails.startShift, jobDetails.endShift)}
           </Text>
         </Row>
-        <Row alignCenter style={styles.marginTop}>
+        <Row alignCenter style={styles.marginTopSec}>
           <LOCATION_TERNARY
             width={verticalScale(20)}
             height={verticalScale(20)}
@@ -78,6 +78,11 @@ const getStyles = ({color}: Theme) => {
       marginTop: verticalScale(16),
       gap: verticalScale(4),
     },
+    marginTopSec: {
+      marginTop: verticalScale(8),
+      gap: verticalScale(4),
+    },
+
     description: {
       color: color.textPrimary,
       ...fonts.regular,

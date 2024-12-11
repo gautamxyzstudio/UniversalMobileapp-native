@@ -1,9 +1,10 @@
 import {View, StyleSheet} from 'react-native';
-import {ActivityIndicator} from 'react-native-paper';
 import React from 'react';
 import {useSelector} from 'react-redux';
 import {loadingStateFromSlice} from '@api/features/loading/loadingSlice';
 import {useTheme} from '@theme/Theme.context';
+import LoaderKit from 'react-native-loader-kit';
+import {verticalScale} from '@utils/metrics';
 
 type ILoaderWrapperProps = {
   children: React.ReactNode;
@@ -19,9 +20,11 @@ const LoaderWrapper: React.FC<ILoaderWrapperProps> = ({children}) => {
         <View style={styles.childrenContainer}>{children}</View>
         {isLoading && (
           <View style={styles.loaderBlackOverlay}>
-            <View style={styles.loaderWhiteContainerView}>
-              <ActivityIndicator color={theme.color.darkBlue} size={'large'} />
-            </View>
+            <LoaderKit
+              style={styles.loader}
+              name={'BallClipRotatePulse'}
+              color={theme.color.darkBlue}
+            />
           </View>
         )}
       </View>
@@ -41,7 +44,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  loader: {
+    width: verticalScale(56),
+    height: verticalScale(56),
+  },
   loaderWhiteContainerView: {
     height: 130,
     width: 150,

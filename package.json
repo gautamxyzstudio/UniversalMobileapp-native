@@ -51,6 +51,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-keyboard-controller": "^1.12.7",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-loader-kit": "^2.0.8",
     "react-native-material-ripple": "^0.9.1",
     "react-native-month-year-picker": "^1.9.0",
     "react-native-otp-textinput": "^1.1.5",

@@ -215,7 +215,13 @@ const FilterListBottomSheet = forwardRef<
                         backgroundColor: theme.color.primary,
                       },
                     ]}>
-                    <Text style={styles.filterOptionTitle}>{item.title}</Text>
+                    <Text
+                      style={[
+                        styles.filterOptionTitle,
+                        selectedFilterHeading.id === item.id && styles.select,
+                      ]}>
+                      {item.title}
+                    </Text>
                   </Pressable>
                 ))}
               </View>

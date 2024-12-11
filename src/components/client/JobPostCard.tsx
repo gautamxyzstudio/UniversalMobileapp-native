@@ -82,6 +82,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
           defaultSource={ICONS.imagePlaceholder}
           image={company?.logo?.url ?? null}
           resizeMode="cover"
+          loaderSize={'small'}
           customStyle={styles.image}
         />
         <View style={styles.jobDetails}>
@@ -115,7 +116,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
                 <Text style={styles.postedDate}>{company?.name}</Text>
               )}
             </View>
-            <Row alignCenter style={styles.statusRow}>
+            <Row style={styles.statusRow}>
               <JobTypeChip
                 backgroundColor={theme.theme.color.lightGrey}
                 color={theme.theme.color.textPrimary}
@@ -252,6 +253,11 @@ const createStyles = ({color}: Theme) => {
     viewText: {
       ...fonts.small,
       color: color.darkBlue,
+      ...Platform.select({
+        android: {
+          lineHeight: verticalScale(18),
+        },
+      }),
     },
 
     postedBy: {
@@ -314,6 +320,7 @@ const createStyles = ({color}: Theme) => {
     postedDate: {
       ...fonts.regular,
       color: color.disabled,
+      marginTop: verticalScale(2),
     },
   });
 

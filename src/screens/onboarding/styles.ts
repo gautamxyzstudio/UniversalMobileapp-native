@@ -15,7 +15,7 @@ export const getStyles = (colors: Theme) => {
     container: {
       flex: 1,
     },
-    poster: {marginVertical: verticalScale(28)},
+    poster: {marginVertical: verticalScale(20)},
 
     itemContainer: {
       width: windowWidth,
@@ -29,15 +29,17 @@ export const getStyles = (colors: Theme) => {
     },
     paragraph: {
       ...fonts.medium,
+      lineHeight: verticalScale(24),
       marginTop: 24,
       color: colors.color.textPrimary,
       textAlign: 'center',
     },
-    buttonContainer: {
-      marginBottom: 20,
-    },
+
     listContainer: {
       flex: 3,
+    },
+    dots: {
+      marginVertical: verticalScale(24),
     },
   });
   return styles;

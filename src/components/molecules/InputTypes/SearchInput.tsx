@@ -70,7 +70,7 @@ const SearchInput: React.FC<ISearchInputProps> = ({
           )}
         </View>
       )}
-      <Spacers size={4} scalable type="horizontal" />
+      <Spacers size={8} scalable type="horizontal" />
       <TextInput
         value={value}
         ref={inputRef}

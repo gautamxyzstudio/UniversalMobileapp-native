@@ -5,6 +5,7 @@ import {STRINGS} from 'src/locales/english';
 
 import {verticalScale} from '@utils/metrics';
 import {LOCATION_TERNARY} from '@assets/exporter';
+import {useTheme} from '@theme/Theme.context';
 
 type ILocationInputPropTypes = {
   onPress: () => void;
@@ -17,6 +18,7 @@ const LocationInput: React.FC<ILocationInputPropTypes> = ({
   value,
   errorMessage,
 }) => {
+  const {theme} = useTheme();
   return (
     <View>
       <CustomTextInput
@@ -24,6 +26,7 @@ const LocationInput: React.FC<ILocationInputPropTypes> = ({
         onTextChange={undefined}
         value={value}
         editable={false}
+        textCustomColor={theme.color.textPrimary}
         keyboardType="email-address"
         right={
           <TouchableOpacity onPress={onPress} style={styles.locationContainer}>

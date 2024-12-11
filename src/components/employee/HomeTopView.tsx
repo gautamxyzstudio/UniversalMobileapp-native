@@ -140,12 +140,12 @@ const createStyles = ({color}: Theme) => {
     },
     redDotSec: {
       position: 'absolute',
-      width: verticalScale(12),
-      height: verticalScale(12),
+      width: verticalScale(10),
+      height: verticalScale(10),
       borderRadius: 100,
       backgroundColor: color.red,
-      right: verticalScale(4),
-      top: verticalScale(4),
+      right: verticalScale(6),
+      top: verticalScale(6),
     },
   });
   return styles;

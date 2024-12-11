@@ -91,7 +91,7 @@ const createStyles = () =>
       shadowOpacity: 1,
       shadowRadius: 4,
       borderRadius: 8,
-      elevation: 1,
+      elevation: 5,
     },
     status: {
       ...fonts.medium,

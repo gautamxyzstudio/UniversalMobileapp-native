@@ -1,4 +1,11 @@
-import {StyleSheet, TextInput, View, findNodeHandle} from 'react-native';
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  TextInput,
+  View,
+  findNodeHandle,
+} from 'react-native';
 import React, {
   forwardRef,
   memo,
@@ -26,6 +33,7 @@ import LocationInput from '@components/molecules/InputTypes/locationInput';
 import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import FilterListBottomSheet from '@components/molecules/filterListBottomSheet';
 import {verticalScale} from '@utils/metrics';
+import {useTheme} from '@theme/Theme.context';
 
 const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
@@ -33,6 +41,7 @@ const JobSeekerDetailsStepsOne = forwardRef<{}, jobSeekerRef>((props, ref) => {
   const phoneRef = useRef<TextInput>(null);
   const dobRef = useRef<TextInput>(null);
   const addressRef = useRef<TextInput>(null);
+  const {theme} = useTheme();
   const cityRef = useRef<TextInput>(null);
   const genderRef = useRef<TextInput>(null);
   const userDetails = useSelector(userBasicDetailsFromState);

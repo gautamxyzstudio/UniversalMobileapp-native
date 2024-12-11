@@ -53,18 +53,17 @@ import {getStyles} from './styles';
 const EmployeeHome = () => {
   //States initializations
   const styles = useThemeAwareObject(getStyles);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<IJobPostTypes[] | null>(null);
   const [isLastPage, setIsLastPage] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
-
+  const [isLoading, setIsLoading] = useState(true);
   const scrollY = useSharedValue(0);
-  const [getJobs, {isLoading, error}] = useLazyFetchJobsQuery();
+  const [getJobs, {error}] = useLazyFetchJobsQuery();
   const jobsInState = useSelector(jobsFromState);
-
   const {onPressSheet} = useJobDetailsContext();
 
   const selectedFilters = useSelector(getSelectedFiltersFromState);
@@ -82,10 +81,17 @@ const EmployeeHome = () => {
 
   // to get job posts in case of filter applied
   useEffect(() => {
-    dispatch(setLoading(true));
-    setIsLastPage(true);
-    getJobsPosts(true);
+    if (!isLoading) {
+      dispatch(setLoading(true));
+      setIsLastPage(true);
+      getJobsPosts(true);
+    }
   }, [jobType, filterDate?.startDate, filterDate?.endDate, preferredLocations]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getJobsPosts(true);
+  }, []);
 
   // to set the data after from redux after  api call
   useEffect(() => {
@@ -129,6 +135,7 @@ const EmployeeHome = () => {
             detailsId: user?.details?.detailsId ?? 0,
           }),
         );
+        setIsLoading;
         setIsRefreshing(false);
         setCurrentPage(page);
         setTotalPages(usersJobsResponse.pagination.total);
@@ -140,9 +147,11 @@ const EmployeeHome = () => {
       }
     } catch (err) {
       setIsRefreshing(false);
+
       console.log(err, 'ERROR GETTING JOB POSTS');
     } finally {
       dispatch(setLoading(false));
+      setIsLoading(false);
     }
   };
 
@@ -296,12 +305,9 @@ const EmployeeHome = () => {
       />
       <View
         style={[
-          {
-            height:
-              selectedFilters.length === 0 && preferredLocations.length === 0
-                ? 0
-                : verticalScale(58),
-          },
+          selectedFilters.length === 0 && preferredLocations.length === 0
+            ? styles.withoutHeight
+            : styles.withHeight,
           styles.rowView,
         ]}>
         <ScrollView showsHorizontalScrollIndicator={false} horizontal>
@@ -345,8 +351,8 @@ const EmployeeHome = () => {
               style={[
                 styles.headingView,
                 selectedFilters.length === 0 && preferredLocations.length === 0
-                  ? {marginTop: verticalScale(24)}
-                  : {marginTop: 0},
+                  ? styles.withMargin
+                  : styles.withoutMargin,
               ]}>
               <HomeListHeaderView
                 title={STRINGS.jobListing}

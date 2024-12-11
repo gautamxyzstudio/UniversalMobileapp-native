@@ -97,8 +97,8 @@ export const userDetailsStep3Schema = Yup.object().shape({
 
 // supportingDocument: number | null;
 export const getYearEndAndStartDate = (type: 'end' | 'start') => {
-  const yearStart = moment().startOf('year');
-  const yearEnd = moment().endOf('year');
+  const yearStart = moment().subtract(12, 'months');
+  const yearEnd = moment().add(2, 'months');
   return type === 'end' ? yearEnd : yearStart;
 };
 

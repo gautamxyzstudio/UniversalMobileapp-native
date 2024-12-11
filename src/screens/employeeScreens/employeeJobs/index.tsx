@@ -125,6 +125,8 @@ const EmployeeJobs = () => {
           error={error}
           refreshAfterError={onRefreshHandler}
           isRefreshing={isRefreshing}
+          ListFooterComponent={<View />}
+          ListFooterComponentStyle={styles.footer}
           onEndReached={loadMore}
           onRefresh={onRefreshHandler}
           isLastPage={isLastPage}
@@ -147,5 +149,8 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(24),
     paddingHorizontal: verticalScale(24),
     justifyContent: 'center',
+  },
+  footer: {
+    height: verticalScale(24),
   },
 });

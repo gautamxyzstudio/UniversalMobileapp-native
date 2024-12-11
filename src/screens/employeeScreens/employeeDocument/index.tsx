@@ -359,7 +359,10 @@ const EmployeeDocuments = () => {
         onPressRightIcon={() => navigation.navigate('updatedDocumentStatus')}
         headerTitle={STRINGS.documents}
       />
-      <StatusBar backgroundColor={theme.color.primary} />
+      <StatusBar
+        barStyle={'dark-content'}
+        backgroundColor={theme.color.primary}
+      />
       <View style={styles.mainView}>
         <ScrollView
           refreshControl={
