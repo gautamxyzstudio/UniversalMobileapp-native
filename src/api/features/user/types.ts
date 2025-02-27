@@ -7,6 +7,7 @@ import {
 
 export type IUserSliceInitialState = {
   user: IUser<'client' | 'emp'> | null;
+  fcmToken: string | null;
   preferredLocations: string[];
   selectedFilters: string[];
   filtersDate: {

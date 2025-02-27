@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>333110462709-p8qn8rsbjfdmab3r0ff47215tn0rrcg8.apps.googleusercontent.com</string>
+	<string>333110462709-e8k45dtq3srbd5vk0q6nmkfpgfc5g0pk.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.333110462709-p8qn8rsbjfdmab3r0ff47215tn0rrcg8</string>
+	<string>com.googleusercontent.apps.333110462709-e8k45dtq3srbd5vk0q6nmkfpgfc5g0pk</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>333110462709-d7gf673hm09va69nvrr7helsiva0c33u.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,11 +15,11 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.UniversalMobileApp</string>
+	<string>com.universalworkforce.labouragency</string>
 	<key>PROJECT_ID</key>
 	<string>universalproject-2ec97</string>
 	<key>STORAGE_BUCKET</key>
-	<string>universalproject-2ec97.appspot.com</string>
+	<string>universalproject-2ec97.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:333110462709:ios:04a9c20909a8108be8ddbc</string>
+	<string>1:333110462709:ios:8bf281b0b2204699e8ddbc</string>
 </dict>
 </plist>

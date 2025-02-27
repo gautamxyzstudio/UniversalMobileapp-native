@@ -10,6 +10,7 @@ import {RootState} from '@api/store';
 const initialState: IUserSliceInitialState = {
   user: null,
   preferredLocations: [],
+  fcmToken: null,
   recentSearchesEmployee: [],
   selectedFilters: [],
   filtersDate: {
@@ -172,6 +173,9 @@ const userSlice = createSlice({
         };
       }
     },
+    updateFcmToken: (state, action: PayloadAction<string>) => {
+      state.fcmToken = action.payload;
+    },
   },
 });
 
@@ -196,6 +200,7 @@ export const {
   removeLocation,
   addNewDocumentEmployee,
   addNewUpdateRequest,
+  updateFcmToken,
 } = userSlice.actions;
 export default userSlice.reducer;
 export const userBasicDetailsFromState = (state: RootState) => state.user.user;

@@ -30,9 +30,12 @@ import {
 import {IClientDetails, IEmployeeDetails} from '@api/features/user/types';
 import {IClientStatus} from '@utils/enums';
 import FocusedText from '@components/atoms/focusedText';
+import {apiEndPoints} from '@api/endpoints';
 
 const Login = () => {
   const styles = useThemeAwareObject(getStyles);
+
+  console.log(apiEndPoints.login);
 
   const [login, {}] = useLoginMutation();
   const [getUserDetails] = useLazyGetUserQuery();

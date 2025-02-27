@@ -145,6 +145,7 @@ export const ICONS = {
   contactListFilled: require('./icons/png/tabaricons/candidateListFill.png'),
   search: require('./icons/png/search.png'),
   searchCross: require('./icons/png/searchCross.png'),
+  notificationIcon: require('./icons/png/notification_icon.png'),
 };
 
 export const ANIMATIONS = {
