@@ -222,3 +222,7 @@ export const getFiltersDateFromState = (state: RootState) =>
 
 export const getJobTypeFilterFromState = (state: RootState) =>
   state.user.jobTypeFilter;
+
+export const userTokenInState = (state: RootState) => state.user.user?.token;
+
+export const fcmTokenInState = (state: RootState) => state.user.fcmToken;

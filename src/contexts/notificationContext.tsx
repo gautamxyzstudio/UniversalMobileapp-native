@@ -1,12 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-shadow */
-import {updateFcmToken} from '@api/features/user/userSlice';
-import {tokenInState, useAppDispatch, useAppSelector} from '@api/store';
+import {setLoading} from '@api/features/loading/loadingSlice';
+import {
+  useLazyGetJobDetailsQuery,
+  useUpdateFcmTokenMutation,
+} from '@api/features/user/userApi';
+import {
+  fcmTokenInState,
+  updateFcmToken,
+  userAdvanceDetailsFromState,
+  userTokenInState,
+} from '@api/features/user/userSlice';
+import {useAppDispatch, useAppSelector} from '@api/store';
 import {showToast} from '@components/organisms/customToast';
 import messaging from '@react-native-firebase/messaging';
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {PermissionsAndroid, Platform} from 'react-native';
 import {useToast} from 'react-native-toast-notifications';
+import {useSelector} from 'react-redux';
+import {STRINGS} from 'src/locales/english';
+import {useJobDetailsContext} from './displayJobDetailsContext';
+import {employeeTabBarRoutes, navigationRef} from 'src/navigator/types';
 
 interface NotificationContextProps {
   fcmToken: string;
@@ -40,19 +54,24 @@ export const NotificationContextProvider = ({
   children: React.ReactNode;
 }) => {
   // State management
-  const fcmTokenInState = useAppSelector(tokenInState);
+  const fcmTokenState = useAppSelector(fcmTokenInState);
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const toast = useToast();
+  const authToken = useSelector(userTokenInState);
+  const user = useSelector(userAdvanceDetailsFromState);
+  const [getJobDetails] = useLazyGetJobDetailsQuery();
   const dispatch = useAppDispatch();
+  const [updateFcmHandler] = useUpdateFcmTokenMutation();
   const [subscribers, setSubscribers] = useState<Function[]>([]);
   const [notification, setNotification] = useState<NotificationMessage | null>(
     null,
   );
-
+  const {onPressSheet} = useJobDetailsContext();
   // Initialize Firebase listeners and check for initial notification on mount
   useEffect(() => {
-    setupFirebaseListeners();
+    const unsubscribe = setupFirebaseListeners();
     getInitialNotification();
+    return unsubscribe;
   }, []);
 
   // Handle initial notification when the app is launched from a killed state
@@ -69,7 +88,11 @@ export const NotificationContextProvider = ({
 
   // TODO: Implement notification navigation logic
   const handleNotificationRedirection = (notification: NotificationMessage) => {
-    console.log('handleNotificationRedirection', notification);
+    // if (notification.notification?.title === 'Job Status Updated') {
+    //   navigationRef.navigate('employeeTabBar', {
+    //     screen: employeeTabBarRoutes.jobs,
+    //   } as unknown as undefined);
+    // }
   };
 
   // Central handler for all incoming notifications
@@ -94,24 +117,44 @@ export const NotificationContextProvider = ({
         notification.notification?.title ?? '',
         'notification',
         notification.notification?.body ?? '',
+        () => handleNotificationOnPress(notification),
       );
     }
   }, [notification]);
 
-  // Handle FCM token changes: update Redux store if changed or fetch new token
-  useEffect(() => {
-    tokenHandler();
-  }, [fcmToken]);
-
-  const tokenHandler = async () => {
-    if (fcmToken?.toString() === fcmTokenInState?.toString() && fcmToken) {
-      console.log('fcmToken', fcmToken);
-    } else if (fcmToken) {
-      updateFcmTokenHandler(fcmToken);
+  const handleNotificationOnPress = async (
+    notification: NotificationMessage,
+  ) => {
+    if (notification && notification.data?.JobId && user?.detailsId) {
+      const jobId = notification.data?.JobId;
+      try {
+        dispatch(setLoading(true));
+        const jobDetails = await getJobDetails({
+          jobId: jobId as unknown as number,
+          userId: user?.detailsId ?? 0,
+        }).unwrap();
+        onPressSheet('show', jobDetails);
+      } catch (error) {
+        showToast(toast, STRINGS.something_went_wrong, 'error');
+        console.log('error', error);
+      } finally {
+        dispatch(setLoading(false));
+      }
     } else {
-      getFcmToken();
+      if (notification.notification?.title === 'Job Status Updated') {
+        navigationRef.navigate('employeeTabBar', {
+          screen: employeeTabBarRoutes.jobs,
+        } as unknown as undefined);
+      }
     }
   };
+
+  // Handle FCM token changes: update Redux store if changed or fetch new token
+  useEffect(() => {
+    if (authToken) {
+      getFcmToken();
+    }
+  }, [authToken]); // Removed fcmToken from dependencies
 
   // Request permissions and fetch the FCM token.
   // For iOS, ensure that an APNS token is registered first.
@@ -143,9 +186,10 @@ export const NotificationContextProvider = ({
 
       if (enabled) {
         const token = await messaging().getToken();
-        if (token) {
-          setFcmToken(token);
-          updateFcmTokenHandler(token);
+        if (token && token !== fcmTokenState) {
+          await updateFcmTokenHandler(token);
+        } else {
+          console.log('same Fcm token', token);
         }
       } else {
         console.warn('FCM permission not granted');
@@ -165,9 +209,10 @@ export const NotificationContextProvider = ({
   };
 
   // Update FCM token in local state and Redux store
-  const updateFcmTokenHandler = (token: string) => {
+  const updateFcmTokenHandler = async (token: string) => {
     setFcmToken(token);
     dispatch(updateFcmToken(token));
+    await updateFcmHandler({firebaseToken: token});
   };
 
   // Setup Firebase message listeners for various app states
@@ -203,15 +248,20 @@ export const NotificationContextProvider = ({
       // Token refresh handler
       messaging().onTokenRefresh(token => {
         try {
-          setFcmToken(token);
+          updateFcmTokenHandler(token);
         } catch (error) {
           console.error('Error refreshing FCM token:', error);
         }
       }),
     ];
-
     // Cleanup function to remove listeners
-    return () => unsubscribers.forEach(unsubscribe => unsubscribe);
+    return () => {
+      unsubscribers.forEach(unsubscribe => {
+        if (typeof unsubscribe === 'function') {
+          unsubscribe();
+        }
+      });
+    };
   };
 
   // Notify all subscribers with the new notification data

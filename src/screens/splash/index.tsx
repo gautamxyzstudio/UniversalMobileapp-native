@@ -31,6 +31,7 @@ import CustomText, {textSizeEnum} from '@components/atoms/CustomText';
 import CustomButton from '@components/molecules/customButton';
 import {STRINGS} from 'src/locales/english';
 import {IClientStatus} from '@utils/enums';
+import {useNotification} from 'src/contexts/notificationContext';
 
 const Splash = () => {
   const styles = useThemeAwareObject(getStyles);
@@ -42,7 +43,9 @@ const Splash = () => {
   const user = useSelector(userBasicDetailsFromState);
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProps>();
+  const [isNotification, setIsNotification] = useState(false);
   const [getUserDetails, {error}] = useLazyGetUserQuery();
+  const {pendingNotification, subscribe, unsubscribe} = useNotification();
 
   const getUser = async (): Promise<
     IEmployeeDetails | null | ICustomErrorResponse | IClientDetails
@@ -67,7 +70,12 @@ const Splash = () => {
     if (user?.token) {
       try {
         const userDetails = await getUser();
-        console.log(userDetails, 'USERNDONDON');
+
+        // Fetch user details regardless of notification status
+        if (isNotification) {
+          return; // Exit early to prevent navigation if there is a notification
+        }
+
         if (user.user_type === 'emp') {
           if (userDetails) {
             dispatch(updateEmployeeDetails(userDetails as IEmployeeDetails));

@@ -25,6 +25,7 @@ export const STRINGS = {
   email: 'E-mail',
   emailOrUsername: 'Email / Username',
   company_name: 'Company name',
+  all_notifications_marked_as_read: 'All notifications marked as read',
   password: 'Password',
   refetch: 'Refetch',
   confirmPassword: 'Confirm Password',

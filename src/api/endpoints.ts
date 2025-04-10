@@ -23,6 +23,7 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/other-documents/${docId}`,
   updateEmployeeDocuments: `${process.env.BASE_URL}/api/update-doc-requests`,
   jobPost: `${process.env.BASE_URL}/api/Jobs`,
+  updateFcmToken: `${process.env.BASE_URL}/api/user/save-firebase-token`,
   getOpenJobPost: (detailsId: number) =>
     `${process.env.BASE_URL}/api/jobs/find-Openjob/${detailsId}`,
   getClosedJobPost: (detailsId: number) =>
@@ -77,6 +78,8 @@ export const apiEndPoints = {
   updatePrimaryDocuments: `${process.env.BASE_URL}/api/document-requests`,
   getUpdateDocumentsRequests: (id: number) =>
     `${process.env.BASE_URL}/api/document-requests/employee/${id}`,
+  getJobDetails: (jobId: number) =>
+    `${process.env.BASE_URL}/api/jobsbyid/${jobId}`,
   checkInOutEmployee: (applicationId: number) =>
     `${process.env.BASE_URL}/api/job-applications/${applicationId}/checkin-checkout`,
   getScheduledJobs: (emplyeeId: number) =>
@@ -93,4 +96,11 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/issue-raised/by-client/${detailId}?sort=id:desc`,
   replaceUpdateDocumentRequest: (docId: number) =>
     `${process.env.BASE_URL}/api/document-requests/${docId}`,
+  getNotifications: (employeeId: number, page: number, pageSize: number) =>
+    `${process.env.BASE_URL}/api/push-notifications/user/${employeeId}?page=${page}&pageSize=${pageSize}`,
+  clearFirebaseToken: `${process.env.BASE_URL}/api/firebase-token/clear`,
+  updateNotificationStatus: (notificationId: number) =>
+    `${process.env.BASE_URL}/api/push-notifications/${notificationId}/read`,
+  markAllRead: (employeeId: number) =>
+    `${process.env.BASE_URL}/api/push-notifications/mark-all-read/${employeeId}`,
 };
