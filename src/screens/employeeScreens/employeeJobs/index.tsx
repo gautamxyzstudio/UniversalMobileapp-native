@@ -23,14 +23,11 @@ import {useJobDetailsContext} from 'src/contexts/displayJobDetailsContext';
 import {jobFilters} from 'src/constants/constants';
 import {IJobPostStatus} from '@utils/enums';
 import {IC_EMPTY_APPLIED} from '@assets/exporter';
-import {IEmployeeJobsProps} from './types';
 
-const EmployeeJobs = ({route}: IEmployeeJobsProps) => {
+const EmployeeJobs = () => {
   const [selectedFilter, setSelectedFilter] = useState<IJobPostStatus | null>(
     null,
   );
-
-  const title = route?.params?.title;
   const [fetchJobs, {error}] = useLazyFetchAppliedJobsQuery();
   const [isFetching, setIsFetching] = useState(true);
   const [jobs, updateJobs] = useState<IJobPostTypes[]>([]);
@@ -45,7 +42,7 @@ const EmployeeJobs = ({route}: IEmployeeJobsProps) => {
   useEffect(() => {
     setIsFetching(true);
     fetchAppliedJobsHandler(true);
-  }, [selectedFilter, title]);
+  }, [selectedFilter]);
 
   useEffect(() => {
     updateJobs(appliedJobs);

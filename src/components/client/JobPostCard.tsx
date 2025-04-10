@@ -87,7 +87,7 @@ const JobPostCard: React.FC<IJobDetailsPropTypes> = ({
         />
         <View style={styles.jobDetails}>
           <Row spaceBetween>
-            <View style={styles.titleContainer}>
+            <View>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
@@ -235,9 +235,6 @@ const createStyles = ({color}: Theme) => {
       color: color.red,
       ...fonts.regular,
     },
-    titleContainer: {
-      flex: 1,
-    },
     arrowView: {
       width: verticalScale(16),
       height: verticalScale(16),
@@ -291,7 +288,6 @@ const createStyles = ({color}: Theme) => {
     },
 
     title: {
-      flex: 1,
       color: color.textPrimary,
       ...fonts.mediumBold,
     },

@@ -1,13 +1,5 @@
 import {IJobPostStatus} from '@utils/enums';
 
-export interface IEmployeeJobsProps {
-  route: {
-    params: {
-      title: string;
-    };
-  };
-}
-
 export enum IJobStatus {
   APPLIED = 1,
   IN_PROGRESS = 2,

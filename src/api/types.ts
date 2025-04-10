@@ -10,6 +10,15 @@ export interface IEmployeeTypes {
   industry: string;
 }
 
+export interface INotification {
+  title: string;
+  icon: string;
+  highlightText: string;
+  isRead: boolean;
+  time: string;
+  id: number;
+}
+
 export interface IErrorResponse {
   status: number | string;
   data: {
