@@ -230,7 +230,7 @@ export const withAsyncErrorHandlingPost = (
   fn: (...args: any[]) => Promise<any>,
   toast: typeof Toast,
   dispatch: Dispatch,
-  onError?: () => void,
+  onError?: (error?: ICustomErrorResponse) => void,
 ) => {
   return async (...args: any[]) => {
     try {
@@ -243,7 +243,7 @@ export const withAsyncErrorHandlingPost = (
         customError.message ?? STRINGS.someting_went_wrong,
         'error',
       );
-      onError && onError();
+      onError && onError(customError);
     } finally {
       dispatch(setLoading(false));
     }

@@ -1,6 +1,7 @@
 import {
   Image,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -25,6 +26,7 @@ export const showToast = (
   message: string,
   type: 'success' | 'error' | 'notification',
   subtitle?: string,
+  onPress?: () => void,
 ) => {
   toast.hideAll();
   toast.show(message, {
@@ -32,6 +34,7 @@ export const showToast = (
     placement: type === 'notification' ? 'top' : 'bottom',
     data: {
       subtitle: subtitle,
+      onPress: onPress,
     },
   });
 };
@@ -43,7 +46,11 @@ const CustomToast: React.FC<ICustomToastProps> = ({toast}) => {
   return (
     <View>
       {toast.type === 'notification' ? (
-        <View style={[styles.notificationContainer]}>
+        <Pressable
+          onPress={() => {
+            toast?.data?.onPress?.();
+          }}
+          style={[styles.notificationContainer]}>
           <Image
             source={ICONS.notificationIcon}
             style={styles.notificationImage}
@@ -54,7 +61,7 @@ const CustomToast: React.FC<ICustomToastProps> = ({toast}) => {
               {toast?.data?.subtitle}
             </Text>
           </View>
-        </View>
+        </Pressable>
       ) : (
         <View
           style={[
@@ -146,7 +153,7 @@ const createStyles = (theme: Theme) =>
     notificationContainer: {
       flexDirection: 'row',
       width: windowWidth - verticalScale(48),
-      borderRadius: 8,
+      borderRadius: 16,
       backgroundColor: theme.color.backgroundWhite,
       paddingHorizontal: verticalScale(12),
       justifyContent: 'flex-start',
@@ -168,7 +175,7 @@ const createStyles = (theme: Theme) =>
     },
     notificationImage: {
       width: verticalScale(40),
-      borderRadius: 8,
+      borderRadius: 12,
       height: verticalScale(40),
     },
     notificationTextContainer: {

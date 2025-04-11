@@ -2,6 +2,8 @@ import {
   IClientStatus,
   IHelpAndSupportTicketStatus,
   IIssueStatus,
+  IJobPostStatus,
+  IJobTypesEnum,
   IUserTypeEnum,
 } from '@utils/enums';
 
@@ -429,4 +431,107 @@ export type Issue = {
   createdAt: Date;
   id: number;
   status: IHelpAndSupportTicketStatus;
+};
+
+export type ICustomNotificationResponse = {
+  data: INotification[];
+  meta: {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
+  };
+};
+
+export type INotification = {
+  JobID: number;
+  title: string;
+  status: string;
+  message: string;
+  updatedAt: Date;
+  id: number;
+  icon: IDoc;
+};
+
+export type INotificationResponse = {
+  data: {
+    id: number;
+    title: string;
+    status: string;
+    timestamp: string;
+    fcm_token: string;
+    message: string;
+    createdAt: Date;
+    updatedAt: Date;
+    publishedAt: Date;
+    JobID: number;
+    UserID_detail: {
+      id: number;
+    };
+    icon: IDoc;
+  }[];
+  meta: {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
+  };
+};
+
+export type IJobDetailsResponse = {
+  id: number;
+
+  job_name: string;
+  city: string;
+  state: string;
+  address: string;
+  postalCode: string;
+  postID: string;
+  gender: string;
+  salary: string;
+  Event: string;
+  job_type: IJobTypesEnum;
+  location: string;
+  required_certificates: string[];
+  startShift: Date;
+  eventDate: Date;
+  description: string;
+  jobDuties: string;
+  delete: boolean;
+  status: IJobPostStatus;
+  endShift: Date;
+  requiredEmployee: number;
+  notAccepting: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date;
+
+  job_applications: [
+    {
+      id: number;
+      status: IJobPostStatus;
+      employee_details: {
+        id: number;
+      }[];
+    },
+  ];
+  client_details: [
+    {
+      id: number;
+      Name: string;
+      companyname: string;
+      contactno: string;
+      Industry: string;
+      Email: string;
+      createdAt: Date;
+      updatedAt: Date;
+      publishedAt: Date;
+      companylogo: IDoc;
+      status: string;
+      location: string;
+      company_detail: {
+        companylogo: IDoc;
+      };
+    },
+  ];
 };

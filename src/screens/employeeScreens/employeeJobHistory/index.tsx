@@ -10,8 +10,7 @@ import JobHistorySelectedRange from '@components/employee/JobHistorySelectedRang
 import {verticalScale} from '@utils/metrics';
 import Spacers from '@components/atoms/Spacers';
 import {CalendarDate} from 'react-native-paper-dates/lib/typescript/Date/Calendar';
-import JobCard, {IJobDetailsPropTypes} from '@components/employee/JobCard';
-import {useTheme} from '@theme/Theme.context';
+
 const EmployeeJobHistory = () => {
   const [range, setRange] = React.useState<{
     startDate: Date | undefined;
@@ -21,7 +20,6 @@ const EmployeeJobHistory = () => {
     endDate: undefined,
   });
   const [open, setOpen] = React.useState(false);
-  const {theme} = useTheme();
   const onDismiss = React.useCallback(() => {
     setOpen(false);
   }, [setOpen]);
@@ -40,9 +38,9 @@ const EmployeeJobHistory = () => {
     [setOpen, setRange],
   );
 
-  const renderItemListing = ({item}: {item: IJobDetailsPropTypes}) => {
-    return <JobCard {...item} />;
-  };
+  // const renderItemListing = ({item}: {item: IJobDetailsPropTypes}) => {
+  //   return <JobCard {...item} />;
+  // };
 
   return (
     <SafeAreaView hideBottomSpace>

@@ -3,6 +3,7 @@ import {
   IAddEmployeeDetailsCustomizedResponse,
   ICheckEmailVerificationStatus,
   IClientDetails,
+  ICustomNotificationResponse,
   IDoc,
   IDocumentRequests,
   IDocumentStatus,
@@ -12,7 +13,10 @@ import {
   IEmployeeUploadOtherDocumentsRequest,
   IGetRaisedIssuesResponse,
   IGetUserResponse,
+  IJobDetailsResponse,
   ILoginArgs,
+  INotification,
+  INotificationResponse,
   IRaiseIssueArgs,
   IRegisterUserArgs,
   IRegisterUserResponse,
@@ -43,7 +47,8 @@ import {
   formatDocument,
 } from '@utils/utils.common';
 import {STRINGS} from 'src/locales/english';
-import {IClientStatus, IUserTypeEnum} from '@utils/enums';
+import {IClientStatus, IJobPostStatus, IUserTypeEnum} from '@utils/enums';
+import {IJobPostTypes} from '../client/types';
 
 const baseApiWithUserTag = baseApi.enhanceEndpoints({
   addTagTypes: ['user'],
@@ -230,6 +235,13 @@ const authApi = baseApiWithUserTag.injectEndpoints({
     getUserDetails: builder.query<any, IUserDetailsRequest>({
       query: body => ({
         url: apiEndPoints.employeeDetails,
+        method: apiMethodType.post,
+        body,
+      }),
+    }),
+    updateFcmToken: builder.mutation<any, {firebaseToken: string}>({
+      query: body => ({
+        url: apiEndPoints.updateFcmToken,
         method: apiMethodType.post,
         body,
       }),
@@ -429,6 +441,127 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         return issues;
       },
     }),
+    getJobDetails: builder.query<
+      IJobPostTypes,
+      {jobId: number; userId: number}
+    >({
+      query: ({jobId}) => ({
+        url: apiEndPoints.getJobDetails(jobId),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (
+        response: IJobDetailsResponse,
+        meta: any,
+        args: any,
+      ) => {
+        let status: IJobPostStatus = IJobPostStatus.APPLIED;
+        response?.job_applications?.forEach(item => {
+          if (item.employee_details[0].id === args.userId) {
+            status = item.status;
+          }
+        });
+        console.log('JOBstatus', status);
+        return {
+          id: response.id,
+          job_name: response.job_name,
+          required_certificates: response.required_certificates,
+          city: response.city,
+          address: response.address,
+          postalCode: response.postalCode,
+          postID: response.postID,
+          gender: response.gender,
+          salary: response.salary,
+          notAccepting: response.notAccepting,
+          jobDuties: response.jobDuties,
+          job_type: response.job_type,
+          publishedAt: response.publishedAt,
+          applicants: null,
+          location: response.location,
+          description: response.description,
+          eventDate: response.eventDate,
+          endShift: response.endShift,
+          requiredEmployee: response.requiredEmployee,
+          status: status ?? IJobPostStatus.APPLIED,
+          startShift: response.startShift,
+          client_details: null,
+          company: {
+            id: response.client_details[0].id,
+            name: response.client_details[0].Name,
+            email: response.client_details[0].Email,
+            contactNo: response.client_details[0].contactno,
+            industry: response.client_details[0].Industry,
+            location: response.client_details[0].location,
+            logo: {
+              url: getImageUrl(
+                response.client_details[0].company_detail.companylogo?.url ??
+                  '',
+              ),
+              id:
+                response.client_details[0].company_detail.companylogo?.id ?? 0,
+              name: '',
+              size: 0,
+              mime: '',
+            },
+          },
+        };
+      },
+    }),
+    getNotifications: builder.query<
+      ICustomNotificationResponse,
+      {employeeId: number; page: number; pageSize: number}
+    >({
+      query: body => ({
+        url: apiEndPoints.getNotifications(
+          body.employeeId,
+          body.page,
+          body.pageSize,
+        ),
+        method: apiMethodType.get,
+      }),
+      transformResponse: (response: INotificationResponse) => {
+        const notifications: INotification[] = [];
+        response.data.map(notification => {
+          notifications.push({
+            JobID: notification.JobID,
+            title: notification.title,
+            status: notification.status,
+            message: notification.message,
+            updatedAt: notification.updatedAt,
+            id: notification.id,
+            icon: {
+              url: getImageUrl(notification.icon?.url ?? ''),
+              id: notification.icon?.id ?? 0,
+              name: notification.icon?.name ?? '',
+              size: notification.icon?.size ?? 0,
+              mime: notification.icon?.mime ?? '',
+            },
+          });
+        });
+        return {
+          data: notifications,
+          meta: response.meta,
+        };
+      },
+    }),
+    clearFirebaseToken: builder.mutation({
+      query: () => ({
+        url: apiEndPoints.clearFirebaseToken,
+        method: apiMethodType.post,
+        body: {},
+      }),
+    }),
+    updateNotificationStatus: builder.mutation<any, {notificationId: number}>({
+      query: body => ({
+        url: apiEndPoints.updateNotificationStatus(body.notificationId),
+        method: apiMethodType.PUT,
+      }),
+    }),
+    markAllRead: builder.mutation<any, {employeeId: number}>({
+      query: body => ({
+        url: apiEndPoints.markAllRead(body.employeeId),
+        method: apiMethodType.PUT,
+      }),
+    }),
   }),
 
   overrideExisting: false,
@@ -455,6 +588,12 @@ export const {
   useCancelDocumentRequestMutation,
   useReplaceRejectedDocumentMutation,
   useReplaceUpdateDocRequestMutation,
+  useUpdateFcmTokenMutation,
+  useLazyGetNotificationsQuery,
+  useUpdateNotificationStatusMutation,
+  useClearFirebaseTokenMutation,
+  useMarkAllReadMutation,
+  useLazyGetJobDetailsQuery,
 } = authApi;
 
 const getEmployeeDocs = (

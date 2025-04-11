@@ -1,56 +1,52 @@
-import {Pressable, StyleSheet, Text, View, Image} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {Row} from '@components/atoms/Row';
 import {verticalScale} from '@utils/metrics';
 import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
 import {Theme} from '@theme/index';
 import {fonts} from '@utils/common.styles';
-import HighlightText from '@sanar/react-native-highlight-text';
 import {useTheme} from '@theme/Theme.context';
 import {ICONS} from '@assets/exporter';
 import {fromNowOn} from '@utils/utils.common';
+import {INotification} from '@api/features/user/types';
+import CustomImageComponent from '@components/atoms/customImage';
 
 type INotificationPropsTypes = {
-  title: string;
-  icon: string | undefined;
-  isRead: boolean;
-  highlightText: string;
-  time: string;
+  notification: INotification;
+  updateNotificationStatus: (notificationId: number, jobId: number) => void;
 };
 
 const NotificationCard: React.FC<INotificationPropsTypes> = ({
-  title,
-  time,
-  isRead,
-  highlightText,
+  notification,
+  updateNotificationStatus,
 }) => {
   const {theme} = useTheme();
   const styles = useThemeAwareObject(createStyles);
+  const isRead = notification.status === 'read';
 
+  const onPressHandler = () => {
+    if (!isRead) {
+      updateNotificationStatus(notification.id, notification.JobID);
+    }
+  };
   return (
     <Pressable
+      onPress={onPressHandler}
       style={[styles.row, !isRead && {backgroundColor: theme.color.ternary}]}>
       {!isRead && <View style={styles.dot} />}
       <Row alignCenter>
-        <Image
-          resizeMode="cover"
-          style={styles.image}
-          source={ICONS.imagePlaceholder}
-        />
-        {/* <CustomImageComponent
+        <CustomImageComponent
           defaultSource={ICONS.imagePlaceholder}
-          image={icon}
-          resizeMode="cover"
+          image={notification.icon?.url ?? ''}
           customStyle={styles.image}
-        /> */}
+        />
         <View style={styles.textContainer}>
-          <HighlightText
-            highlightStyle={styles.notificationTextBold}
-            searchWords={[highlightText]}
-            style={styles.notificationText}
-            textToHighlight={title}
-          />
-          <Text style={styles.timeText}>{fromNowOn(time)}</Text>
+          <Text style={styles.notificationTextBold}>
+            {notification.message}
+          </Text>
+          <Text style={styles.timeText}>
+            {fromNowOn(notification.updatedAt)}
+          </Text>
         </View>
       </Row>
     </Pressable>
