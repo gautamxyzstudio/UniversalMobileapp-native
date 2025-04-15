@@ -18,17 +18,23 @@ import {NavigationProps} from 'src/navigator/types';
 import ActionPopup from '@components/molecules/ActionPopup';
 import {customModalRef} from '@components/molecules/customModal/types';
 import store from '@api/store';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   userAdvanceDetailsFromState,
   userBasicDetailsFromState,
 } from '@api/features/user/userSlice';
 import {IClientDetails} from '@api/features/user/types';
-
+import {withAsyncErrorHandlingPost} from '@utils/constants';
+import {ICustomErrorResponse} from '@api/types';
+import {useToast} from 'react-native-toast-notifications';
+import {useClearFirebaseTokenMutation} from '@api/features/user/userApi';
 const ClientProfile = () => {
   const styles = useThemeAwareObject(createStyles);
+  const [clearFirebaseToken] = useClearFirebaseTokenMutation();
   const navigation = useNavigation<NavigationProps>();
   const userBasicDetails = useSelector(userBasicDetailsFromState);
+  const toast = useToast();
+  const dispatch = useDispatch();
   const userAdvDetails = useSelector(
     userAdvanceDetailsFromState,
   ) as IClientDetails;
@@ -58,16 +64,26 @@ const ClientProfile = () => {
     });
   };
 
-  const onPressLogout = () => {
-    popupRef.current?.handleModalState(false);
-    setTimeout(() => {
-      store.dispatch({type: 'RESET'});
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'onBoarding'}],
-      });
-    }, 350);
-  };
+  const onPressLogout = withAsyncErrorHandlingPost(
+    async () => {
+      popupRef.current?.handleModalState(false);
+      setTimeout(async () => {
+        const response = await clearFirebaseToken({}).unwrap();
+        if (response) {
+          store.dispatch({type: 'RESET'});
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'onBoarding'}],
+          });
+        }
+      }, 350);
+    },
+    toast,
+    dispatch,
+    (error?: ICustomErrorResponse) => {
+      console.log('error', error);
+    },
+  );
   return (
     <OnBoardingBackground
       childrenStyles={styles.children}

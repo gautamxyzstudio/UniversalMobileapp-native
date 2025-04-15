@@ -98,11 +98,11 @@ const JobSeekerDetailsAndDocs = () => {
       const submitUserDetailsResponse = await submitUserDetails({
         data: fields,
       }).unwrap();
-      if (submitUserDetailsResponse) {
+      if (submitUserDetailsResponse.data.id) {
         const docs = employeeDocs?.concat(thirdStepDocs);
         const isDocumentsUploaded = await uploadOtherDocHandler(
           docs ?? [],
-          submitUserDetailsResponse.detailsId,
+          submitUserDetailsResponse.data.id,
         );
         if (isDocumentsUploaded) {
           const userDetails = await getUser();

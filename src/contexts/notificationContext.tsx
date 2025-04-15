@@ -152,9 +152,12 @@ export const NotificationContextProvider = ({
   // Handle FCM token changes: update Redux store if changed or fetch new token
   useEffect(() => {
     if (authToken) {
+      console.log('authToken', authToken);
       getFcmToken();
     }
   }, [authToken]); // Removed fcmToken from dependencies
+
+  console.log('authToken', authToken);
 
   // Request permissions and fetch the FCM token.
   // For iOS, ensure that an APNS token is registered first.
@@ -170,8 +173,6 @@ export const NotificationContextProvider = ({
           return;
         }
       }
-
-      // For iOS, register the device and get the APNS token
       if (Platform.OS === 'ios') {
         const isRegistered =
           await messaging().registerDeviceForRemoteMessages();
@@ -186,7 +187,7 @@ export const NotificationContextProvider = ({
 
       if (enabled) {
         const token = await messaging().getToken();
-        if (token && token !== fcmTokenState) {
+        if (token) {
           await updateFcmTokenHandler(token);
         } else {
           console.log('same Fcm token', token);
@@ -210,9 +211,15 @@ export const NotificationContextProvider = ({
 
   // Update FCM token in local state and Redux store
   const updateFcmTokenHandler = async (token: string) => {
-    setFcmToken(token);
-    dispatch(updateFcmToken(token));
-    await updateFcmHandler({firebaseToken: token});
+    try {
+      const response = await updateFcmHandler({firebaseToken: token}).unwrap();
+      if (response) {
+        setFcmToken(token);
+        dispatch(updateFcmToken(token));
+      }
+    } catch (error) {
+      console.error('Error updating FCM token:', error);
+    }
   };
 
   // Setup Firebase message listeners for various app states

@@ -364,9 +364,13 @@ export type IAddEmployeeDetailsResponse = {
 };
 
 export type IAddEmployeeDetailsCustomizedResponse = {
-  name: string;
-  email: string;
-  detailsId: number;
+  data: {
+    id: number;
+    attributes: {
+      name: string;
+      email: string;
+    };
+  };
 };
 
 export type IReplaceRejectedDocumentResponse = {
