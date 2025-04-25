@@ -31,6 +31,17 @@ export const forgotPasswordSchema = Yup.object().shape({
     .email(STRINGS.emailOrUsernameValid),
 });
 
+//reset password
+export const resetPasswordSchema = Yup.object().shape({
+  password: Yup.string()
+    .required(STRINGS.passwordRequired)
+    .min(8, STRINGS.passwordError)
+    .matches(/[A-Z]/, STRINGS.passErrorAtLeastOneCaps),
+  confirmPassword: Yup.string()
+    .required(STRINGS.passwordRequired)
+    .oneOf([Yup.ref('password')], STRINGS.passwordNotMatch),
+});
+
 //client details
 export const clientDetailsSchema = Yup.object().shape({
   name: Yup.string().required(STRINGS.name_required),

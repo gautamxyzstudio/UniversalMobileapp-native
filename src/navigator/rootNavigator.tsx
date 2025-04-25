@@ -40,6 +40,7 @@ import ClientDetails from '@screens/clientScreens/clientDetails';
 import HelpAndSupport from '@screens/common/helpAndSupport';
 import PrivacyPolicy from '@screens/common/privacyPolicy';
 import {NotificationContextProvider} from 'src/contexts/notificationContext';
+import ResetPassword from '@screens/auth/resetPasswrord';
 
 const RootNavigator = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -69,6 +70,10 @@ const RootNavigator = () => {
             <Stack.Screen
               name={routNames.employeeSearch}
               component={EmployeeSearch}
+            />
+            <Stack.Screen
+              name={routNames.resetPassword}
+              component={ResetPassword}
             />
             <Stack.Screen
               name={routNames.notifications}

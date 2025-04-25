@@ -49,6 +49,9 @@ export const STRINGS = {
   date_of_birth_required: 'Date of birth is a required field',
   gender: 'Gender',
   forgot_password: 'Forgot password?',
+  enter_the_new_password: 'Enter the new password',
+  reset_password: 'Reset password',
+  enter_the_password: 'Enter the password',
   sign_in_with: 'or sign in with',
   by_continuing_you_agree_to_our: 'By continuing, you agree to our ',
   terms_of_service: 'Terms of service',
@@ -330,4 +333,5 @@ export const STRINGS = {
   otherDocs: 'Other Documents',
   resume_simple: 'Resume',
   directDeposit: 'directDepositVoidCheque',
+  reset: 'Reset',
 };

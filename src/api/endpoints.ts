@@ -103,4 +103,5 @@ export const apiEndPoints = {
     `${process.env.BASE_URL}/api/push-notifications/${notificationId}/read`,
   markAllRead: (employeeId: number) =>
     `${process.env.BASE_URL}/api/push-notifications/mark-all-read/${employeeId}`,
+  resetPassword: `${process.env.BASE_URL}/api/users/reset-user-password`,
 };

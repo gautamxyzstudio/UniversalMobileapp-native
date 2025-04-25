@@ -89,22 +89,28 @@ const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
         email: userCred?.email,
       }).unwrap();
       if (verityOptResult.approved) {
-        let userSignUpRes = await userSignUp();
-        if (userSignUpRes) {
-          dispatch(saveUserDetails(userSignUpRes));
-          toast.show('SignUp Successful', {
-            type: 'success',
+        if (userCred.isForgotPassword) {
+          navigation.navigate('resetPassword', {
+            email: userCred.email,
           });
-          if (userCred.userType === 'emp') {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'jobSeekerDetailsAndDocs'}],
+        } else {
+          let userSignUpRes = await userSignUp();
+          if (userSignUpRes) {
+            dispatch(saveUserDetails(userSignUpRes));
+            toast.show('SignUp Successful', {
+              type: 'success',
             });
-          } else {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'recruiterDetails'}],
-            });
+            if (userCred.userType === 'emp') {
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'jobSeekerDetailsAndDocs'}],
+              });
+            } else {
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'recruiterDetails'}],
+              });
+            }
           }
         }
       } else {

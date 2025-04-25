@@ -31,6 +31,9 @@ export type RootStackParamList = {
   login: undefined;
   selectLocation: undefined;
   addLocationManually: undefined;
+  resetPassword: {
+    email: string;
+  };
   otpVerification: {
     isForgotPassword?: boolean;
     email: string;
@@ -86,6 +89,7 @@ type IScreenType = {
   onBoarding: 'onBoarding';
   welcome: 'welcome';
   login: 'login';
+  resetPassword: 'resetPassword';
   selectLocation: 'selectLocation';
   addLocationManually: 'addLocationManually';
   recruiterDetails: 'recruiterDetails';
@@ -134,6 +138,7 @@ export const routNames: IScreenType = {
   clientTabBar: 'clientTabBar',
   jobSeekerDetailsAndDocs: 'jobSeekerDetailsAndDocs',
   signup: 'signup',
+  resetPassword: 'resetPassword',
   otpVerification: 'otpVerification',
   forgotPassword: 'forgotPassword',
   confirmPassword: 'confirmPassword',

@@ -111,6 +111,16 @@ const authApi = baseApiWithUserTag.injectEndpoints({
         method: apiMethodType.get,
       }),
     }),
+    resetPassword: builder.mutation<
+      {message: 'Password reset successfully'},
+      {email: string; password: string}
+    >({
+      query: body => ({
+        url: apiEndPoints.resetPassword,
+        method: apiMethodType.post,
+        body,
+      }),
+    }),
     submitUserDetails: builder.mutation<
       IAddEmployeeDetailsCustomizedResponse,
       IUserDetailsRequest
@@ -594,6 +604,7 @@ export const {
   useClearFirebaseTokenMutation,
   useMarkAllReadMutation,
   useLazyGetJobDetailsQuery,
+  useResetPasswordMutation,
 } = authApi;
 
 const getEmployeeDocs = (
