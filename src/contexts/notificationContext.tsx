@@ -9,18 +9,23 @@ import {
   fcmTokenInState,
   updateFcmToken,
   userAdvanceDetailsFromState,
+  userBasicDetailsFromState,
   userTokenInState,
 } from '@api/features/user/userSlice';
 import {useAppDispatch, useAppSelector} from '@api/store';
 import {showToast} from '@components/organisms/customToast';
 import messaging from '@react-native-firebase/messaging';
 import React, {createContext, useContext, useEffect, useState} from 'react';
-import {PermissionsAndroid, Platform} from 'react-native';
+import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import {useToast} from 'react-native-toast-notifications';
 import {useSelector} from 'react-redux';
 import {STRINGS} from 'src/locales/english';
 import {useJobDetailsContext} from './displayJobDetailsContext';
-import {employeeTabBarRoutes, navigationRef} from 'src/navigator/types';
+import {
+  clientTabBarRoutes,
+  employeeTabBarRoutes,
+  navigationRef,
+} from 'src/navigator/types';
 
 interface NotificationContextProps {
   fcmToken: string;
@@ -58,6 +63,7 @@ export const NotificationContextProvider = ({
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const toast = useToast();
   const authToken = useSelector(userTokenInState);
+  const userBasic = useSelector(userBasicDetailsFromState);
   const user = useSelector(userAdvanceDetailsFromState);
   const [getJobDetails] = useLazyGetJobDetailsQuery();
   const dispatch = useAppDispatch();
@@ -125,25 +131,36 @@ export const NotificationContextProvider = ({
   const handleNotificationOnPress = async (
     notification: NotificationMessage,
   ) => {
-    if (notification && notification.data?.JobId && user?.detailsId) {
-      const jobId = notification.data?.JobId;
-      try {
-        dispatch(setLoading(true));
-        const jobDetails = await getJobDetails({
-          jobId: jobId as unknown as number,
-          userId: user?.detailsId ?? 0,
-        }).unwrap();
-        onPressSheet('show', jobDetails);
-      } catch (error) {
-        showToast(toast, STRINGS.something_went_wrong, 'error');
-        console.log('error', error);
-      } finally {
-        dispatch(setLoading(false));
+    if (userBasic?.user_type === 'emp') {
+      if (notification && notification.data?.JobId && user?.detailsId) {
+        const jobId = notification.data?.JobId;
+        try {
+          dispatch(setLoading(true));
+          const jobDetails = await getJobDetails({
+            jobId: jobId as unknown as number,
+            userId: user?.detailsId ?? 0,
+          }).unwrap();
+          onPressSheet('show', jobDetails);
+        } catch (error) {
+          showToast(toast, STRINGS.something_went_wrong, 'error');
+          console.log('error', error);
+        } finally {
+          dispatch(setLoading(false));
+        }
+      } else {
+        if (notification.notification?.title === 'Job Status Updated') {
+          navigationRef.navigate('employeeTabBar', {
+            screen: employeeTabBarRoutes.jobs,
+          } as unknown as undefined);
+        }
       }
     } else {
-      if (notification.notification?.title === 'Job Status Updated') {
-        navigationRef.navigate('employeeTabBar', {
-          screen: employeeTabBarRoutes.jobs,
+      if (notification?.data?.jobId) {
+        navigationRef.navigate('clientTabBar', {
+          screen: clientTabBarRoutes.contactList,
+          params: {
+            jobId: notification?.data?.jobId,
+          },
         } as unknown as undefined);
       }
     }
@@ -152,12 +169,9 @@ export const NotificationContextProvider = ({
   // Handle FCM token changes: update Redux store if changed or fetch new token
   useEffect(() => {
     if (authToken) {
-      console.log('authToken', authToken);
       getFcmToken();
     }
   }, [authToken]); // Removed fcmToken from dependencies
-
-  console.log('authToken', authToken);
 
   // Request permissions and fetch the FCM token.
   // For iOS, ensure that an APNS token is registered first.

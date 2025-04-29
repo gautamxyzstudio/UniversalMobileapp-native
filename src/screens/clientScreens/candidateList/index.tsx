@@ -28,7 +28,6 @@ import EmptyState from '@screens/common/emptyAndErrorScreen';
 import {IC_NO_CANDIDATES} from '@assets/exporter';
 import {timeOutTimeSheets} from 'src/constants/constants';
 import {IClientDetails} from '@api/features/user/types';
-import {useToast} from 'react-native-toast-notifications';
 
 type ICandidateListProps = {
   route: {
@@ -83,16 +82,15 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   );
 
   useEffect(() => {
-    if (selectedJobId) {
+    if (selectedJobId && candidateJobs.length > 0) {
       let jobIndex = candidateJobs.findIndex(
-        j => j.details.jobId === selectedJobId,
+        j => j.details.jobId === Number(selectedJobId),
       );
-
       if (jobIndex !== -1) {
         setCurrentSelectedJob(candidateJobs[jobIndex]);
       }
     }
-  }, [selectedJobId, isJobsUpdated]);
+  }, [selectedJobId, isJobsUpdated, candidateJobs]);
 
   useEffect(() => {
     if (candidateJobs) {
