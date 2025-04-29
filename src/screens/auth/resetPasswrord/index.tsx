@@ -43,7 +43,6 @@ const ResetPassword = ({route}: {route: {params: {email: string}}}) => {
             email: route.params.email,
             password: state.password,
           }).unwrap();
-          console.log(response, 'SOSS');
           if (response?.message) {
             showToast(toast, response?.message, 'success');
             navigation.reset({

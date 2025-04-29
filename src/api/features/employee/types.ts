@@ -106,8 +106,8 @@ export type IApplyForJobRequest = {
   data: {
     applicationDate: Date;
     status: IJobPostStatus;
-    employee_details: number;
-    jobs: number;
+    employee_details: [number];
+    jobs: [number];
   };
 };
 

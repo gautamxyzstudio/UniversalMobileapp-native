@@ -30,6 +30,7 @@ const ClientHome = () => {
     <PaperProvider>
       <View style={styles.container}>
         <HomeTopView
+          withNotification={false}
           withSearch={false}
           height={undefined}
           isLocationApplied={false}

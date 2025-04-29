@@ -56,7 +56,7 @@ type IReviewJobPostProps = {
 const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const dispatch = useDispatch();
   const jobDetails = route.params.postDetails;
-
+  const userAdv = useSelector(userAdvanceDetailsFromState) as IClientDetails;
   const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
 
@@ -84,12 +84,13 @@ const ReviewJobPost: React.FC<IReviewJobPostProps> = ({route}) => {
   const postJobHandler = async () => {
     try {
       dispatch(setLoading(true));
-      if (jobDetails) {
+      if (jobDetails && userAdv?.company?.id) {
         const response = await postJob({
           data: {
             ...jobDetails,
             client_details: user?.details?.detailsId ?? 0,
             status: IJobPostStatus.OPEN,
+            CompanyId: userAdv?.company?.id,
           },
         }).unwrap();
         if (response) {

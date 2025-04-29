@@ -29,6 +29,7 @@ export interface IJobPostInterface
     IJobPostingStepTwoFields,
     IJobPostingStepThreeFields {
   client_details: number;
+  CompanyId: number;
   status: IJobPostStatus;
 }
 

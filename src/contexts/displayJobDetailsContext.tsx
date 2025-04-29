@@ -66,10 +66,10 @@ const JobDetailsContextProvider = ({children}: {children: React.ReactNode}) => {
       if (selectedJobDetails?.id && selectedJobDetails?.id && user) {
         const applyJobResponse = await applyForJob({
           data: {
-            jobs: selectedJobDetails?.id,
+            jobs: [selectedJobDetails?.id],
             applicationDate: new Date(),
             status: IJobPostStatus.APPLIED,
-            employee_details: user.details?.detailsId ?? 0,
+            employee_details: [user.details?.detailsId ?? 0],
           },
         }).unwrap();
         if (applyJobResponse) {

@@ -29,16 +29,21 @@ import {mockJobPosts} from '@api/mockData';
 import JobDetailsBottomSheet from '@components/employee/JobDetailsBottomSheet';
 import {showToast} from '@components/organisms/customToast';
 import {useToast} from 'react-native-toast-notifications';
-import {userBasicDetailsFromState} from '@api/features/user/userSlice';
+import {
+  userAdvanceDetailsFromState,
+  userBasicDetailsFromState,
+} from '@api/features/user/userSlice';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {IJobPostStatus} from '@utils/enums';
 import {timeOutTimeSheets} from 'src/constants/constants';
+import {IClientDetails} from '@api/features/user/types';
 
 const JobPostDrafts = () => {
   const quickActionSheetRef = useRef<BottomSheetModal | null>(null);
   const jobDetailsSheetRef = useRef<BottomSheetModal | null>(null);
   const rootDrafts = useSelector(jobDraftFromState);
+  const userAdv = useSelector(userAdvanceDetailsFromState) as IClientDetails;
 
   const [currentSelectedDraft, setCurrentSelectedDraft] =
     useState<IJobPostTypes | null>(null);
@@ -84,7 +89,7 @@ const JobPostDrafts = () => {
     setTimeout(async () => {
       try {
         dispatch(setLoading(true));
-        if (currentSelectedDraft !== null) {
+        if (currentSelectedDraft !== null && userAdv?.company?.id) {
           const response = await postJob({
             data: {
               job_name: currentSelectedDraft.job_name ?? '',
@@ -105,6 +110,7 @@ const JobPostDrafts = () => {
               requiredEmployee: currentSelectedDraft.requiredEmployee ?? 0,
               required_certificates:
                 currentSelectedDraft.required_certificates ?? [],
+              CompanyId: userAdv?.company?.id ?? 0,
             },
           }).unwrap();
           if (response) {
@@ -112,7 +118,23 @@ const JobPostDrafts = () => {
               id: currentSelectedDraft?.id ?? 0,
             }).unwrap();
             if (deletePostedDraftResponse) {
-              dispatch(addNewJob(response));
+              dispatch(
+                addNewJob({
+                  ...response,
+                  company: {
+                    logo: userAdv?.company?.companylogo ?? null,
+                    name: userAdv?.company?.companyname ?? '',
+                    id: userAdv?.company?.id ?? 0,
+                  },
+                  client_details: {
+                    ...response.client_details,
+                    id: user?.details?.detailsId ?? 0,
+                    name: user?.details?.name ?? '',
+                    email: user?.email ?? '',
+                    location: userAdv.location ?? '',
+                  },
+                }),
+              );
               dispatch(removeADraft({id: currentSelectedDraft?.id ?? 0}));
             }
             showToast(toast, 'job posted successfully', 'success');

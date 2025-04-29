@@ -30,6 +30,7 @@ const HomeTopView = ({
   onPressFilters,
   isLocationApplied,
   isFilterApplied,
+  withNotification = true,
 }: {
   height?: SharedValue<number>;
   onPress?: () => void;
@@ -37,6 +38,7 @@ const HomeTopView = ({
   isLocationApplied: boolean;
   isFilterApplied?: boolean;
   onPressFilters: () => void;
+  withNotification?: boolean;
 }) => {
   const insetTop = useSafeAreaInsets().top;
   const top = verticalScale(insetTop) + verticalScale(8);
@@ -82,10 +84,12 @@ const HomeTopView = ({
             ]}>{`Hi ${userDetails?.name},`}</Text>
           <Text style={styles.subHeading}>{STRINGS.welcome_to_universal}</Text>
         </View>
-        <TouchableOpacity onPress={onPressBell}>
-          <BELL height={verticalScale(24)} width={verticalScale(24)} />
-          <View style={styles.redDot} />
-        </TouchableOpacity>
+        {withNotification && (
+          <TouchableOpacity onPress={onPressBell}>
+            <BELL height={verticalScale(24)} width={verticalScale(24)} />
+            <View style={styles.redDot} />
+          </TouchableOpacity>
+        )}
       </Animated.View>
       {withSearch && (
         <Row alignCenter style={styles.search}>

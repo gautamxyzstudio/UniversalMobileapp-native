@@ -49,6 +49,7 @@ const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
   const toast = useToast();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector(userBasicDetailsFromState);
+
   const [jobPostFields, updateJobPostFields] = useState<any>();
   const jobPostStepOneRef = useRef<IJobPostRef | null>(null);
   const jobPostStepTwoRef = useRef<IJobPostStepTwoRef | null>(null);
@@ -58,6 +59,7 @@ const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
   const flatListRef = useRef<FlatList | null>(null);
   const draftsFromState = useSelector(jobDraftFromState);
   const {draftId} = route.params;
+
   const [updateDraft] = usePatchADraftMutation();
 
   useEffect(() => {
