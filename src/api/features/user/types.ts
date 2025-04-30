@@ -172,6 +172,7 @@ export type IClientApiResponse = {
 export type IVerifyOtpResponse = {
   approved: boolean;
   details: string[];
+  resetToken: string;
 };
 
 export type IUpdateClientDetailsRequest = {

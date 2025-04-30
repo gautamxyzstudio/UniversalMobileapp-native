@@ -16,7 +16,7 @@ import {showToast} from '@components/organisms/customToast';
 import {resetPasswordSchema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 
-const ResetPassword = ({route}: {route: {params: {email: string}}}) => {
+const ResetPassword = ({route}: {route: {params: {resetToken: string}}}) => {
   const [resetPassword] = useResetPasswordMutation();
   const toast = useToast();
   const navigation = useNavigation<NavigationProps>();
@@ -30,7 +30,7 @@ const ResetPassword = ({route}: {route: {params: {email: string}}}) => {
     isConfirmPasswordVisible: false,
   });
   console.log('reset password');
-  console.log(route.params.email);
+  console.log(route.params.resetToken);
 
   const resetPasswordHandler = withAsyncErrorHandlingPost(
     async () => {
@@ -40,7 +40,7 @@ const ResetPassword = ({route}: {route: {params: {email: string}}}) => {
         });
         if (fields) {
           const response = await resetPassword({
-            email: route.params.email,
+            resetToken: route.params.resetToken,
             password: state.password,
           }).unwrap();
           if (response?.message) {

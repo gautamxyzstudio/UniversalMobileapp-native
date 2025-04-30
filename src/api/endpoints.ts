@@ -17,6 +17,7 @@ export const apiEndPoints = {
   verifyOtpMobile: `${process.env.BASE_URL}/api/otp/verify`,
   updateEmployeeDetails: (id: number) =>
     `${process.env.BASE_URL}/api/employee-details/${id}`,
+  userExists: `${process.env.BASE_URL}/api/users/user-exists`,
   clientDetails: `${process.env.BASE_URL}/api/client-details`,
   uploadOtherDocuments: `${process.env.BASE_URL}/api/other-documents/bulk-create`,
   replaceDocument: (docId: number) =>

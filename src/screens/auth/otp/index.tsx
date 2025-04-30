@@ -14,7 +14,7 @@ import {fontFamily, fonts} from '@utils/common.styles';
 import {moderateScale, verticalScale} from '@utils/metrics';
 import OtpInput from '@components/molecules/InputTypes/otpInput';
 import CustomButton from '@components/molecules/customButton';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, StackActions} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {useDispatch} from 'react-redux';
 import {
@@ -90,9 +90,11 @@ const OtpVerification: React.FC<IOptVerificationPros> = ({route}) => {
       }).unwrap();
       if (verityOptResult.approved) {
         if (userCred.isForgotPassword) {
-          navigation.navigate('resetPassword', {
-            email: userCred.email,
-          });
+          navigation.dispatch(
+            StackActions.replace('resetPassword', {
+              resetToken: verityOptResult.resetToken,
+            }),
+          );
         } else {
           let userSignUpRes = await userSignUp();
           if (userSignUpRes) {

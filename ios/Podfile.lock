@@ -18,7 +18,7 @@ PODS:
   - Firebase/Messaging (11.7.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 11.7.0)
-  - FirebaseAppCheckInterop (11.11.0)
+  - FirebaseAppCheckInterop (11.12.0)
   - FirebaseAuth (11.7.0):
     - FirebaseAppCheckInterop (~> 11.0)
     - FirebaseAuthInterop (~> 11.0)
@@ -28,7 +28,7 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GTMSessionFetcher/Core (< 5.0, >= 3.4)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseAuthInterop (11.11.0)
+  - FirebaseAuthInterop (11.12.0)
   - FirebaseCore (11.7.0):
     - FirebaseCoreInternal (~> 11.7.0)
     - GoogleUtilities/Environment (~> 8.0)
@@ -1399,8 +1399,6 @@ PODS:
     - React-perflogger (= 0.74.0)
     - React-utils (= 0.74.0)
   - RecaptchaInterop (100.0.0)
-  - RNAppleAuthentication (2.3.0):
-    - React-Core
   - RNCAsyncStorage (1.23.1):
     - React-Core
   - RNCPushNotificationIOS (1.11.0):
@@ -1601,7 +1599,6 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
@@ -1789,8 +1786,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  RNAppleAuthentication:
-    :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCPushNotificationIOS:
@@ -1833,9 +1828,9 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 026c8f4ae67b06e088ae01baa2271ef8a26c0e8c
   Firebase: a64bf6a8546e6eab54f1c715cd6151f39d2329f4
-  FirebaseAppCheckInterop: f23709c9ce92d810aa53ff4ce12ad3e666a3c7be
+  FirebaseAppCheckInterop: 73b173e5ec45192e2d522ad43f526a82ad10b852
   FirebaseAuth: 77e25aa24f3e1c626c5babd3338551fc1669ee0e
-  FirebaseAuthInterop: ac22ed402c2f4e3a8c63ebd3278af9a06073c1be
+  FirebaseAuthInterop: b583210c039a60ed3f1e48865e1f3da44a796595
   FirebaseCore: 3227e35f4197a924206fbcdc0349325baf4f5de4
   FirebaseCoreExtension: 206c1b399f0d103055207c16f299b28e3dbd1949
   FirebaseCoreInternal: d6c17dafc8dc33614733a8b52df78fcb4394c881
@@ -1918,7 +1913,6 @@ SPEC CHECKSUMS:
   React-utils: 0f71d5cff6548ba0228f8d337a512ea0e9de4538
   ReactCommon: cb3b44918cda4534d7e2ca944afae7e36a26e9ee
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNAppleAuthentication: 445222cf501db405f0b3713593a6d0fecc87fd05
   RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
   RNCPushNotificationIOS: 6c4ca3388c7434e4a662b92e4dfeeee858e6f440
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
@@ -1940,6 +1934,6 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 3f9165051bbc60b66f6a88c5eeafd9e9faa29500
 
-PODFILE CHECKSUM: 3dc5a2924eb4909e39619e8500eb3b7fd8cf4c76
+PODFILE CHECKSUM: bfb9a1e2918fc666dd9050087dbd0d7247a044d2
 
 COCOAPODS: 1.16.2

@@ -113,10 +113,17 @@ const authApi = baseApiWithUserTag.injectEndpoints({
     }),
     resetPassword: builder.mutation<
       {message: 'Password reset successfully'},
-      {email: string; password: string}
+      {resetToken: string; password: string}
     >({
       query: body => ({
         url: apiEndPoints.resetPassword,
+        method: apiMethodType.post,
+        body,
+      }),
+    }),
+    userExists: builder.mutation<{exists: boolean}, {email: string}>({
+      query: body => ({
+        url: apiEndPoints.userExists,
         method: apiMethodType.post,
         body,
       }),
@@ -605,6 +612,7 @@ export const {
   useMarkAllReadMutation,
   useLazyGetJobDetailsQuery,
   useResetPasswordMutation,
+  useUserExistsMutation,
 } = authApi;
 
 const getEmployeeDocs = (

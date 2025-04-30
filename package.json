@@ -12,7 +12,6 @@
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.3",
     "@gorhom/portal": "^1.0.14",
-    "@invertase/react-native-apple-authentication": "^2.3.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/geolocation": "^3.2.1",
     "@react-native-community/netinfo": "^11.3.2",

@@ -9,7 +9,10 @@ import {useNavigation} from '@react-navigation/native';
 import {forgotPasswordSchema} from '@utils/validationSchemas';
 import {ValidationError} from 'yup';
 import {NavigationProps} from 'src/navigator/types';
-import {useSendEmailOtpMutation} from '@api/features/user/userApi';
+import {
+  useSendEmailOtpMutation,
+  useUserExistsMutation,
+} from '@api/features/user/userApi';
 import {useDispatch} from 'react-redux';
 import {setLoading} from '@api/features/loading/loadingSlice';
 import {showToast} from '@components/organisms/customToast';
@@ -19,6 +22,7 @@ const ForgotPassword = () => {
   const navigation = useNavigation<NavigationProps>();
   const [email, setEmail] = useState<string>('');
   const dispatch = useDispatch();
+  const [userExists] = useUserExistsMutation();
   const toast = useToast();
   const [sendOptVerificationRequest] = useSendEmailOtpMutation();
   const [emailError, setEmailError] = useState('');
@@ -32,7 +36,13 @@ const ForgotPassword = () => {
         },
       );
       if (validateEmail) {
-        navigateToConfirmPassword(validateEmail.email);
+        dispatch(setLoading(true));
+        const isUserExists = await checkUserExists(validateEmail.email);
+        if (isUserExists) {
+          navigateToConfirmPassword(validateEmail.email);
+        } else {
+          setEmailError('User does not exist');
+        }
       }
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -49,9 +59,17 @@ const ForgotPassword = () => {
     }
   };
 
+  const checkUserExists = async (email: string) => {
+    try {
+      const result = await userExists({email}).unwrap();
+      return result?.exists;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const navigateToConfirmPassword = async (email: string) => {
     try {
-      dispatch(setLoading(true));
       const otpSent = await sendOtp(email);
       if (otpSent) {
         navigation.navigate('otpVerification', {
