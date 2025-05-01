@@ -41,7 +41,7 @@ const ForgotPassword = () => {
         if (isUserExists) {
           navigateToConfirmPassword(validateEmail.email);
         } else {
-          setEmailError('User does not exist');
+          showToast(toast, 'User does not exist', 'error');
         }
       }
     } catch (error) {
@@ -56,6 +56,8 @@ const ForgotPassword = () => {
       } else {
         console.error(error);
       }
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -65,6 +67,8 @@ const ForgotPassword = () => {
       return result?.exists;
     } catch (error) {
       throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 

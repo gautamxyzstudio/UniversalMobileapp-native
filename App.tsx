@@ -80,7 +80,7 @@ const App = () => {
                   <PersistGate loading={null} persistor={persistor}>
                     <ToastProvider
                       placement="bottom"
-                      duration={333000}
+                      duration={3000}
                       animationType="zoom-in"
                       renderToast={toast => <CustomToast toast={toast} />}
                       swipeEnabled>
