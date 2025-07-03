@@ -6,7 +6,7 @@ export const getStyles = (colors: Theme) => {
   const styles = StyleSheet.create({
     unfinished: {
       width: verticalScale(25),
-      backgroundColor: '#Fea66a',
+      backgroundColor: colors.color.primary,
       height: verticalScale(25),
       borderRadius: verticalScale(15),
       borderWidth: 2,

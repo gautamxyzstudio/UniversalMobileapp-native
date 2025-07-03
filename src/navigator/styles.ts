@@ -1,3 +1,4 @@
+import {DEFAULT_LIGHT_COLOR_THEME} from '@theme/DefaultLight.theme';
 import {fonts} from '@utils/common.styles';
 import {verticalScale} from '@utils/metrics';
 import {Platform, StyleSheet} from 'react-native';
@@ -10,7 +11,7 @@ export const styles = StyleSheet.create({
   container: {
     height: verticalScale(48),
     gap: verticalScale(12),
-    backgroundColor: '#FF7312',
+    backgroundColor: DEFAULT_LIGHT_COLOR_THEME.darkBlue,
     borderRadius: 40,
     paddingHorizontal: verticalScale(12),
     // paddingVertical: verticalScale(8),

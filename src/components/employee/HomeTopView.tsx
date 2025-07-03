@@ -73,6 +73,8 @@ const HomeTopView = ({
   return (
     <LinearGradient
       colors={gradients.defaultLinear}
+      start={{x: 0.9, y: 0}}
+      end={{x: 0, y: 0}}
       style={[styles.main, {paddingTop: top}]}>
       <Animated.View style={[styles.container, withSearch && containerStyles]}>
         <View>

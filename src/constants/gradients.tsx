@@ -1,3 +1,3 @@
 export const gradients = {
-  defaultLinear: ['#F9751A', '#FFBB8C'],
+  defaultLinear: ['#109b4f', '#E7FFF4'],
 };

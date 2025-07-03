@@ -128,6 +128,7 @@ export const ICONS = {
   tick: require('./icons/png/tick.png'),
   logoOne: require('./icons/png/logoOne.png'),
   logoTwo: require('./icons/png/logoTwo.png'),
+  logoThree: require('./icons/png/logoThree.png'),
   dropDown: require('./icons/png/dropdown.png'),
   home: require('./icons/png/tabaricons/home.png'),
   homeFilled: require('./icons/png/tabaricons/home_filled.png'),

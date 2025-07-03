@@ -5,20 +5,43 @@ import {StyleSheet} from 'react-native';
 export const getStyles = (colors: Theme) => {
   const styles = StyleSheet.create({
     logoOne: {
-      width: verticalScale(108),
-      height: verticalScale(108),
+      width: verticalScale(208),
+      height: verticalScale(208),
       resizeMode: 'contain',
     },
     container: {
       flex: 1,
       justifyContent: 'center',
-      paddingLeft: verticalScale(36),
+    },
+    logoText: {
+      fontSize: verticalScale(48),
+      fontWeight: 'bold',
+      color: colors.color.textPrimary,
+      fontFamily: 'Poppins-Bold',
+    },
+    logoTextSec: {
+      fontSize: verticalScale(36),
+      fontWeight: 'bold',
+      color: colors.color.darkBlue,
+      fontFamily: 'Poppins-Bold',
+    },
+    logoTextContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     logoTwo: {
+      width: verticalScale(104),
       position: 'absolute',
-      top: verticalScale(19),
-      left: verticalScale(89),
-      backgroundColor: colors.color.primary,
+      height: verticalScale(104),
+      top: 120 / 3,
+      resizeMode: 'contain',
+    },
+    logoThree: {
+      width: verticalScale(54),
+      position: 'absolute',
+      height: verticalScale(54),
+      top: -verticalScale(12),
+      resizeMode: 'contain',
     },
     loaderView: {
       height: windowHeight / 2,

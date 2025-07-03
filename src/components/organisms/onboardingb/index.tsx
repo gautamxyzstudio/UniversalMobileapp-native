@@ -93,7 +93,11 @@ const OnBoardingBackground: React.FC<IOnboardingProps> = ({
           paddingTop: insetsTop,
         },
       ]}
-      colors={['#F9751A', '#FFBB8C', '#FFF']}>
+      colors={[
+        `${theme.color.blueLight}`,
+        `${theme.color.greenLight}`,
+        `${theme.color.primary}`,
+      ]}>
       <View style={[styles.header]}>
         <View style={styles.flexBox}>
           {!hideBack && (

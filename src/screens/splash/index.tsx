@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
-import {getStyles} from './styles';
-import {ActivityIndicator, Platform, StatusBar, View} from 'react-native';
+import {ActivityIndicator, Platform, StatusBar, Text, View} from 'react-native';
 import Animated, {
   Easing,
   interpolate,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
+  withRepeat,
 } from 'react-native-reanimated';
 import {useTheme} from '@theme/Theme.context';
+import {useThemeAwareObject} from '@theme/ThemeAwareObject.hook';
+import {getStyles} from './styles';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from 'src/navigator/types';
 import {useDispatch, useSelector} from 'react-redux';
@@ -34,10 +34,14 @@ import {IClientStatus} from '@utils/enums';
 
 const Splash = () => {
   const styles = useThemeAwareObject(getStyles);
-  const animationValue = useSharedValue(0);
-  const animationValueSec = useSharedValue(0);
   const {theme} = useTheme();
   const backgroundColor = useSharedValue(theme.color.primary);
+
+  const animationValue = useSharedValue(0);
+  const animationValueSec = useSharedValue(0);
+  const logoThreeYoyo = useSharedValue(0);
+  const logoThreeVisible = useSharedValue(0); // controls visibility
+
   const [showLoader, setShowLoader] = useState(false);
   const user = useSelector(userBasicDetailsFromState);
   const dispatch = useDispatch();
@@ -120,65 +124,79 @@ const Splash = () => {
       duration: 500,
       easing: Easing.linear,
     });
+
     animationValueSec.value = withDelay(
       700,
-      withTiming(
-        1,
-        {
-          duration: 500,
-          easing: Easing.linear,
-        },
-        () => {
-          runOnJS(navigateToNextScreen)();
-        },
+      withTiming(1, {
+        duration: 500,
+        easing: Easing.linear,
+      }),
+    );
+
+    logoThreeVisible.value = withDelay(1300, withTiming(1, {duration: 300}));
+
+    logoThreeYoyo.value = withDelay(
+      1300,
+      withRepeat(
+        withTiming(1, {
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        -1,
+        true,
       ),
     );
+    const timeout = setTimeout(() => {
+      navigateToNextScreen();
+    }, 3000);
+    return () => clearTimeout(timeout); // cl
   }, []);
 
-  const backgroundStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor: backgroundColor.value,
-    };
-  }, []);
+  const backgroundStyles = useAnimatedStyle(() => ({
+    backgroundColor: backgroundColor.value,
+  }));
 
-  const logoOneStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {scale: interpolate(animationValue.value, [0, 1], [0.7, 1])},
-        {
-          translateX: interpolate(
-            animationValue.value,
-            [0, 1],
-            [windowWidth * 1.2, 0],
-          ),
-        },
-        {
-          rotate: `${interpolate(animationValue.value, [0, 1], [180, 0])}deg`,
-        },
-      ],
-    };
-  }, []);
+  const logoOneStyles = useAnimatedStyle(() => ({
+    transform: [
+      {scale: interpolate(animationValue.value, [0, 1], [0.7, 1])},
+      {
+        translateX: interpolate(
+          animationValue.value,
+          [0, 1],
+          [windowWidth * 1.2, 0],
+        ),
+      },
+      {rotate: `${interpolate(animationValue.value, [0, 1], [180, 0])}deg`},
+    ],
+  }));
 
-  console.log(error, 'ERROR');
+  const logoTwoStyles = useAnimatedStyle(() => ({
+    transform: [{scale: interpolate(animationValueSec.value, [0, 1], [0, 1])}],
+    opacity: interpolate(animationValueSec.value, [0, 1], [0, 1]),
+  }));
 
-  const logoTwoStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: interpolate(
-            animationValueSec.value,
-            [0, 1],
-            [windowWidth, 0],
-          ),
-        },
-      ],
-    };
-  }, []);
+  const logoThreeStyles = useAnimatedStyle(() => ({
+    opacity: logoThreeVisible.value,
+    transform: [
+      {
+        translateY: interpolate(logoThreeYoyo.value, [0, 1], [-8, 8]),
+      },
+    ],
+  }));
+
+  const textAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: logoThreeVisible.value,
+    transform: [
+      {
+        translateY: interpolate(logoThreeVisible.value, [0, 1], [10, 0]),
+      },
+    ],
+  }));
 
   return (
     <>
       <Animated.View style={[styles.container, backgroundStyles]}>
-        <Row>
+        <Row alignCenter center>
           <Animated.Image
             style={[styles.logoOne, logoOneStyles]}
             source={ICONS.logoOne}
@@ -187,13 +205,23 @@ const Splash = () => {
             style={[styles.logoTwo, logoTwoStyles]}
             source={ICONS.logoTwo}
           />
+          <Animated.Image
+            style={[styles.logoThree, logoThreeStyles]}
+            source={ICONS.logoThree}
+          />
         </Row>
+        <Animated.View style={[styles.logoTextContainer, textAnimatedStyle]}>
+          <Text style={styles.logoText}>Universal</Text>
+          <Text style={styles.logoTextSec}>Recruitment Inc.</Text>
+        </Animated.View>
       </Animated.View>
+
       {showLoader && (
         <View style={styles.loaderView}>
           <ActivityIndicator size={'large'} color={theme.color.accent} />
         </View>
       )}
+
       {!showLoader && error && (
         <View style={styles.bottomView}>
           <CustomText size={textSizeEnum.headingBold} value={'Oops!'} />
@@ -207,6 +235,7 @@ const Splash = () => {
           />
         </View>
       )}
+
       {Platform.OS === 'android' && (
         <StatusBar
           translucent={true}

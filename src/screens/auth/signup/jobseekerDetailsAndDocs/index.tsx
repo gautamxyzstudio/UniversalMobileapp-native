@@ -49,6 +49,7 @@ import {useToast} from 'react-native-toast-notifications';
 import {IOtherDocRequest} from './types';
 import {showToast} from '@components/organisms/customToast';
 import {ICustomErrorResponse} from '@api/types';
+import {gradients} from 'src/constants/gradients';
 
 const JobSeekerDetailsAndDocs = () => {
   const stepOneRef = useRef<jobSeekerRef>(null);
@@ -248,7 +249,7 @@ const JobSeekerDetailsAndDocs = () => {
     <LinearGradient
       style={[styles.container, {paddingTop: insetsTop}]}
       locations={[0.05, 0.25, 1]}
-      colors={['#F9751A', '#FFBB8C', '#FFF']}>
+      colors={gradients.defaultLinear}>
       <View style={styles.headerContainer}>
         <HeaderWithBack
           withArrow={false}

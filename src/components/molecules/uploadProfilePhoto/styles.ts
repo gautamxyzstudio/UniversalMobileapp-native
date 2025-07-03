@@ -13,7 +13,7 @@ export const getStyles = (theme: Theme) => {
       width: verticalScale(80),
       height: verticalScale(80),
       borderRadius: verticalScale(40),
-      backgroundColor: theme.color.secondary,
+      backgroundColor: theme.color.greenLight,
       justifyContent: 'center',
       borderWidth: 1,
       borderColor: theme.color.grey,

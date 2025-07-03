@@ -34,6 +34,7 @@ import {IJobPostStatus} from '@utils/enums';
 import {userBasicDetailsFromState} from '@api/features/user/userSlice';
 import {showToast} from '@components/organisms/customToast';
 import {AppDispatch} from '@api/store';
+import {gradients} from 'src/constants/gradients';
 
 export type IJobPostingPropType = {
   route: {
@@ -197,7 +198,7 @@ const JobPosting: React.FC<IJobPostingPropType> = ({route}) => {
     <LinearGradient
       style={[styles.container, {paddingTop: insetsTop}]}
       locations={[0.05, 0.25, 1]}
-      colors={['#F9751A', '#FFBB8C', '#FFF']}>
+      colors={gradients.defaultLinear}>
       <View style={styles.headerContainer}>
         <HeaderWithBack
           renderRightIcon={true}
