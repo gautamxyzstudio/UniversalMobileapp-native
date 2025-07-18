@@ -65,7 +65,7 @@ const OnBoarding = () => {
           <Poster
             style={styles.poster}
             width={posterWidth}
-            height={verticalScale(410)}
+            height={verticalScale(380)}
           />
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.paragraph}>{item.description}</Text>

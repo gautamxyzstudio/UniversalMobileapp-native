@@ -14,12 +14,19 @@ const initialState: IClientSliceInitialState = {
     drafts: [],
   },
   candidateList: [],
+  selectedJob: null,
 };
 
 const clientSlice = createSlice({
   name: 'CLIENT',
   initialState,
   reducers: {
+    setCurrentSelectedJob: (
+      state,
+      action: PayloadAction<ICandidateListTypes>,
+    ) => {
+      state.selectedJob = action.payload;
+    },
     saveOpenJobs: (
       state,
       action: PayloadAction<{jobs: IJobPostTypes[]; pageNo: number}>,
@@ -376,6 +383,7 @@ export const {
   declineCandidate,
   restoreDeclinedCandidate,
   saveClosedJobs,
+  setCurrentSelectedJob,
   saveDrafts,
   removeADraft,
   updateDeclinedApplications,
@@ -396,3 +404,5 @@ export const closedJobsFromState = (state: RootState) =>
 export const jobDraftFromState = (state: RootState) => state.client.jobs.drafts;
 export const candidateListFromState = (state: RootState) =>
   state.client.candidateList;
+export const selectedJobFromState = (state: RootState) =>
+  state.client.selectedJob;

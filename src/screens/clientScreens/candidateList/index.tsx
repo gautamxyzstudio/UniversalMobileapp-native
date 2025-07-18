@@ -15,6 +15,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   candidateListFromState,
   saveOpenJobs,
+  selectedJobFromState,
+  setCurrentSelectedJob,
 } from '@api/features/client/clientSlice';
 import {ICandidateListTypes} from '@api/features/client/types';
 import {useLazyGetPostedJobQuery} from '@api/features/client/clientApi';
@@ -45,7 +47,6 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const [getJobPosts, {error}] = useLazyGetPostedJobQuery();
   const user = useSelector(userAdvanceDetailsFromState) as IClientDetails;
   const candidateJobs = useSelector(candidateListFromState);
-  const [localCandidatesLength, setLocalCandidatesLength] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
@@ -55,8 +56,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const [isJobsUpdated, setIsJobsUpdated] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState(true);
   const bottomSheetRef = useRef<BottomSheetModalMethods | null>(null);
-  const [currentSelectedJob, setCurrentSelectedJob] =
-    useState<ICandidateListTypes | null>(null);
+  const currentSelectedJob = useSelector(selectedJobFromState);
 
   const getJobPostsHandler = withAsyncErrorHandlingGet(
     async (isFirstPage: boolean = false) => {
@@ -87,20 +87,17 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
         j => j.details.jobId === Number(selectedJobId),
       );
       if (jobIndex !== -1) {
-        setCurrentSelectedJob(candidateJobs[jobIndex]);
+        dispatch(setCurrentSelectedJob(candidateJobs[jobIndex]));
       }
     }
   }, [selectedJobId, isJobsUpdated, candidateJobs]);
 
   useEffect(() => {
-    if (candidateJobs) {
-      setCurrentSelectedJob(candidateJobs[0]);
+    // Only set the first job as selected if no job is currently selected
+    if (candidateJobs && candidateJobs.length > 0 && !currentSelectedJob) {
+      dispatch(setCurrentSelectedJob(candidateJobs[0]));
     }
-  }, [localCandidatesLength]);
-
-  useEffect(() => {
-    setLocalCandidatesLength(() => candidateJobs.length);
-  }, [candidateJobs]);
+  }, [candidateJobs, currentSelectedJob]);
 
   const onPressTab = (index: number) => {
     scrollViewRef.current?.scrollTo({
@@ -112,7 +109,7 @@ const CandidateList: React.FC<ICandidateListProps> = ({route}) => {
   const onChangeSelectedJobHandler = (candidateJob: ICandidateListTypes) => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
-      setCurrentSelectedJob(candidateJob);
+      dispatch(setCurrentSelectedJob(candidateJob));
     }, timeOutTimeSheets);
   };
 

@@ -10,6 +10,7 @@ export type IClientSliceInitialState = {
     drafts: IJobPostTypes[];
   };
   candidateList: ICandidateListTypes[];
+  selectedJob: ICandidateListTypes | null;
 };
 
 export type ICandidateListTypes = {
